@@ -12,6 +12,8 @@
 #define IDD_BULLETTOOL                  314
 #define IDD_OBJECTTOOL                  314
 #define IDD_UITOOL                      315
+#define IDD_OPTIONVIEW                  316
+#define IDB_FOLDER                      318
 #define IDC_BUTTON1                     1000
 #define IDC_EDIT1                       1001
 #define IDC_BUTTON6                     1001
@@ -128,14 +130,22 @@
 #define IDC_EDIT1_PLACE                 1060
 #define IDC_PICTURE_PLACE2              1061
 #define IDC_MAT_MOD_PLACE               1062
+#define IDC_PIC_OPTION_OBJ              1063
+#define IDC_EDIT_POSX                   1064
+#define IDC_EDIT_POSY                   1065
+#define IDC_EDIT_SCALEX                 1066
+#define IDC_EDIT_SCALEY                 1067
+#define IDC_EDIT_OPTION_ANGLE           1068
+#define IDC_LIST_OPTION_PREFAB          1069
+#define IDC_BUTTON_OPTION_APPLY         1070
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        317
+#define _APS_NEXT_RESOURCE_VALUE        320
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1063
-#define _APS_NEXT_SYMED_VALUE           316
+#define _APS_NEXT_CONTROL_VALUE         1071
+#define _APS_NEXT_SYMED_VALUE           317
 #endif
 #endif

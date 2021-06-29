@@ -36,7 +36,7 @@ void CMiniview::OnDraw(CDC* pDC)
 	// MainApp -> MainFrame -> MainSplitterWnd 얻어올수 있고 -> MFCToolView -> Terrain 
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(AfxGetApp()->GetMainWnd()); 
 	CMFCToolView* pView = dynamic_cast<CMFCToolView*>(pMain->m_tMainSplitter.GetPane(0, 1));
-	pView->m_pTerrain->MiniRender_Terrain(); 
+	//pView->m_pTerrain->MiniRender_Terrain(); 
 	CGraphic_Device::Get_Instance()->Render_End(m_hWnd); 
 }
 

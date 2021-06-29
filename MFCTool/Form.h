@@ -19,8 +19,7 @@ public:
 	CMapTool m_tMapTool; 
 	CAnimationTool m_tAnimationTool;
 	CObjectTool	m_tObjectTool;
-	CUiTool	m_tUiTool;
-	
+
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_FORM };
 #endif
@@ -38,7 +37,6 @@ protected:
 public:
 	virtual void OnInitialUpdate();
 	afx_msg void OnBnClickedMapTool();
-	afx_msg void OnBnClickedUiTool();
 	afx_msg void OnBnClickedAnimationTool();
 	afx_msg void OnBnClickedBulletTool();
 };

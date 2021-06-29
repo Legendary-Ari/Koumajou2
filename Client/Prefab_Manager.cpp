@@ -71,7 +71,7 @@ HRESULT CPrefab_Manager::LoadObjectPrefab()
 
 		pBuff = new TCHAR[strLen]{};
 		ReadFile(hFile, pBuff, sizeof(TCHAR) * strLen, &dwbyte, nullptr);
-		pObject->wstrName = pBuff;
+		pObject->wstrPrefabName = pBuff;
 		Safe_Delete(pBuff);
 
 		ReadFile(hFile, &strLen, sizeof(DWORD), &dwbyte, nullptr);
@@ -108,7 +108,7 @@ HRESULT CPrefab_Manager::LoadObjectPrefab()
 		ReadFile(hFile, &pObject->fShotGunAngle, sizeof(float), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->iShotGunCount, sizeof(int), &dwbyte, nullptr);
 
-		m_mapObjectPrefab.emplace(pObject->wstrName, pObject);
+		m_mapObjectPrefab.emplace(pObject->wstrPrefabName, pObject);
 
 		if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, pObject->wstrObjectImage_Path, pObject->wstrObjectImage_ObjectKey)))
 		{
@@ -215,11 +215,11 @@ HRESULT CPrefab_Manager::LoadPlacementPrefab(const wstring & _path)
 	DWORD dwStringSize = 0;
 
 	TCHAR* pBuf = nullptr;
-	PLACEMENT* pPlacement = nullptr;
+	ACTORINFO* pPlacement = nullptr;
 
 	while (true)
 	{
-		pPlacement = new PLACEMENT;
+		pPlacement = new ACTORINFO;
 		ReadFile(hFile, &pPlacement->eRenderID, sizeof(int), &dwbyte, nullptr);
 		if (0 == dwbyte)
 		{
@@ -236,7 +236,7 @@ HRESULT CPrefab_Manager::LoadPlacementPrefab(const wstring & _path)
 		ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
 		pBuf = new TCHAR[dwStringSize];
 		ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-		pPlacement->wstrObjName = pBuf;
+		pPlacement->wstrActorName = pBuf;
 
 		Safe_Delete(pBuf);
 
@@ -245,7 +245,7 @@ HRESULT CPrefab_Manager::LoadPlacementPrefab(const wstring & _path)
 		ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
 		pBuf = new TCHAR[dwStringSize];
 		ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-		pPlacement->wstrName = pBuf;
+		pPlacement->wstrPrefabName = pBuf;
 		Safe_Delete(pBuf);
 
 		ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
@@ -260,12 +260,12 @@ HRESULT CPrefab_Manager::LoadPlacementPrefab(const wstring & _path)
 		pPlacement->wstrFilePath = pBuf;
 		Safe_Delete(pBuf);
 
-		m_mapPlacementPrefab.emplace(pPlacement->wstrName, pPlacement);
+		m_mapPlacementPrefab.emplace(pPlacement->wstrPrefabName, pPlacement);
 		//===============이미지 Insert==============
 
 		if (pPlacement->wstrObjectKey != L"")
 		{
-			if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, pPlacement->wstrFilePath, pPlacement->wstrName)))
+			if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, pPlacement->wstrFilePath, pPlacement->wstrPrefabName)))
 			{
 				ERR_MSG(L"싱글 텍스쳐 실패");
 				return E_FAIL;
@@ -293,7 +293,7 @@ const ANIMATION * CPrefab_Manager::Get_AnimationPrefab(const wstring & _key) con
 	return iter_find->second;
 }
 
-const PLACEMENT * CPrefab_Manager::Get_PlacementPrefab(const wstring & _key) const
+const ACTORINFO * CPrefab_Manager::Get_PlacementPrefab(const wstring & _key) const
 {
 	auto& iter_find = m_mapPlacementPrefab.find(_key);
 	if (iter_find == m_mapPlacementPrefab.end())
@@ -307,11 +307,11 @@ HRESULT CPrefab_Manager::SpawnObjectbyScene(const CScene_Manager::ID & _id)
 	swprintf_s(szFilePath, m_wstrPlacementPath.c_str(), (int)_id);
 	LoadPlacementPrefab(szFilePath);
 
-	PLACEMENT* pPlacement = nullptr;
+	ACTORINFO* pPlacement = nullptr;
 	for (auto& rPair : m_mapPlacementPrefab)
 	{
 		pPlacement = rPair.second;
-		auto& iter_find = m_mapObjectPrefab.find(pPlacement->wstrObjName);
+		auto& iter_find = m_mapObjectPrefab.find(pPlacement->wstrActorName);
 		if (iter_find == m_mapObjectPrefab.end())
 		{
 			//ERR_MSG(L"키값 오류");
@@ -319,7 +319,7 @@ HRESULT CPrefab_Manager::SpawnObjectbyScene(const CScene_Manager::ID & _id)
 		}
 		else
 		{
-			CSpawn_Manager::Spawn(iter_find->second->wstrName, pPlacement, iter_find->second);
+			CSpawn_Manager::Spawn(iter_find->second->wstrPrefabName, pPlacement, iter_find->second);
 		}
 		
 		

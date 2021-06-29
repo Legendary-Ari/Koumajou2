@@ -194,6 +194,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimationTool.h" />
+    <ClInclude Include="HierarchyView.h" />
     <ClInclude Include="ObjectTool.h" />
     <ClInclude Include="FileInfo.h" />
     <ClInclude Include="Form.h" />
@@ -205,6 +206,7 @@
     <ClInclude Include="MFCToolView.h" />
     <ClInclude Include="Miniview.h" />
     <ClInclude Include="Multi_Texture.h" />
+    <ClInclude Include="OptionView.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Single_Texture.h" />
     <ClInclude Include="stdafx.h" />
@@ -216,6 +218,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationTool.cpp" />
+    <ClCompile Include="HierarchyView.cpp" />
     <ClCompile Include="ObjectTool.cpp" />
     <ClCompile Include="FileInfo.cpp" />
     <ClCompile Include="Form.cpp" />
@@ -227,6 +230,7 @@
     <ClCompile Include="MFCToolView.cpp" />
     <ClCompile Include="Miniview.cpp" />
     <ClCompile Include="Multi_Texture.cpp" />
+    <ClCompile Include="OptionView.cpp" />
     <ClCompile Include="Single_Texture.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -246,6 +250,7 @@
     <None Include="res\MFCTool.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\..\Jusin\image\FolderClosed_16x.bmp" />
     <Image Include="res\MFCTool.ico" />
     <Image Include="res\MFCToolDoc.ico" />
     <Image Include="res\Toolbar.bmp" />

@@ -10,10 +10,10 @@
 #include "Form.h"
 // CUiTool 대화 상자입니다.
 
-IMPLEMENT_DYNAMIC(CUiTool, CDialog)
+IMPLEMENT_DYNAMIC(CUiTool, CFormView)
 
-CUiTool::CUiTool(CWnd* pParent /*=NULL*/)
-	: CDialog(IDD_UITOOL, pParent)
+CUiTool::CUiTool()
+	: CFormView(IDD_UITOOL)
 	, m_fPosX(0)
 	, m_fPosY(0)
 	, m_fRotZ(0)
@@ -32,21 +32,21 @@ CUiTool::CUiTool(CWnd* pParent /*=NULL*/)
 	, m_beIDObject(false)
 
 {
-	
+
 
 
 }
 
 CUiTool::~CUiTool()
 {
-	for (pair<CString, PLACEMENT*> rPair : m_mapPlacementInfo)
+	for (pair<CString, ACTORINFO*> rPair : m_mapActorInfo)
 		Safe_Delete(rPair.second);
-	m_mapPlacementInfo.clear();
+	m_mapActorInfo.clear();
 }
 
 void CUiTool::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+	CFormView::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_COMBO1_PLACE, m_ComboID);
 	DDX_Control(pDX, IDC_LIST1_PLACE, m_Image_ListBox);
 	DDX_Control(pDX, IDC_PICTURE_PLACE, m_Picture);
@@ -63,7 +63,7 @@ void CUiTool::DoDataExchange(CDataExchange* pDX)
 }
 
 
-BEGIN_MESSAGE_MAP(CUiTool, CDialog)
+BEGIN_MESSAGE_MAP(CUiTool, CFormView)
 	ON_BN_CLICKED(IDC_BUTTON22_PLACE, &CUiTool::OnBnClickedPrefabLoad)
 	ON_BN_CLICKED(IDC_BUTTON8_PLACE, &CUiTool::OnBnClickedTranslation)
 	ON_BN_CLICKED(IDC_BUTTON9_PLACE, &CUiTool::OnBnClickedRotation)
@@ -99,7 +99,7 @@ void CUiTool::OnDropFiles(HDROP hDropInfo)
 		CString wstrRelativePath = CFileInfo::ConvertRelativePath(szFileFullPath);
 		CString wstrFileNameAndEx = PathFindFileName(wstrRelativePath);
 
-		TCHAR szFileName[MAX_PATH] = {};	
+		TCHAR szFileName[MAX_PATH] = {};
 		lstrcpy(szFileName, wstrFileNameAndEx.GetString());
 		PathRemoveExtension(szFileName);
 		m_Image_ListBox.AddString(szFileName);
@@ -112,7 +112,7 @@ void CUiTool::OnDropFiles(HDROP hDropInfo)
 	}
 	m_Image_ListBox.SetHorizontalExtent(500);
 	UpdateData(FALSE);
-	CDialog::OnDropFiles(hDropInfo);
+	CFormView::OnDropFiles(hDropInfo);
 }
 
 
@@ -135,8 +135,8 @@ void CUiTool::SetImageView(CString Objectkey, const CStatic& PictureBox)
 		->Get_TexInfo(Objectkey.GetString());
 	if (nullptr == pTexInfo)
 		return;
-	float m_ScaleX= 1.f;
-	float m_ScaleY= 1.f;
+	float m_ScaleX = 1.f;
+	float m_ScaleY = 1.f;
 
 	if (pTexInfo->tImageInfo.Width > WINCX || pTexInfo->tImageInfo.Height > WINCY)
 	{
@@ -145,8 +145,8 @@ void CUiTool::SetImageView(CString Objectkey, const CStatic& PictureBox)
 	}
 	else
 	{
-		m_ScaleX = float(WINCX/ pTexInfo->tImageInfo.Width);
-		m_ScaleY = float( WINCY/ pTexInfo->tImageInfo.Height);
+		m_ScaleX = float(WINCX / pTexInfo->tImageInfo.Width);
+		m_ScaleY = float(WINCY / pTexInfo->tImageInfo.Height);
 	}
 
 	D3DXMATRIX matScale, matTrans, matWorld;
@@ -172,15 +172,12 @@ void CUiTool::Render_UI()
 	{
 		CString wstrName;
 		m_Result_ListBox.GetText(i, wstrName);
-		auto& iter = m_mapPlacementInfo.find(wstrName);
-		if (iter == m_mapPlacementInfo.end())
+		auto& iter = m_mapActorInfo.find(wstrName);
+		if (iter == m_mapActorInfo.end())
 		{
 			ERR_MSG(L"맵에 해당 키가 없다");
 			return;
 		}
-
-		if (!iter->second->m_bRender)
-			continue;
 
 		const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()
 			->Get_TexInfo(iter->second->wstrObjectKey.GetString());
@@ -193,9 +190,9 @@ void CUiTool::Render_UI()
 		D3DXMatrixIdentity(&matRotZ);
 		float fCenterX = float(pTexInfo->tImageInfo.Width >> 1);
 		float fCenterY = float(pTexInfo->tImageInfo.Height >> 1);
-		D3DXMatrixScaling(&matScale, iter->second->m_tMatInfo.mat[MATID::SCALE].x, iter->second->m_tMatInfo.mat[MATID::SCALE].y, 0.f);
-		D3DXMatrixRotationZ(&matRotZ, -D3DXToRadian(iter->second->m_tMatInfo.mat[MATID::ROT].z));
-		D3DXMatrixTranslation(&matTrans, iter->second->m_tMatInfo.mat[MATID::TRANS].x - m_pView->GetScrollPos(SB_HORZ), iter->second->m_tMatInfo.mat[MATID::TRANS].y - m_pView->GetScrollPos(SB_VERT), 0.f);
+		D3DXMatrixScaling(&matScale, iter->second->tInfo.vSize.x, iter->second->tInfo.vSize.y, 0.f);
+		D3DXMatrixRotationZ(&matRotZ, -D3DXToRadian(iter->second->tInfo.fAngle));
+		D3DXMatrixTranslation(&matTrans, iter->second->tInfo.vPos.x - m_pView->GetScrollPos(SB_HORZ), iter->second->tInfo.vPos.y - m_pView->GetScrollPos(SB_VERT), 0.f);
 		matWorld = matScale *matRotZ* matTrans;
 
 		CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
@@ -204,9 +201,9 @@ void CUiTool::Render_UI()
 
 		if (i == m_iNowResultIdx)
 		{
-			if (m_bMatTrans|| m_bMatScale)
+			if (m_bMatTrans || m_bMatScale)
 			{
-				D3DXVECTOR3 vPos = iter->second->m_tMatInfo.mat[MATID::TRANS];
+				D3DXVECTOR3 vPos = iter->second->tInfo.vPos;
 				vPos.x -= m_pView->GetScrollPos(SB_HORZ);
 				vPos.y -= m_pView->GetScrollPos(SB_VERT);
 				CGraphic_Device::Get_Instance()->Get_Sprite()->End();
@@ -219,16 +216,16 @@ void CUiTool::Render_UI()
 			}
 			if (m_bMatRot)
 			{
-				D3DXVECTOR3 vPos = iter->second->m_tMatInfo.mat[MATID::TRANS];
+				D3DXVECTOR3 vPos = iter->second->tInfo.vPos;
 				vPos.x -= m_pView->GetScrollPos(SB_HORZ);
 				vPos.y -= m_pView->GetScrollPos(SB_VERT);
 				CGraphic_Device::Get_Instance()->Get_Sprite()->End();
 				float fAngle = 360.f;
 				D3DXVECTOR2	vCirclePos[31];
 				for (int i = 0; i < 30; i++)
-				{			
-					vCirclePos[i].x = vPos.x + cosf(D3DXToRadian(( 360.f/ 30.f)*i))*100.f;
-					vCirclePos[i].y = vPos.y - sinf(D3DXToRadian((360.f / 30.f )*i))*100.f;
+				{
+					vCirclePos[i].x = vPos.x + cosf(D3DXToRadian((360.f / 30.f)*i))*100.f;
+					vCirclePos[i].y = vPos.y - sinf(D3DXToRadian((360.f / 30.f)*i))*100.f;
 				}
 				vCirclePos[30] = vCirclePos[0];
 				CGraphic_Device::Get_Instance()->Get_Line()->Draw(vCirclePos, 31, D3DCOLOR_ARGB(255, 0, 255, 0));
@@ -246,23 +243,23 @@ bool CUiTool::ColArrow(D3DXVECTOR3 vMouse, RECT rc)
 	int iresultIdx = m_Result_ListBox.GetCurSel();
 	m_Result_ListBox.GetText(iresultIdx, wstrResultName);
 
-	auto& iter_find = m_mapPlacementInfo.find(wstrResultName);
+	auto& iter_find = m_mapActorInfo.find(wstrResultName);
 
 	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()
 		->Get_TexInfo(iter_find->second->wstrObjectKey.GetString());
-	
 
-	float fArrowLeft	= iter_find->second->m_tMatInfo.mat[MATID::TRANS].x + (float)rc.left;
-	float fArrowTop		= iter_find->second->m_tMatInfo.mat[MATID::TRANS].y + (float)rc.top;
-	float fArrowRight	= iter_find->second->m_tMatInfo.mat[MATID::TRANS].x + (float)rc.right;
-	float fArrowBottom	= iter_find->second->m_tMatInfo.mat[MATID::TRANS].y + (float)rc.bottom;
+
+	float fArrowLeft = iter_find->second->tInfo.vPos.x + (float)rc.left;
+	float fArrowTop = iter_find->second->tInfo.vPos.y + (float)rc.top;
+	float fArrowRight = iter_find->second->tInfo.vPos.x + (float)rc.right;
+	float fArrowBottom = iter_find->second->tInfo.vPos.y + (float)rc.bottom;
 	//{-5.f,-5.f,100.f,5.f}; X
 	//{-5.f,-100.f,5.f,5.f}; Y
- 
-	//float fArrowLeft = iter_fine->second->m_tMatInfo.mat[MATID::TRANS].x-5.f ;
-	//float fArrowUp = iter_fine->second->m_tMatInfo.mat[MATID::TRANS].y - 5.f;
-	//float fArrowRight = iter_fine->second->m_tMatInfo.mat[MATID::TRANS].x +100.f;
-	//float fArrowBottom = iter_fine->second->m_tMatInfo.mat[MATID::TRANS].y +5.f;
+
+	//float fArrowLeft = iter_fine->second->tInfo.vPos.x-5.f ;
+	//float fArrowUp = iter_fine->second->tInfo.vPos.y - 5.f;
+	//float fArrowRight = iter_fine->second->tInfo.vPos.x +100.f;
+	//float fArrowBottom = iter_fine->second->tInfo.vPos.y +5.f;
 
 	RECT MouseColRect = { (LONG)vMouse.x - 5,(LONG)vMouse.y - 5,(LONG)vMouse.x + 5,(LONG)vMouse.y + 5 };
 	RECT ArrowXColRect = { (LONG)fArrowLeft,(LONG)fArrowTop,(LONG)fArrowRight,(LONG)fArrowBottom };
@@ -279,12 +276,12 @@ bool CUiTool::ColCircle(D3DXVECTOR3 vMouse)
 	int iresultIdx = m_Result_ListBox.GetCurSel();
 	m_Result_ListBox.GetText(iresultIdx, wstrResultName);
 
-	auto& iter_find = m_mapPlacementInfo.find(wstrResultName);
+	auto& iter_find = m_mapActorInfo.find(wstrResultName);
 
 	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()
 		->Get_TexInfo(iter_find->second->wstrObjectKey.GetString());
 
-	D3DXVECTOR3 vDis = vMouse-iter_find->second->m_tMatInfo.mat[MATID::TRANS];
+	D3DXVECTOR3 vDis = vMouse - iter_find->second->tInfo.vPos;
 	float fDia = D3DXVec3Length(&vDis);
 
 	float fDis = float((100 + 10));
@@ -302,22 +299,22 @@ void CUiTool::Collision_Move(D3DXVECTOR3 vMouse)
 		int iresultIdx = m_Result_ListBox.GetCurSel();
 		m_Result_ListBox.GetText(iresultIdx, wstrResultName);
 
-		auto& iter_find = m_mapPlacementInfo.find(wstrResultName);
+		auto& iter_find = m_mapActorInfo.find(wstrResultName);
 		if (m_bArrowX)
 		{
 			if (m_bMatTrans)
-			{	
-			
-				iter_find->second->m_tMatInfo.mat[MATID::TRANS].x = m_vStartPos.x+(vMouse.x- m_vStartMouse.x);
+			{
+
+				iter_find->second->tInfo.vPos.x = m_vStartPos.x + (vMouse.x - m_vStartMouse.x);
 				UpdateData(TRUE);
-				m_fPosX = iter_find->second->m_tMatInfo.mat[MATID::TRANS].x;
+				m_fPosX = iter_find->second->tInfo.vPos.x;
 				UpdateData(FALSE);
 			}
 			if (m_bMatScale)
 			{
-				iter_find->second->m_tMatInfo.mat[MATID::SCALE].x = ( vMouse.x - m_vStartMouse.x)/100;
+				iter_find->second->tInfo.vSize.x = (vMouse.x - m_vStartMouse.x) / 100;
 				UpdateData(TRUE);
-				m_fScaleX = iter_find->second->m_tMatInfo.mat[MATID::SCALE].x;
+				m_fScaleX = iter_find->second->tInfo.vSize.x;
 				UpdateData(FALSE);
 			}
 		}
@@ -325,33 +322,33 @@ void CUiTool::Collision_Move(D3DXVECTOR3 vMouse)
 		{
 			if (m_bMatTrans)
 			{
-				iter_find->second->m_tMatInfo.mat[MATID::TRANS].y = m_vStartPos.y + (vMouse.y - m_vStartMouse.y);
+				iter_find->second->tInfo.vPos.y = m_vStartPos.y + (vMouse.y - m_vStartMouse.y);
 				UpdateData(TRUE);
-				m_fPosY = iter_find->second->m_tMatInfo.mat[MATID::TRANS].y;
+				m_fPosY = iter_find->second->tInfo.vPos.y;
 				UpdateData(FALSE);
 			}
 			if (m_bMatScale)
 			{
-				iter_find->second->m_tMatInfo.mat[MATID::SCALE].y = (vMouse.y - m_vStartMouse.y)/100;
+				iter_find->second->tInfo.vSize.y = (vMouse.y - m_vStartMouse.y) / 100;
 				UpdateData(TRUE);
-				m_fScaleY = iter_find->second->m_tMatInfo.mat[MATID::SCALE].y;
+				m_fScaleY = iter_find->second->tInfo.vSize.y;
 				UpdateData(FALSE);
 			}
 		}
 		if (m_bCircle)
 		{
-			D3DXVECTOR3 vDis =  iter_find->second->m_tMatInfo.mat[MATID::TRANS]- vMouse;
+			D3DXVECTOR3 vDis = iter_find->second->tInfo.vPos - vMouse;
 			D3DXVec3Normalize(&vDis, &vDis);
-		
+
 			float fCos = D3DXVec3Dot(&vDis, &m_vStartPos);
 			//시작 angle
 			float fAngle = D3DXToDegree(acosf(fCos));
-			if (iter_find->second->m_tMatInfo.mat[MATID::TRANS].y < vMouse.y)
-				 fAngle *= -1.f; 
-			iter_find->second->m_tMatInfo.mat[MATID::ROT].z = fAngle;
+			if (iter_find->second->tInfo.vPos.y < vMouse.y)
+				fAngle *= -1.f;
+			iter_find->second->tInfo.fAngle = fAngle;
 
 			UpdateData(TRUE);
-			m_fRotZ = iter_find->second->m_tMatInfo.mat[MATID::ROT].z;
+			m_fRotZ = iter_find->second->tInfo.fAngle;
 			UpdateData(FALSE);
 		}
 		m_pView->Invalidate(FALSE);
@@ -368,10 +365,10 @@ void CUiTool::Collision_Down(D3DXVECTOR3 vMouse)
 			CString wstrResultName;
 			int iresultIdx = m_Result_ListBox.GetCurSel();
 			m_Result_ListBox.GetText(iresultIdx, wstrResultName);
-			auto& iter_find = m_mapPlacementInfo.find(wstrResultName);
-			
+			auto& iter_find = m_mapActorInfo.find(wstrResultName);
+
 			m_vStartMouse = vMouse;
-			m_vStartPos = iter_find->second->m_tMatInfo.mat[MATID::TRANS];
+			m_vStartPos = iter_find->second->tInfo.vPos;
 			m_bArrowX = true;
 			m_bMouseDown = true;
 		}
@@ -381,15 +378,15 @@ void CUiTool::Collision_Down(D3DXVECTOR3 vMouse)
 			CString wstrResultName;
 			int iresultIdx = m_Result_ListBox.GetCurSel();
 			m_Result_ListBox.GetText(iresultIdx, wstrResultName);
-			auto& iter_find = m_mapPlacementInfo.find(wstrResultName);
+			auto& iter_find = m_mapActorInfo.find(wstrResultName);
 
 			m_vStartMouse = vMouse;
-			m_vStartPos = iter_find->second->m_tMatInfo.mat[MATID::TRANS];
+			m_vStartPos = iter_find->second->tInfo.vPos;
 			m_bArrowY = true;
 			m_bMouseDown = true;
 		}
 	}
- 	if (m_bMatRot)
+	if (m_bMatRot)
 	{
 		if (ColCircle(vMouse))
 		{
@@ -397,11 +394,11 @@ void CUiTool::Collision_Down(D3DXVECTOR3 vMouse)
 			int iresultIdx = m_Result_ListBox.GetCurSel();
 			m_Result_ListBox.GetText(iresultIdx, wstrResultName);
 
-			auto& iter_find = m_mapPlacementInfo.find(wstrResultName);
+			auto& iter_find = m_mapActorInfo.find(wstrResultName);
 
-			m_vStartPos = iter_find->second->m_tMatInfo.mat[MATID::TRANS]- vMouse;
+			m_vStartPos = iter_find->second->tInfo.vPos - vMouse;
 			D3DXVec3Normalize(&m_vStartPos, &m_vStartPos);
-			m_bCircle = true; 
+			m_bCircle = true;
 			m_bMouseDown = true;
 		}
 	}
@@ -423,7 +420,7 @@ void CUiTool::PickingPos(D3DXVECTOR3 vMouse)
 {
 	UpdateData(TRUE);
 
-	if (m_bMatTrans || m_bMatScale || m_bMatScale||m_bPicking)
+	if (m_bMatTrans || m_bMatScale || m_bMatScale || m_bPicking)
 		return;
 
 	int iIdx = m_Result_ListBox.GetCurSel();
@@ -435,26 +432,26 @@ void CUiTool::PickingPos(D3DXVECTOR3 vMouse)
 
 	CString wstrName;
 	m_Result_ListBox.GetText(iIdx, wstrName);
-	auto& iter = m_mapPlacementInfo.find(wstrName);
-	if (iter == m_mapPlacementInfo.end())
+	auto& iter = m_mapActorInfo.find(wstrName);
+	if (iter == m_mapActorInfo.end())
 	{
 		ERR_MSG(L"맵에 해당 키가 없다");
 		return;
 	}
-	iter->second->m_tMatInfo.mat[MATID::TRANS]= vMouse;
+	iter->second->tInfo.vPos = vMouse;
 	m_fPosX = vMouse.x;
 	m_fPosY = vMouse.y;
 
-	if (!iter->second->m_bRender)
-	{
-		iter->second->m_tMatInfo.mat[MATID::SCALE] = { 1.f,1.f,0.f };
-		iter->second->m_tMatInfo.mat[MATID::ROT] = { 0.f,0.f,0.f };
-		iter->second->m_bRender = true;	
-	}
+	//if (!iter->second->m_bRender)
+	//{
+	//	iter->second->tInfo.vSize = { 1.f,1.f,0.f };
+	//	iter->second->fAngle = { 0.f,0.f,0.f };
+	//	iter->second->m_bRender = true;
+	//}
 
 	m_bPicking = true;
 	m_wstrMatMod = L"Null";
-	
+
 	UpdateData(FALSE);
 }
 
@@ -465,17 +462,16 @@ void CUiTool::OnBnClickedApply()
 	int iIdx = m_Result_ListBox.GetCurSel();
 	CString wstrName;
 	m_Result_ListBox.GetText(iIdx, wstrName);
-	auto& iter = m_mapPlacementInfo.find(wstrName);
+	auto& iter = m_mapActorInfo.find(wstrName);
 
-	if (iter == m_mapPlacementInfo.end())
+	if (iter == m_mapActorInfo.end())
 	{
 		ERR_MSG(L"맵에 해당 키가 없다");
 		return;
 	}
-	iter->second->m_tMatInfo.mat[MATID::TRANS] = { m_fPosX ,m_fPosY,0.f };
-	iter->second->m_tMatInfo.mat[MATID::ROT] = { 0.f,0.f,m_fRotZ };
-	iter->second->m_tMatInfo.mat[MATID::SCALE] = { m_fScaleX,m_fScaleY ,0.f };
-	iter->second->m_bRender = true;
+	iter->second->tInfo.vPos = { m_fPosX ,m_fPosY,0.f };
+	iter->second->tInfo.fAngle = m_fRotZ;
+	iter->second->tInfo.vSize = { m_fScaleX,m_fScaleY ,0.f };
 	m_pView->Invalidate(FALSE);
 	UpdateData(FALSE);
 }
@@ -484,9 +480,9 @@ void CUiTool::OnBnClickedApply()
 void CUiTool::OnBnClickedAdd()
 {
 	UpdateData(TRUE);
-	PLACEMENT* pPlacementInfo = new PLACEMENT{};
+	ACTORINFO* tActorInfo = new ACTORINFO{};
 	//콤보 박스 선택
- 	int iIdx = m_ComboID.GetCurSel();
+	int iIdx = m_ComboID.GetCurSel();
 	CString strID;
 	m_ComboID.GetLBText(iIdx, strID);
 
@@ -527,34 +523,8 @@ void CUiTool::OnBnClickedAdd()
 		return;
 	}
 
-	pPlacementInfo->wstrObjectKey = iter_find->first;
-	pPlacementInfo->wstrFilePath = iter_find->second;
-
-	if (strID == L"BACKGROUND")
-		pPlacementInfo->eRenderID = RENDERID::BACKGROUND;
-	else if(strID == L"UI")
-		pPlacementInfo->eRenderID = RENDERID::UI;
-	else if (strID == L"OBJECT")
-	{
-		CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd());
-		CForm*	pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
-		const map<CString, OBJECTINFO*>& map = pForm->m_tObjectTool.m_mapObject;
-
-		pPlacementInfo->eRenderID = RENDERID::OBJECT;
-
-		//프리팹 리스트박스 선택
-		int iPrefabIdx = m_Prefab_ListBox.GetCurSel();
-		if (LB_ERR == iPrefabIdx)
-		{
-			ERR_MSG(L"프리팹 선택 안함");
-			return;
-		}
-		CString PrefabName;
-		m_Prefab_ListBox.GetText(iPrefabIdx, PrefabName);
-		//이름 가져와서 키값으로 정보 저장 
-		auto& iter = map.find(PrefabName);
-		pPlacementInfo->wstrPrefabName = iter->second->cstrName;
-	}
+	tActorInfo->wstrObjectKey = iter_find->first;
+	tActorInfo->wstrFilePath = iter_find->second;
 
 	//이름뒤에 인덱스를 붙여줌
 	//마지막 인덱스를 찾음
@@ -564,17 +534,17 @@ void CUiTool::OnBnClickedAdd()
 		CString ObjName = m_wstrObjID.GetString();
 		index.Format(_T("_%d"), m_KeyIndex);
 		ObjName.Append(index);
-		auto& iter_mapPalce = m_mapPlacementInfo.find(ObjName);
-		
-		if (iter_mapPalce == m_mapPlacementInfo.end())
+		auto& iter_mapPalce = m_mapActorInfo.find(ObjName);
+
+		if (iter_mapPalce == m_mapActorInfo.end())
 		{
-			pPlacementInfo->wstrName = ObjName;
-			m_mapPlacementInfo.emplace(ObjName, pPlacementInfo);
+			tActorInfo->wstrActorName = ObjName;
+			m_mapActorInfo.emplace(ObjName, tActorInfo);
 			m_Result_ListBox.AddString(ObjName);
 			m_KeyIndex++;
 			break;
 		}
-		else 
+		else
 			m_KeyIndex++;
 	}
 	UpdateData(FALSE);
@@ -719,16 +689,11 @@ void CUiTool::OnBnClickedResultSave()
 		DWORD dwbyte = 0;
 		DWORD dwStringSize = 0;
 
-		for (auto& rPair : m_mapPlacementInfo)
+		for (auto& rPair : m_mapActorInfo)
 		{
-			WriteFile(hFile, &rPair.second->eRenderID, sizeof(int), &dwbyte, nullptr);
 
-			WriteFile(hFile, &rPair.second->m_tMatInfo.mat[MATID::TRANS], sizeof(D3DXVECTOR3), &dwbyte, nullptr);
-			WriteFile(hFile, &rPair.second->m_tMatInfo.mat[MATID::ROT], sizeof(D3DXVECTOR3), &dwbyte, nullptr);
-			WriteFile(hFile, &rPair.second->m_tMatInfo.mat[MATID::SCALE], sizeof(D3DXVECTOR3), &dwbyte, nullptr);
+			WriteFile(hFile, &rPair.second->tInfo, sizeof(INFO), &dwbyte, nullptr);
 
-			WriteFile(hFile, &rPair.second->m_bRender, sizeof(bool), &dwbyte, nullptr);
-		
 			//if (rPair.second->eRenderID == RENDERID::OBJECT)
 			//{
 			if (rPair.second->wstrPrefabName.IsEmpty())
@@ -743,9 +708,9 @@ void CUiTool::OnBnClickedResultSave()
 				WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
 				WriteFile(hFile, rPair.second->wstrPrefabName.GetString(), dwStringSize, &dwbyte, nullptr);
 			}
-			dwStringSize = (rPair.second->wstrName.GetLength() + 1) * sizeof(TCHAR);
+			dwStringSize = (rPair.second->wstrActorName.GetLength() + 1) * sizeof(TCHAR);
 			WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-			WriteFile(hFile, rPair.second->wstrName.GetString(), dwStringSize, &dwbyte, nullptr);
+			WriteFile(hFile, rPair.second->wstrActorName.GetString(), dwStringSize, &dwbyte, nullptr);
 
 			dwStringSize = (rPair.second->wstrObjectKey.GetLength() + 1) * sizeof(TCHAR);
 			WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
@@ -781,38 +746,33 @@ void CUiTool::OnBnClickedResultLoad()
 
 		if (INVALID_HANDLE_VALUE == hFile)
 			return;
-		for (auto& rPair : m_mapPlacementInfo)
+		for (auto& rPair : m_mapActorInfo)
 			Safe_Delete(rPair.second);
-		m_mapPlacementInfo.clear();
+		m_mapActorInfo.clear();
 		m_Result_ListBox.ResetContent();
 
 		DWORD dwbyte = 0;
 		DWORD dwStringSize = 0;
 
 		TCHAR* pBuf = nullptr;
-		PLACEMENT* pPlacement = nullptr;
+		ACTORINFO* pACTORINFO = nullptr;
 
 		while (true)
 		{
-			pPlacement = new PLACEMENT;
-			ReadFile(hFile, &pPlacement->eRenderID, sizeof(int), &dwbyte, nullptr);
+			pACTORINFO = new ACTORINFO;
+
+			ReadFile(hFile, &pACTORINFO->tInfo, sizeof(INFO), &dwbyte, nullptr);
 			if (0 == dwbyte)
 			{
-				Safe_Delete(pPlacement);
+				Safe_Delete(pACTORINFO);
 				break;
 			}
-			ReadFile(hFile, &pPlacement->m_tMatInfo.mat[MATID::TRANS], sizeof(D3DXVECTOR3), &dwbyte, nullptr);
-			ReadFile(hFile, &pPlacement->m_tMatInfo.mat[MATID::ROT], sizeof(D3DXVECTOR3), &dwbyte, nullptr);
-			ReadFile(hFile, &pPlacement->m_tMatInfo.mat[MATID::SCALE], sizeof(D3DXVECTOR3), &dwbyte, nullptr);
-
-			ReadFile(hFile, &pPlacement->m_bRender, sizeof(bool), &dwbyte, nullptr);
-
 
 			ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
 			pBuf = new TCHAR[dwStringSize];
 			ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-			pPlacement->wstrPrefabName = pBuf;
-			if(pBuf != NULL)
+			pACTORINFO->wstrPrefabName = pBuf;
+			if (pBuf != NULL)
 				m_beIDObject = true;
 			Safe_Delete(pBuf);
 
@@ -821,31 +781,31 @@ void CUiTool::OnBnClickedResultLoad()
 			ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
 			pBuf = new TCHAR[dwStringSize];
 			ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-			pPlacement->wstrName = pBuf;
+			pACTORINFO->wstrActorName = pBuf;
 			Safe_Delete(pBuf);
 
 			ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
 			pBuf = new TCHAR[dwStringSize];
 			ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-			pPlacement->wstrObjectKey = pBuf;
+			pACTORINFO->wstrObjectKey = pBuf;
 			Safe_Delete(pBuf);
 
 			ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
 			pBuf = new TCHAR[dwStringSize];
 			ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-			pPlacement->wstrFilePath = pBuf;
+			pACTORINFO->wstrFilePath = pBuf;
 			Safe_Delete(pBuf);
 
-			m_mapPlacementInfo.emplace(pPlacement->wstrName,pPlacement);
-			m_mapFileInfo.emplace(pPlacement->wstrObjectKey, pPlacement->wstrFilePath);
-			m_Result_ListBox.AddString(pPlacement->wstrName);
-			if(LB_ERR == m_Image_ListBox.FindStringExact(-1,pPlacement->wstrObjectKey))
-				m_Image_ListBox.AddString(pPlacement->wstrObjectKey);
+			m_mapActorInfo.emplace(pACTORINFO->wstrActorName, pACTORINFO);
+			m_mapFileInfo.emplace(pACTORINFO->wstrObjectKey, pACTORINFO->wstrFilePath);
+			m_Result_ListBox.AddString(pACTORINFO->wstrActorName);
+			if (LB_ERR == m_Image_ListBox.FindStringExact(-1, pACTORINFO->wstrObjectKey))
+				m_Image_ListBox.AddString(pACTORINFO->wstrObjectKey);
 			//===============이미지 Insert==============
 
-			if (pPlacement->wstrObjectKey.GetString() != L"")
+			if (pACTORINFO->wstrObjectKey.GetString() != L"")
 			{
-				if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, pPlacement->wstrFilePath.GetString(), pPlacement->wstrObjectKey.GetString())))
+				if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, pACTORINFO->wstrFilePath.GetString(), pACTORINFO->wstrObjectKey.GetString())))
 				{
 					ERR_MSG(L"싱글 텍스쳐 실패");
 					return;
@@ -880,43 +840,43 @@ void CUiTool::OnLbnSelchangeResultList()
 	m_iNowResultIdx = m_Result_ListBox.GetCurSel();
 	CString wstrName;
 	m_Result_ListBox.GetText(m_iNowResultIdx, wstrName);
-	auto& iter = m_mapPlacementInfo.find(wstrName);
-	
-	m_wstrObjID = iter->second->wstrName.GetString();
+	auto& iter = m_mapActorInfo.find(wstrName);
+
+	m_wstrObjID = iter->second->wstrActorName.GetString();
 	int idx = 0;
-	switch (iter->second->eRenderID)
-	{
-	case RENDERID::BACKGROUND:
-		idx = m_ComboID.FindString(-1,L"BACKGROUND");
-		m_ComboID.SetCurSel(idx);
-		break;
-	case RENDERID::OBJECT:
-		idx = m_ComboID.FindString(-1, L"OBJECT");
-		m_ComboID.SetCurSel(idx);
-		break;
-	case RENDERID::UI:
-		idx = m_ComboID.FindString(-1, L"UI");
-		m_ComboID.SetCurSel(idx);
-		break;
-	}
+	//switch (iter->second->eRenderID)
+	//{
+	//case RENDERID::BACKGROUND:
+	//	idx = m_ComboID.FindString(-1, L"BACKGROUND");
+	//	m_ComboID.SetCurSel(idx);
+	//	break;
+	//case RENDERID::OBJECT:
+	//	idx = m_ComboID.FindString(-1, L"OBJECT");
+	//	m_ComboID.SetCurSel(idx);
+	//	break;
+	//case RENDERID::UI:
+	//	idx = m_ComboID.FindString(-1, L"UI");
+	//	m_ComboID.SetCurSel(idx);
+	//	break;
+	//}
 	//그려지고있으면 매트릭스값 써줌
-	if (iter->second->m_bRender)
-	{
-		m_fPosX = iter->second->m_tMatInfo.mat[MATID::TRANS].x;
-		m_fPosY = iter->second->m_tMatInfo.mat[MATID::TRANS].y;
-		m_fRotZ = iter->second->m_tMatInfo.mat[MATID::ROT].z;
-		m_fScaleX = iter->second->m_tMatInfo.mat[MATID::SCALE].x;
-		m_fScaleY = iter->second->m_tMatInfo.mat[MATID::SCALE].y;
-	}
-	else
-	{
-		m_fPosX = 0.f;
-		m_fPosY = 0.f;
-		m_fRotZ = 0.f;
-		m_fScaleX = 1.f;
-		m_fScaleY = 1.f;
-	}
-	int iImageIdx = 0; 
+	//if (iter->second->m_bRender)
+	//{
+		m_fPosX = iter->second->tInfo.vPos.x;
+		m_fPosY = iter->second->tInfo.vPos.y;
+		m_fRotZ = iter->second->tInfo.fAngle;
+		m_fScaleX = iter->second->tInfo.vSize.x;
+		m_fScaleY = iter->second->tInfo.vSize.y;
+	//}
+	//else
+	//{
+	//	m_fPosX = 0.f;
+	//	m_fPosY = 0.f;
+	//	m_fRotZ = 0.f;
+	//	m_fScaleX = 1.f;
+	//	m_fScaleY = 1.f;
+	//}
+	int iImageIdx = 0;
 	//이미지 리스트박스에서 키값과 같은 스트링을 찾아 커서로 가리킴 
 	if ((iImageIdx = m_Image_ListBox.FindStringExact(-1, iter->second->wstrObjectKey)) != LB_ERR)
 	{
@@ -927,29 +887,29 @@ void CUiTool::OnLbnSelchangeResultList()
 	m_Image_ListBox.GetText(iImageIdx, wstrFileName);
 	SetImageView(wstrFileName.GetString(), m_Picture);
 
-	if (iter->second->eRenderID == RENDERID::OBJECT)
-	{
-		int iImageIdx = 0;
-		//프리팹 리스트박스에서 키값과 같은 스트링을 찾아 커서로 가리킴 
-		if ((iImageIdx = m_Prefab_ListBox.FindStringExact(-1, iter->second->wstrPrefabName)) == LB_ERR)
-		{
-			ERR_MSG(L"프리펩 이미지가 없다 왜 없냐? 뭔가 이상한데?");
-			return;
-		}
+	//if (iter->second->eRenderID == RENDERID::OBJECT)
+	//{
+	//	int iImageIdx = 0;
+	//	//프리팹 리스트박스에서 키값과 같은 스트링을 찾아 커서로 가리킴 
+	//	if ((iImageIdx = m_Prefab_ListBox.FindStringExact(-1, iter->second->wstrPrefabName)) == LB_ERR)
+	//	{
+	//		ERR_MSG(L"프리펩 이미지가 없다 왜 없냐? 뭔가 이상한데?");
+	//		return;
+	//	}
 
-			m_Prefab_ListBox.SetCurSel(iImageIdx);
-		CString wstrFileName;
-		m_Prefab_ListBox.GetText(iImageIdx, wstrFileName);
+	//	m_Prefab_ListBox.SetCurSel(iImageIdx);
+	//	CString wstrFileName;
+	//	m_Prefab_ListBox.GetText(iImageIdx, wstrFileName);
 
-		CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd());
-		CForm*	pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
-		const map<CString, OBJECTINFO*>& map = pForm->m_tObjectTool.m_mapObject;
+	//	CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd());
+	//	CForm*	pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
+	//	const map<CString, OBJECTINFO*>& map = pForm->m_tObjectTool.m_mapObject;
 
-		CString wstrPrefabKey;
-		auto& iter_find = map.find(wstrFileName);
-		wstrPrefabKey = iter_find->second->cstrObjectImage_ObjectKey;
-		SetImageView(wstrPrefabKey.GetString(), m_Picture_Prefab);
-	}
+	//	CString wstrPrefabKey;
+	//	auto& iter_find = map.find(wstrFileName);
+	//	wstrPrefabKey = iter_find->second->cstrObjectImage_ObjectKey;
+	//	SetImageView(wstrPrefabKey.GetString(), m_Picture_Prefab);
+	//}
 
 
 
@@ -967,7 +927,7 @@ void CUiTool::OnLbnSelchangeResultList()
 void CUiTool::OnBnClickedMouseTrans()
 {
 	UpdateData(TRUE);
-	if (m_bPicking) 
+	if (m_bPicking)
 	{
 		m_bPicking = false;
 		m_bMatTrans = false;

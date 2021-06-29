@@ -55,6 +55,12 @@
     <Filter Include="01.View\Form\ObjectTool">
       <UniqueIdentifier>{08daf43e-fe32-4125-bd3c-9a5f51205ee1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.View\Hierarchy">
+      <UniqueIdentifier>{794ef204-9f65-4d5f-8adf-4db8f4c1e097}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.View\OptionView">
+      <UniqueIdentifier>{f811c6ee-ac4e-426b-955b-e9cdb1449b08}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainFrm.h">
@@ -117,6 +123,12 @@
     <ClInclude Include="ObjectTool.h">
       <Filter>01.View\Form\ObjectTool</Filter>
     </ClInclude>
+    <ClInclude Include="HierarchyView.h">
+      <Filter>01.View\Hierarchy</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionView.h">
+      <Filter>01.View\OptionView</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp">
@@ -173,6 +185,12 @@
     <ClCompile Include="ObjectTool.cpp">
       <Filter>01.View\Form\ObjectTool</Filter>
     </ClCompile>
+    <ClCompile Include="HierarchyView.cpp">
+      <Filter>01.View\Hierarchy</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionView.cpp">
+      <Filter>01.View\OptionView</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\MFCTool.ico">
@@ -184,6 +202,7 @@
     <Image Include="res\Toolbar.bmp">
       <Filter>98.Default</Filter>
     </Image>
+    <Image Include="..\..\..\Jusin\image\FolderClosed_16x.bmp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MFCTool.rc">

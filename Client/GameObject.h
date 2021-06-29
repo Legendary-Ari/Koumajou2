@@ -14,7 +14,7 @@ public:
 	virtual void	Release_GameObject()PURE; 
 
 	virtual void	Set_Prefab(const OBJECTINFO* _pPrefab);
-	void			Set_Placement(const PLACEMENT* _pPlacement);
+	void			Set_Placement(const ACTORINFO* _pPlacement);
 	inline const RENDERID::ID&	Get_RenderId() const { return m_eRenderId; }
 protected:
 	bool	m_bDestroyed;
@@ -23,7 +23,7 @@ protected:
 	INFO m_tInfo; 
 	float m_fAngle = 0.f;
 	const OBJECTINFO*	m_pObjectInfo;
-	const PLACEMENT*	m_pPlacement;
+	const ACTORINFO*	m_pPlacement;
 
 	RENDERID::ID		m_eRenderId;
 	//INFO* m_pInfo; 

@@ -17,9 +17,9 @@ typedef struct tagUnitInfo
 {
 	// 다시한번 강조하지만 저장할 안에 포인터 있으면 어떻게 될지 다시 생각해봐. 
 #ifdef _AFX
-	CString wstrName; 
+	CString wstrPrefabName; 
 #else
-	wstring wstrName; 
+	wstring wstrPrefabName; 
 #endif // _AFX
 	int		iAtt; 
 	int		iDef; 
@@ -32,6 +32,8 @@ typedef struct tagInfo
 	D3DXVECTOR3 vPos;
 	D3DXVECTOR3 vDir;
 	D3DXVECTOR3 vSize;
+
+	float		fAngle;
 	//D3DXVECTOR2; 
 	//D3DXVECTOR4; 
 
@@ -51,7 +53,7 @@ typedef struct tagOBJECTINFO
 	CString cstrDeathAnimImage_ObjectKey;
 	CString cstrDeathAnimImage_StateKey;
 #else
-	wstring wstrName;
+	wstring wstrPrefabName;
 	wstring wstrObjectImage_ObjectKey;
 	wstring wstrObjectImage_Path;
 	wstring wstrDeathAnimImage_ObjectKey;
@@ -91,30 +93,21 @@ typedef struct tagAnimationInfo
 
 }ANIMATION;
 
-
-typedef struct tagMatrixInfo
-{
-	D3DXVECTOR3 mat[MATID::END];
-}MATRIXINFO;
-
-
-
-typedef struct tagPlacementInfo
+typedef struct tagActorInfo
 {	
-	tagPlacementInfo() :m_bRender(false){}
-	RENDERID::ID eRenderID;
-	MATRIXINFO m_tMatInfo;	//매트릭스를 조정할 백터를 저장
-	bool m_bRender;			//그려질지 말지를 결정
+
+	INFO	tInfo;
 	
 #ifdef _AFX
 	CString wstrPrefabName;
-	CString wstrName;
 	CString wstrObjectKey;
 	CString	wstrFilePath;
+	CString wstrActorName;
 #else
-	wstring wstrName;
+	wstring wstrPrefabName;
 	wstring wstrObjectKey;
 	wstring wstrFilePath;
-	wstring wstrObjName;
+	wstring wstrActorName;
 #endif
-}PLACEMENT;
+}ACTORINFO;
+

@@ -13,7 +13,7 @@ public:
 
 	const OBJECTINFO* Get_ObjectPrefab(const wstring& _key) const;
 	const ANIMATION* Get_AnimationPrefab(const wstring& _key) const;
-	const PLACEMENT* Get_PlacementPrefab(const wstring& _key) const;
+	const ACTORINFO* Get_PlacementPrefab(const wstring& _key) const;
 	HRESULT SpawnObjectbyScene(const CScene_Manager::ID& _id);
 
 private:
@@ -23,7 +23,7 @@ private:
 private:
 	map<wstring, OBJECTINFO*> m_mapObjectPrefab;
 	map<wstring, ANIMATION*> m_mapAnimationPrefab;
-	map<wstring, PLACEMENT*> m_mapPlacementPrefab;
+	map<wstring, ACTORINFO*> m_mapPlacementPrefab;
 
 	const wstring m_wstrPlacementPath;
 };

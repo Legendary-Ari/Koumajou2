@@ -83,7 +83,7 @@ void CPlayer::Release_GameObject()
 {
 }
 
-CGameObject * CPlayer::Create(const OBJECTINFO* _pPrefab, const PLACEMENT* _pPlacement)
+CGameObject * CPlayer::Create(const OBJECTINFO* _pPrefab, const ACTORINFO* _pPlacement)
 {
 	CGameObject* pInstance = new CPlayer;
 	pInstance->Set_Prefab(_pPrefab);

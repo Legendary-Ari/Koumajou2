@@ -40,6 +40,7 @@
 
 #include "Headers.h"
 #include "FileInfo.h"
+#include <afxcview.h>
 
 #ifdef _UNICODE
 #if defined _M_IX86

@@ -16,7 +16,7 @@ CSpawn_Manager::~CSpawn_Manager()
 {
 }
 
-HRESULT CSpawn_Manager::Spawn(const wstring _wstrObjName, const PLACEMENT * _pPlacement, const OBJECTINFO * _pObjectInfo)
+HRESULT CSpawn_Manager::Spawn(const wstring _wstrObjName, const ACTORINFO * _pPlacement, const OBJECTINFO * _pObjectInfo)
 {
 	CGameObject* pObject = nullptr;
 	if (_wstrObjName == L"Player")

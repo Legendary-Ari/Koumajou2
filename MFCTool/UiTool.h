@@ -4,12 +4,12 @@
 
 // CUiTool 대화 상자입니다.
 class CMFCToolView;
-class CUiTool : public CDialog
+class CUiTool : public CFormView
 {
 	DECLARE_DYNAMIC(CUiTool)
 
 public:
-	CUiTool(CWnd* pParent = NULL);   // 표준 생성자입니다.
+	CUiTool();   // 표준 생성자입니다.
 	virtual ~CUiTool();
 
 // 대화 상자 데이터입니다.
@@ -70,7 +70,7 @@ public :
 	OBJECTINFO m_tPrefabInfo;
 
 private :
-	map<CString, PLACEMENT*> m_mapPlacementInfo;
+	map<CString, ACTORINFO*> m_mapActorInfo;
 	map<CString, CString> m_mapFileInfo;
 
 	list<int>m_listResult;

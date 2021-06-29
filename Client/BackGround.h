@@ -8,7 +8,7 @@ private:
 public:
 	virtual ~CBackGround();
 public:
-	static	CGameObject* Create(const PLACEMENT*	_pPlacement);
+	static	CGameObject* Create(const ACTORINFO*	_pPlacement);
 
 	virtual HRESULT Ready_GameObject() override;
 	virtual int Update_GameObject() override;

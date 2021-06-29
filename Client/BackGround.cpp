@@ -12,7 +12,7 @@ CBackGround::~CBackGround()
 	Release_GameObject();
 }
 
-CGameObject * CBackGround::Create(const PLACEMENT * _pPlacement)
+CGameObject * CBackGround::Create(const ACTORINFO * _pPlacement)
 {
 	CGameObject* pInstance = new CBackGround;
 	pInstance->Set_Placement(_pPlacement);
@@ -46,7 +46,7 @@ void CBackGround::Late_Update_GameObject()
 
 void CBackGround::Render_GameObject()
 {
-	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()->Get_TexInfo(m_pPlacement->wstrName);
+	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()->Get_TexInfo(m_pPlacement->wstrPrefabName);
 	if (nullptr == pTexInfo)
 		return;
 	D3DXMATRIX matScale, matTrans, matRotZ, matWorld;
