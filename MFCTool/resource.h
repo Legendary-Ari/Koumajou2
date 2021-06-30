@@ -136,16 +136,17 @@
 #define IDC_EDIT_SCALEX                 1066
 #define IDC_EDIT_SCALEY                 1067
 #define IDC_EDIT_OPTION_ANGLE           1068
-#define IDC_LIST_OPTION_PREFAB          1069
-#define IDC_BUTTON_OPTION_APPLY         1070
+#define IDC_COMBO_OPTION_PREFAB         1071
+#define ID_HIERARCHY_EDIT_NAME          58001
+#define ID_HIERARCHY_DELETE             58002
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        320
-#define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1071
+#define _APS_NEXT_RESOURCE_VALUE        321
+#define _APS_NEXT_COMMAND_VALUE         32774
+#define _APS_NEXT_CONTROL_VALUE         1072
 #define _APS_NEXT_SYMED_VALUE           317
 #endif
 #endif

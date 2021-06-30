@@ -1,4 +1,5 @@
 #pragma once
+#include "afxwin.h"
 
 
 
@@ -25,10 +26,26 @@ public:
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
-
+	
 	DECLARE_MESSAGE_MAP()
+private:
+	
+private:
+	map<CString, OBJECTINFO*>* m_pmapPrefab;
+	map<CString, ACTORINFO*>* m_pmapActorInfo;
 public:
-	afx_msg void OnBnClickedButton1Place();
+	//afx_msg void OnBnClickedButtonApply();
+	afx_msg void OnLbnSelchangeListOptionPrefab();
+	afx_msg void OnEnKillfocusEditPosx();
+	CListBox m_LB_Prefab;
+	float m_fPosX;
+	float m_fPosY;
+	float m_fScaleX;
+	float m_fScaleY;
+	float m_fAngle;
+	virtual void OnInitialUpdate();
+	afx_msg void OnCbnSelchangeComboOptionPrefab();
+	CComboBox m_ComboBox_PrefabList;
 };
 
 

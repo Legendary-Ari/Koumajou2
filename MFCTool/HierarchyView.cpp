@@ -4,13 +4,17 @@
 #include "stdafx.h"
 #include "MFCTool.h"
 #include "HierarchyView.h"
-
+#include "MainFrm.h"
+#include "Form.h"
 
 // CHierarchyView
 
 IMPLEMENT_DYNCREATE(CHierarchyView, CTreeView)
 
 CHierarchyView::CHierarchyView()
+	:m_bDraging(false)
+	//,ID_HIERARCHY_EDIT_NAME(5001)
+	//,ID_HIERARCHY_DELETE(5002)
 {
 
 }
@@ -25,6 +29,13 @@ BEGIN_MESSAGE_MAP(CHierarchyView, CTreeView)
 	ON_NOTIFY_REFLECT(TVN_BEGINDRAG, &CHierarchyView::OnTvnBegindrag)
 	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONUP()
+	ON_NOTIFY_REFLECT(TVN_ENDLABELEDIT, &CHierarchyView::OnTvnEndlabeledit)
+	ON_NOTIFY_REFLECT(TVN_BEGINLABELEDIT, &CHierarchyView::OnTvnBeginlabeledit)
+	ON_WM_CONTEXTMENU()
+	ON_WM_MENUSELECT()
+	ON_NOTIFY_REFLECT(NM_RCLICK, &CHierarchyView::OnNMRClick)
+	ON_COMMAND(ID_HIERARCHY_EDIT_NAME, &CHierarchyView::OnSelectedEditMenu)
+	ON_COMMAND(ID_HIERARCHY_DELETE, &CHierarchyView::OnSelectedDeleteMenu)
 END_MESSAGE_MAP()
 
 
@@ -55,11 +66,24 @@ void CHierarchyView::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
 	*pResult = 0;
 }
 
+void CHierarchyView::OnSelectedEditMenu()
+{
+	GetTreeCtrl().EditLabel(GetTreeCtrl().GetSelectedItem());
+}
+
+void CHierarchyView::OnSelectedDeleteMenu()
+{
+}
+
 
 void CHierarchyView::OnInitialUpdate()
 {
 	CTreeView::OnInitialUpdate();
+
+	
+
 	CTreeCtrl& tree = GetTreeCtrl();
+	tree.SetFocus();
 
 	tree.SetBkColor(RGB(230, 230, 230));
 
@@ -153,13 +177,13 @@ void CHierarchyView::OnMouseMove(UINT nFlags, CPoint point)
 
 	HTREEITEM htiTarget;  // Handle to target item. 
 	TVHITTESTINFO tvht;   // Hit test information. 
-
+	
 	if (!m_bDraging)
 		return CTreeView::OnMouseMove(nFlags, point);
 
 	POINT pt = point;
-	ClientToScreen(&pt);
-	ScreenToClient(&pt);
+	GetCursorPos(&pt);
+	GetTreeCtrl().ScreenToClient(&pt);
 	
 	ImageList_DragMove(pt.x, pt.y);
 	// Turn off the dragged image so the background can be refreshed.
@@ -173,8 +197,12 @@ void CHierarchyView::OnMouseMove(UINT nFlags, CPoint point)
 	{
 		TreeView_SelectDropTarget(GetSafeHwnd(), htiTarget);
 	}
+	else
+	{
+		TreeView_SelectDropTarget(GetSafeHwnd(), NULL);
+	}
 	ImageList_DragShowNolock(TRUE);
-
+	
 	CTreeView::OnMouseMove(nFlags, point);
 }
 
@@ -197,4 +225,122 @@ void CHierarchyView::OnLButtonUp(UINT nFlags, CPoint point)
 	}
 
 	CTreeView::OnLButtonUp(nFlags, point);
+}
+
+void CHierarchyView::OnTvnBeginlabeledit(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMTVDISPINFO pTVDispInfo = reinterpret_cast<LPNMTVDISPINFO>(pNMHDR);
+	
+	CTreeCtrl& tree = GetTreeCtrl();
+	tree.SetFocus();
+
+	m_cstrEditFrom = pTVDispInfo->item.pszText;
+
+	*pResult = 0;
+}
+
+void CHierarchyView::OnTvnEndlabeledit(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMTVDISPINFO pTVDispInfo = reinterpret_cast<LPNMTVDISPINFO>(pNMHDR);
+	
+	CTreeCtrl& tree = GetTreeCtrl();
+
+	CEdit *pEdit = tree.GetEditControl();
+	if (pEdit)
+	{
+		*pResult = 1;
+		return;
+	}
+	
+	CString cstrEdit = pTVDispInfo->item.pszText;
+	auto iter_find = m_mapActorInfo.find(cstrEdit);
+	if (iter_find != m_mapActorInfo.end())
+	{
+		ERR_MSG(L"이미 있는 이름입니다.");
+		*pResult = 1;
+		return;
+	}
+	iter_find = m_mapActorInfo.find(m_cstrEditFrom);
+	ACTORINFO* pTempActorinfo;
+	if (iter_find != m_mapActorInfo.end())
+	{
+		pTempActorinfo = iter_find->second;
+		m_mapActorInfo.erase(m_cstrEditFrom);
+	}
+	m_mapActorInfo.emplace(cstrEdit, pTempActorinfo);
+
+	*pResult = 0;
+}
+
+
+
+
+
+void CHierarchyView::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
+{
+
+	HTREEITEM htiTarget;
+	TVHITTESTINFO tvht;
+	// Find out if the pointer is on the item. If it is, 
+	// highlight the item as a drop target. 
+
+	CTreeCtrl& tree = GetTreeCtrl();
+
+	POINT pt = point;
+	GetCursorPos(&pt);
+	tree.ScreenToClient(&pt);
+
+	tvht.pt.x = pt.x;
+	tvht.pt.y = pt.y;
+
+	HTREEITEM hit = tree.HitTest(tvht.pt);
+	tree.SelectItem(hit);
+
+	if (!hit)
+	{
+		return;
+	}
+
+	CMenu menu;
+	menu.CreatePopupMenu();
+
+	menu.AppendMenuW(MF_STRING, ID_HIERARCHY_EDIT_NAME, _T("이름 바꾸기 (F2)"));
+	menu.AppendMenuW(MF_STRING, ID_HIERARCHY_DELETE, _T("삭제"));
+	//menu.EnableMenuItem(ID_HIERARCHY_EDIT_NAME, MF_ENABLED);
+	//menu.EnableMenuItem(ID_HIERARCHY_DELETE, MF_ENABLED);
+
+	menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON,
+		point.x,
+		point.y,
+		AfxGetMainWnd());
+	menu.DestroyMenu();
+	
+}
+
+
+void CHierarchyView::OnMenuSelect(UINT nItemID, UINT nFlags, HMENU hSysMenu)
+{
+	CTreeView::OnMenuSelect(nItemID, nFlags, hSysMenu);
+
+	CTreeCtrl& tree = GetTreeCtrl();
+
+	switch (nItemID)
+	{
+	case ID_HIERARCHY_EDIT_NAME:
+		tree.EditLabel(tree.GetSelectedItem());
+		break;
+	default:
+		break;
+	}
+}
+
+
+void CHierarchyView::OnNMRClick(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	CTreeCtrl & tree = GetTreeCtrl();
+	/* Get the cursor position for this message */
+	DWORD dwPos = GetMessagePos();
+	/* Convert the co-ords into a CPoint structure */
+	CPoint pt(GET_X_LPARAM(dwPos), GET_Y_LPARAM(dwPos));
+	OnContextMenu(this, pt);
 }
