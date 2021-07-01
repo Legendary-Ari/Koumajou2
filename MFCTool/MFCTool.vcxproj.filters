@@ -61,7 +61,7 @@
     <Filter Include="01.View\OptionView">
       <UniqueIdentifier>{f811c6ee-ac4e-426b-955b-e9cdb1449b08}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.View\Hierarchy\HierarchyDialog">
+    <Filter Include="01.View\Hierarchy\HierarchyNewActorDialog">
       <UniqueIdentifier>{2db593c1-9a6e-4761-bf3a-d3081ecfc26b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -132,6 +132,9 @@
     <ClInclude Include="OptionView.h">
       <Filter>01.View\OptionView</Filter>
     </ClInclude>
+    <ClInclude Include="HierarchyNewActorDialog.h">
+      <Filter>01.View\Hierarchy\HierarchyNewActorDialog</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp">
@@ -193,6 +196,9 @@
     </ClCompile>
     <ClCompile Include="OptionView.cpp">
       <Filter>01.View\OptionView</Filter>
+    </ClCompile>
+    <ClCompile Include="HierarchyNewActorDialog.cpp">
+      <Filter>01.View\Hierarchy\HierarchyNewActorDialog</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

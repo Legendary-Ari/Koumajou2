@@ -23,7 +23,9 @@ public:
 	virtual void Dump(CDumpContext& dc) const;
 #endif
 #endif
-
+public:
+	void	OnHirerachyTreeCtrlSelectChanged(CString  _cstrActorName);
+	void	UpdatePrefabComboBox();
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
 	
@@ -34,8 +36,6 @@ private:
 	map<CString, OBJECTINFO*>* m_pmapPrefab;
 	map<CString, ACTORINFO*>* m_pmapActorInfo;
 public:
-	//afx_msg void OnBnClickedButtonApply();
-	afx_msg void OnLbnSelchangeListOptionPrefab();
 	afx_msg void OnEnKillfocusEditPosx();
 	CListBox m_LB_Prefab;
 	float m_fPosX;
@@ -46,6 +46,7 @@ public:
 	virtual void OnInitialUpdate();
 	afx_msg void OnCbnSelchangeComboOptionPrefab();
 	CComboBox m_ComboBox_PrefabList;
+	CStatic m_PicturePrefab;
 };
 
 

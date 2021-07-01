@@ -51,7 +51,6 @@ public:
 
 
 	CStatic m_Start_Image;
-	CStatic m_End_Image;
 	CStatic m_Index_To_Selected_Image;
 	CStatic m_List_To_Selected_Image;
 	CListBox m_Image_ListBox;

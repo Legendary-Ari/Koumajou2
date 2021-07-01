@@ -194,6 +194,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimationTool.h" />
+    <ClInclude Include="HierarchyNewActorDialog.h" />
     <ClInclude Include="HierarchyView.h" />
     <ClInclude Include="ObjectTool.h" />
     <ClInclude Include="FileInfo.h" />
@@ -218,6 +219,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AnimationTool.cpp" />
+    <ClCompile Include="HierarchyNewActorDialog.cpp" />
     <ClCompile Include="HierarchyView.cpp" />
     <ClCompile Include="ObjectTool.cpp" />
     <ClCompile Include="FileInfo.cpp" />

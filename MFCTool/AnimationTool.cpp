@@ -41,7 +41,6 @@ void CAnimationTool::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT5, m_iInput_Index);
 
 	DDX_Control(pDX, IDC_START_IMAGE, m_Start_Image);
-	DDX_Control(pDX, IDC_END_IMAGE, m_End_Image);
 	DDX_Control(pDX, IDC_INDEX_TO_SELECTED_IMAGE, m_Index_To_Selected_Image);
 	DDX_Control(pDX, IDC_LIST_TO_SELECTED_IMAGE, m_List_To_Selected_Image);
 
@@ -567,7 +566,7 @@ void CAnimationTool::OnLbnSelchangeAnimation_List()
 
 	//start 이미지, end 이미지 출력 
 	SetImageView(iter_find->second->wstrObjectKey.GetString(), 0, m_Start_Image, iter_find->second->wstrStateKey.GetString());
-	SetImageView(iter_find->second->wstrObjectKey.GetString(), iter_find->second->iMax_Index - 1, m_End_Image, iter_find->second->wstrStateKey.GetString());
+	
 
 	UpdateData(FALSE);
 }
