@@ -44,12 +44,19 @@ CMainFrame::CMainFrame()
 
 CMainFrame::~CMainFrame()
 {
+	CGraphic_Device::Destroy_Instance();
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CFrameWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
+
+	if (FAILED(CGraphic_Device::Get_Instance()->Ready_Graphic_Device()))
+	{
+		ERR_MSG(L"그래픽 디바이스 생성 에러");
+		return FALSE;
+	}
 // 
 // 	if (!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC) ||
 // 		!m_wndToolBar.LoadToolBar(IDR_MAINFRAME))
@@ -78,6 +85,7 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
 	if( !CFrameWnd::PreCreateWindow(cs) )
 		return FALSE;
+
 	// TODO: CREATESTRUCT cs를 수정하여 여기에서
 	//  Window 클래스 또는 스타일을 수정합니다.
 

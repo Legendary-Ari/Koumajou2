@@ -7,6 +7,7 @@
 class CTerrain; 
 class CMFCToolDoc;
 class CUiTool;
+class CHierarchyView;
 class CMFCToolView : public CScrollView
 {
 protected: // serialization에서만 만들어집니다.
@@ -21,6 +22,8 @@ public:
 public:
 	CTerrain* m_pTerrain; 
 	CUiTool* m_pUiTool;
+	CHierarchyView* m_pHierarchyView;
+	map<CString, OBJECTINFO*>* m_pmapPrefab;
 	float m_fAngle = 0.f;
 	float m_fAlpha = 0.f; 
 	float m_fBulletSpeed = 10.f; 

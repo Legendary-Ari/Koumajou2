@@ -24,13 +24,11 @@ protected:
 
 private:
 	void Update_Group_Bullet();
-	void Update_Group_ShotGun();
 
 public:
 	map<CString, OBJECTINFO*>	m_mapObject;
 	map<CString, CString>		m_mapKeyToPath;
 public:
-	afx_msg void OnCbnSelchangeBulletType();
 	CStatic m_GroupBox;
 	CComboBox m_BulletTypeSelectControl;
 	afx_msg void OnBnClickedAdd();
@@ -67,4 +65,5 @@ public:
 	CStatic m_PictureObject;
 	CListBox m_ListBox_ObjImage;
 	virtual BOOL OnInitDialog();
+	CComboBox m_ComboRenderId;
 };

@@ -7,6 +7,7 @@
 #include "MainFrm.h"
 #include "Form.h"
 #include "OptionView.h"
+#include "MFCToolView.h"
 
 // CHierarchyView
 
@@ -153,11 +154,12 @@ void CHierarchyView::InsertTreeItem(TVI_TYPE _type, CString& _cstrName)
 void CHierarchyView::InsertNewEmptyActorToMap(CString & _cstrName, OBJECTINFO * _pPrefab)
 {
 	ACTORINFO* pActorInfo = new ACTORINFO{};
-	pActorInfo->tInfo.vPos = { 400.f, 300.f, 0.f };
+	pActorInfo->tInfo.vPos = { 400.f + m_pView->GetScrollPos(SB_HORZ), 300.f + m_pView->GetScrollPos(SB_VERT), 0.f };
 	pActorInfo->tInfo.vSize = { 1.f, 1.f, 0.f };
 	pActorInfo->wstrActorName = _cstrName;
 	pActorInfo->wstrPrefabName = _pPrefab->cstrName;
 	m_mapActorInfo.emplace(_cstrName, pActorInfo);
+	m_pView->Invalidate(FALSE);
 }
 
 void CHierarchyView::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
@@ -168,13 +170,24 @@ void CHierarchyView::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
 	tree.SetItemState(pNMTreeView->itemOld.hItem, ~TVIS_BOLD, TVIS_BOLD);
 
 	tree.SetItemState(pNMTreeView->itemNew.hItem, TVIS_BOLD, TVIS_BOLD);
-	
-	auto& iter_find = m_mapTreeItem.find(tree.GetItemText(pNMTreeView->itemNew.hItem));
-	if (!(
-		iter_find == m_mapTreeItem.end() || 
-		iter_find->second == FOLDER))
+	CString cstrSelectedTree = tree.GetItemText(pNMTreeView->itemNew.hItem);
+	if (cstrSelectedTree == L"Root")
+		return;
+	auto& iter_find = m_mapTreeItem.find(cstrSelectedTree);
+	if (iter_find != m_mapTreeItem.end())
 	{
-		m_pOptionView->OnHirerachyTreeCtrlSelectChanged(tree.GetItemText(pNMTreeView->itemNew.hItem));
+		if(iter_find->second == ACTOR)
+			m_pOptionView->OnHirerachyTreeCtrlSelectChanged(tree.GetItemText(pNMTreeView->itemNew.hItem));
+		else
+			m_pOptionView->OnHirerachyTreeCtrlSelectChanged(nullptr);
+	}
+	else
+	{
+		POINT pt;
+		GetCursorPos(&pt);
+		ClientToScreen(&pt);
+		if(tree.HitTest(pt))
+			ERR_MSG(L"CHierarchyView::OnTvnSelchanged 에서 map탐색 실패");
 	}
 
 
@@ -232,7 +245,7 @@ void CHierarchyView::OnInitialUpdate()
 
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd());
 	m_pOptionView = dynamic_cast<COptionView*>(pMain->m_tRightSplitter.GetPane(1, 0));
-	
+	m_pView = dynamic_cast<CMFCToolView*>(pMain->m_tMainSplitter.GetPane(0, 1));
 
 	//if (nullptr == m_tNewActorDialog.GetSafeHwnd())
 	//	m_tNewActorDialog.CreateIndirect(IDD_HIERARCHYNEWACTORDIALOG,);

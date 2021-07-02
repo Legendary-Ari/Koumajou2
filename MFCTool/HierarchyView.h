@@ -4,6 +4,7 @@
 // CHierarchyView ∫‰¿‘¥œ¥Ÿ.
 #include "HierarchyNewActorDialog.h"
 class COptionView;
+class CMFCToolView;
 class CHierarchyView : public CTreeView
 {
 	DECLARE_DYNCREATE(CHierarchyView)
@@ -33,6 +34,7 @@ private:
 	COptionView*	m_pOptionView;
 	CString		m_cstrEditFrom;
 public:
+	CMFCToolView* m_pView;
 	CHierarchyNewActorDialog m_tNewActorDialog;
 	map<CString, ACTORINFO*> m_mapActorInfo;
 	map<CString, TVI_TYPE> m_mapTreeItem;

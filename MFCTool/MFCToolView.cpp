@@ -18,6 +18,7 @@
 #include "MapTool.h"
 #include "Form.h"
 #include "UiTool.h"
+#include "HierarchyView.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -80,9 +81,37 @@ void CMFCToolView::OnDraw(CDC* /*pDC*/)
 	//pForm->m_tUiTool.SetView(this);
 	//pForm->m_tUiTool.Render_UI();
 
-	CGraphic_Device::Get_Instance()->Render_End();
-}
+	for (auto& rPair : m_pHierarchyView->m_mapActorInfo)
+	{
+		auto& iter = m_pmapPrefab->find(rPair.second->wstrPrefabName);
+		if (iter == m_pmapPrefab->end())
+		{
+			ERR_MSG(L"CMFCToolView::OnDraw 맵에 해당 키가 없다");
+			return;
+		}
 
+		const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()
+			->Get_TexInfo(iter->second->cstrObjectImage_ObjectKey.GetString());
+
+		D3DXMATRIX matScale, matTrans, matRotZ, matWorld;
+
+		//초기화
+		D3DXMatrixIdentity(&matScale);
+		D3DXMatrixIdentity(&matTrans);
+		D3DXMatrixIdentity(&matRotZ);
+		float fCenterX = float(pTexInfo->tImageInfo.Width >> 1);
+		float fCenterY = float(pTexInfo->tImageInfo.Height >> 1);
+		D3DXMatrixScaling(&matScale, rPair.second->tInfo.vSize.x, rPair.second->tInfo.vSize.y, 0.f);
+		D3DXMatrixRotationZ(&matRotZ, D3DXToRadian(-rPair.second->tInfo.fAngle));
+		D3DXMatrixTranslation(&matTrans, rPair.second->tInfo.vPos.x - GetScrollPos(SB_HORZ), rPair.second->tInfo.vPos.y - GetScrollPos(SB_VERT), 0.f);
+		matWorld = matScale *matRotZ* matTrans;
+
+		CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
+		CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, nullptr, &D3DXVECTOR3{ fCenterX,fCenterY,0.f }, nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
+	}
+
+	CGraphic_Device::Get_Instance()->Render_End(GetSafeHwnd());
+}
 
 // CMFCToolView 인쇄
 
@@ -130,7 +159,7 @@ CMFCToolDoc* CMFCToolView::GetDocument() const // 디버그되지 않은 버전은 인라인�
 void CMFCToolView::OnInitialUpdate()
 {
 	CScrollView::OnInitialUpdate();
-	SIZE; 
+	
 	//CSize tsize; 
 	SetScrollSizes(MM_TEXT, CSize(TILECX * TILEX,(TILECY >> 1) * TILEY));
 	//GetScrollPos()
@@ -153,20 +182,21 @@ void CMFCToolView::OnInitialUpdate()
 
 	pMain->SetWindowPos(nullptr, 0, 0, CLIENTCX + iGapX, CLIENTCY + iGapY, SWP_NOMOVE);
 
-	if (FAILED(CGraphic_Device::Get_Instance()->Ready_Graphic_Device()))
-		return; 
+	m_pHierarchyView = dynamic_cast<CHierarchyView*>(pMain->m_tRightSplitter.GetPane(0, 0));
+	CForm* pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
+	m_pmapPrefab = &(pForm->m_tObjectTool.m_mapObject);
 
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
-	if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX, L"../Texture/Stage/Player/Attack/AKIHA_AKI01_00%d.png", L"Player", L"Attack", 6)))
-		return; 
-	if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX, L"../Texture/Stage/Player/Dash/AKIHA_AKI13_00%d.png", L"Player", L"Dash", 11)))
-		return;
-	if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX, L"../Texture/Stage/Terrain/Tile/Tile%d.png", L"Terrain", L"Tile", 38)))
-		return;
+	//if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX, L"../Texture/Stage/Player/Attack/AKIHA_AKI01_00%d.png", L"Player", L"Attack", 6)))
+	//	return; 
+	//if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX, L"../Texture/Stage/Player/Dash/AKIHA_AKI13_00%d.png", L"Player", L"Dash", 11)))
+	//	return;
+	//if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX, L"../Texture/Stage/Terrain/Tile/Tile%d.png", L"Terrain", L"Tile", 38)))
+	//	return;
 
 
-	if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX, L"../Texture/Stage/Effect/Mega_Explosion/sp_megaexplosion_01_%d.png", L"Effect", L"Mega_Explosion", 24)))
-		return;
+	//if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX, L"../Texture/Stage/Effect/Mega_Explosion/sp_megaexplosion_01_%d.png", L"Effect", L"Mega_Explosion", 24)))
+	//	return;
 
 	//m_pTerrain = new CTerrain; 
 	//if (FAILED(m_pTerrain->Ready_Terrain()))

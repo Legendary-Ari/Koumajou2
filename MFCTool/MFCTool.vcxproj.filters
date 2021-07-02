@@ -64,6 +64,9 @@
     <Filter Include="01.View\Hierarchy\HierarchyNewActorDialog">
       <UniqueIdentifier>{2db593c1-9a6e-4761-bf3a-d3081ecfc26b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="05.EnumToString">
+      <UniqueIdentifier>{bdd4c9bb-06c0-4633-99fe-918b42aedf22}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainFrm.h">
@@ -135,6 +138,9 @@
     <ClInclude Include="HierarchyNewActorDialog.h">
       <Filter>01.View\Hierarchy\HierarchyNewActorDialog</Filter>
     </ClInclude>
+    <ClInclude Include="EnumToString.h">
+      <Filter>05.EnumToString</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp">
@@ -199,6 +205,9 @@
     </ClCompile>
     <ClCompile Include="HierarchyNewActorDialog.cpp">
       <Filter>01.View\Hierarchy\HierarchyNewActorDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="EnumToString.cpp">
+      <Filter>05.EnumToString</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

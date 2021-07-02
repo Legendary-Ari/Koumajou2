@@ -17,3 +17,4 @@ const int TILEX = 20;
 const int TILEY = 30; 
 
 extern HWND g_hWND; 
+

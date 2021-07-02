@@ -22,6 +22,7 @@ using namespace std;
 #include "GameObject_Manager.h"
 #include "Key_Manager.h"
 #include "Scroll_Manager.h"
-
+#else
+#include "EnumToString.h"
 #endif
 

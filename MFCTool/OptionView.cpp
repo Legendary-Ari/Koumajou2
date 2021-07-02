@@ -7,6 +7,7 @@
 #include "MainFrm.h"
 #include "Form.h"
 #include "HierarchyView.h"
+#include "MFCToolView.h"
 
 
 // COptionView
@@ -20,6 +21,7 @@ COptionView::COptionView()
 	, m_fScaleX(0)
 	, m_fScaleY(0)
 	, m_fAngle(0)
+	, m_cstrActorName(_T(""))
 {
 
 }
@@ -34,6 +36,13 @@ void COptionView::OnHirerachyTreeCtrlSelectChanged(CString  _cstrActorName)
 	if (_cstrActorName.IsEmpty())
 	{
 		m_ComboBox_PrefabList.SetCurSel(-1);
+		m_cstrActorName = _T("Folder");
+		m_fPosX = 0.f;
+		m_fPosY = 0.f;
+		m_fScaleX = 0.f;
+		m_fScaleY = 0.f;
+		m_fAngle = 0.f;
+		UpdateData(FALSE);
 		return;
 	}
 	auto& iter_Actor_find = m_pmapActorInfo->find(_cstrActorName);
@@ -51,6 +60,7 @@ void COptionView::OnHirerachyTreeCtrlSelectChanged(CString  _cstrActorName)
 	m_fScaleX = pActorInfo->tInfo.vSize.x;
 	m_fScaleY = pActorInfo->tInfo.vSize.y;
 	m_fAngle = pActorInfo->tInfo.fAngle;
+	m_cstrActorName = _cstrActorName;
 	UpdateData(FALSE);
 	OnCbnSelchangeComboOptionPrefab();
 }
@@ -75,12 +85,18 @@ void COptionView::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_OPTION_ANGLE, m_fAngle);
 	DDX_Control(pDX, IDC_COMBO_OPTION_PREFAB, m_ComboBox_PrefabList);
 	DDX_Control(pDX, IDC_PIC_OPTION_OBJ, m_PicturePrefab);
+	DDX_Text(pDX, IDC_OPTION_ACTORNAME, m_cstrActorName);
 }
 
 BEGIN_MESSAGE_MAP(COptionView, CFormView)
 	//ON_BN_CLICKED(IDC_BUTTON_OPTION_APPLY, &COptionView::OnBnClickedButtonApply)
 	ON_EN_KILLFOCUS(IDC_EDIT_POSX, &COptionView::OnEnKillfocusEditPosx)
 	ON_CBN_SELCHANGE(IDC_COMBO_OPTION_PREFAB, &COptionView::OnCbnSelchangeComboOptionPrefab)
+	ON_EN_KILLFOCUS(IDC_OPTION_ACTORNAME, &COptionView::OnEnKillfocusOptionActorname)
+	ON_EN_KILLFOCUS(IDC_EDIT_POSY, &COptionView::OnEnKillfocusEditPosy)
+	ON_EN_KILLFOCUS(IDC_EDIT_SCALEX, &COptionView::OnEnKillfocusEditScalex)
+	ON_EN_KILLFOCUS(IDC_EDIT_SCALEY, &COptionView::OnEnKillfocusEditScaley)
+	ON_EN_KILLFOCUS(IDC_EDIT_OPTION_ANGLE, &COptionView::OnEnKillfocusEditOptionAngle)
 END_MESSAGE_MAP()
 
 
@@ -126,7 +142,10 @@ void COptionView::Dump(CDumpContext& dc) const
 
 void COptionView::OnEnKillfocusEditPosx()
 {
-
+	UpdateData(TRUE);
+	auto& iter_find = m_pmapActorInfo->find(m_cstrActorName);
+	iter_find->second->tInfo.vPos.x = m_fPosX;
+	m_pView->Invalidate(FALSE);
 }
 
 
@@ -138,8 +157,10 @@ void COptionView::OnInitialUpdate()
 	CForm*	pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
 	m_pmapPrefab = &(pForm->m_tObjectTool.m_mapObject);
 
-	CHierarchyView*	pHierarchyView = dynamic_cast<CHierarchyView*>(pMain->m_tRightSplitter.GetPane(0, 0));
-	m_pmapActorInfo = &(pHierarchyView->m_mapActorInfo);
+	m_pHierarchyView = dynamic_cast<CHierarchyView*>(pMain->m_tRightSplitter.GetPane(0, 0));
+	m_pmapActorInfo = &(m_pHierarchyView->m_mapActorInfo);
+
+	m_pView = dynamic_cast<CMFCToolView*>(pMain->m_tMainSplitter.GetPane(0,1));
 
 	UpdatePrefabComboBox();
 }
@@ -177,4 +198,63 @@ void COptionView::OnCbnSelchangeComboOptionPrefab()
 	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
 	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, nullptr, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
 	CGraphic_Device::Get_Instance()->Render_End(m_PicturePrefab.m_hWnd);
+
+	auto& iter_Actor_find = m_pmapActorInfo->find(m_cstrActorName);
+	iter_Actor_find->second->wstrPrefabName = cstrPrafabName;
+	m_pView->Invalidate(FALSE);
+}
+
+
+void COptionView::OnEnKillfocusOptionActorname()
+{
+	auto& iter_find = m_pmapActorInfo->find(m_cstrActorName);
+	auto& iter_tree_find = m_pHierarchyView->m_mapTreeItem.find(m_cstrActorName);
+	UpdateData(TRUE);	
+	iter_find->second->wstrActorName = m_cstrActorName;
+	CTreeCtrl& tree = m_pHierarchyView->GetTreeCtrl();
+	tree.SetItemText(tree.GetSelectedItem(), m_cstrActorName);
+	ACTORINFO* pTempActorInfo = iter_find->second;
+	m_pmapActorInfo->erase(iter_find);
+	m_pmapActorInfo->emplace(m_cstrActorName, pTempActorInfo);
+	
+	CHierarchyView::TVI_TYPE type = iter_tree_find->second;
+	m_pHierarchyView->m_mapTreeItem.erase(iter_tree_find);
+	m_pHierarchyView->m_mapTreeItem.emplace(m_cstrActorName, type);
+	
+}
+
+
+void COptionView::OnEnKillfocusEditPosy()
+{
+	UpdateData(TRUE);
+	auto& iter_find = m_pmapActorInfo->find(m_cstrActorName);
+	iter_find->second->tInfo.vPos.y = m_fPosY;
+	m_pView->Invalidate(FALSE);
+}
+
+
+void COptionView::OnEnKillfocusEditScalex()
+{
+	UpdateData(TRUE);
+	auto& iter_find = m_pmapActorInfo->find(m_cstrActorName);
+	iter_find->second->tInfo.vSize.x = m_fScaleX;
+	m_pView->Invalidate(FALSE);
+}
+
+
+void COptionView::OnEnKillfocusEditScaley()
+{
+	UpdateData(TRUE);
+	auto& iter_find = m_pmapActorInfo->find(m_cstrActorName);
+	iter_find->second->tInfo.vSize.y = m_fScaleY;
+	m_pView->Invalidate(FALSE);
+}
+
+
+void COptionView::OnEnKillfocusEditOptionAngle()
+{
+	UpdateData(TRUE);
+	auto& iter_find = m_pmapActorInfo->find(m_cstrActorName);
+	iter_find->second->tInfo.fAngle = m_fAngle;
+	m_pView->Invalidate(FALSE);
 }

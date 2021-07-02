@@ -2,7 +2,6 @@
 typedef struct tagTEXINFO
 {
 	LPDIRECT3DTEXTURE9 pTexture; // HBITMAP ?? 
-
 	D3DXIMAGE_INFO tImageInfo; // 이미지에 대한 정보를 가지고 있을 변수 . 
 }TEXINFO;
 typedef struct tagTile
@@ -44,8 +43,8 @@ typedef struct tagInfo
 typedef struct tagOBJECTINFO
 
 {
-	enum OBJID { BACKGROUND, PLAYER, MONSTER, PLAYER_BULLET, ENEMY_BULLET, EFFECT, UI, OBJID_END };
-	enum BULLET_TYPE { NORMAL, GUIDE, SHOTGUN, TYPE_END };
+	enum OBJID { BACKGROUND, PLAYER, ENEMY, BOSS, PLAYER_BULLET, ENEMY_BULLET, EFFECT, UI, OBJID_END };
+	enum BULLET_TYPE { NORMAL, HOMING, TYPE_END };
 #ifdef _AFX
 	CString cstrName;
 	CString cstrObjectImage_ObjectKey;
@@ -64,14 +63,13 @@ typedef struct tagOBJECTINFO
 	float	fAtkRatio;
 	float	fMoveSpeed;
 	BYTE	eObjId;
+	BYTE	eRenderId;
 //Bullet
 	bool	bDestructable;
 	BYTE	eBulletType;
-//샷건일때
-	float	fShotGunAngle;
-	int		iShotGunCount;
 
 }OBJECTINFO;
+
 
 
 

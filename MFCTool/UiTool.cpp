@@ -103,7 +103,7 @@ void CUiTool::OnDropFiles(HDROP hDropInfo)
 		lstrcpy(szFileName, wstrFileNameAndEx.GetString());
 		PathRemoveExtension(szFileName);
 		m_Image_ListBox.AddString(szFileName);
-		if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, wstrRelativePath.GetString(), szFileName)))
+		if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, {RECT()}, wstrRelativePath.GetString(), szFileName)))
 		{
 			ERR_MSG(L"싱글 텍스쳐 실패");
 			return;
@@ -805,7 +805,7 @@ void CUiTool::OnBnClickedResultLoad()
 
 			if (pACTORINFO->wstrObjectKey.GetString() != L"")
 			{
-				if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, pACTORINFO->wstrFilePath.GetString(), pACTORINFO->wstrObjectKey.GetString())))
+				if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, {RECT()}, pACTORINFO->wstrFilePath.GetString(), pACTORINFO->wstrObjectKey.GetString())))
 				{
 					ERR_MSG(L"싱글 텍스쳐 실패");
 					return;

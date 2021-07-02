@@ -18,6 +18,10 @@ CAnimationTool::CAnimationTool(CWnd* pParent /*=NULL*/)
 	, m_iInput_Index(0)
 	, m_iDrawID(0), m_iAnimationCount(0)
 	, m_iPlay_Speed(0)
+	, m_iTop(0)
+	, m_iRight(0)
+	, m_iBottom(0)
+	, m_iLeft(0)
 {
 
 }
@@ -47,9 +51,12 @@ void CAnimationTool::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST2, m_Image_ListBox);
 	DDX_Control(pDX, IDC_LIST1, m_Animation_ListBox);
 
-	DDX_Control(pDX, IDC_CHECK2, m_IsSingle);
 	DDX_Control(pDX, IDC_CHECK1, m_Loop);
 	DDX_Text(pDX, IDC_EDIT6, m_iPlay_Speed);
+	DDX_Text(pDX, IDC_ANIMATION_TOP, m_iTop);
+	DDX_Text(pDX, IDC_ANIMATION_RIGHT, m_iRight);
+	DDX_Text(pDX, IDC_ANIMATION_BOTTOM, m_iBottom);
+	DDX_Text(pDX, IDC_ANIMATION_LEFT, m_iLeft);
 }
 
 
@@ -92,11 +99,6 @@ void CAnimationTool::OnBnClickedAddInfo()
 		pAnima->bLoop = true;
 	else
 		pAnima->bLoop = false;
-
-	if (m_IsSingle.GetCheck())
-		pAnima->bIsSingle = true;
-	else
-		pAnima->bIsSingle = false;
 	//=====================================================
 
 	m_mapAnima.emplace(AnimationName, pAnima);
@@ -109,13 +111,13 @@ void CAnimationTool::OnDropFiles(HDROP hDropInfo)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	UpdateData(TRUE);
-	int iShotGunCount = DragQueryFile(hDropInfo, 0xffffffff, nullptr, 0);
+	int iFileCount = DragQueryFile(hDropInfo, 0xffffffff, nullptr, 0);
 	TCHAR szFileFullPath[MAX_PATH]{};
 
 	m_Drop = hDropInfo;
 
 
-	for (int i = 0; i < iShotGunCount; ++i)
+	for (int i = 0; i < iFileCount; ++i)
 	{
 		DragQueryFile(hDropInfo, i, szFileFullPath, MAX_PATH);
 
@@ -126,6 +128,7 @@ void CAnimationTool::OnDropFiles(HDROP hDropInfo)
 		lstrcpy(szFileName, wstrFileNameAndEx.GetString());
 		PathRemoveExtension(szFileName);
 		m_Image_ListBox.AddString(szFileName);
+		CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, {RECT()}, wstrRelativePath.GetString(), szFileName);
 	}
 	m_Image_ListBox.SetHorizontalExtent(500);
 	UpdateData(FALSE);
@@ -133,58 +136,48 @@ void CAnimationTool::OnDropFiles(HDROP hDropInfo)
 
 
 
-	CString wstrSingleFilePath = CFileInfo::ConvertRelativePath(szFileFullPath);
-	
-	//===============멀티 텍스쳐 파일 이름 셋팅====================
-	CString wstrFileNameAndEx = PathFindFileName(wstrSingleFilePath);
-	CString wstrMultiFilePath = wstrSingleFilePath;
-	
-	TCHAR szFileName[MAX_PATH]{};
-	lstrcpy(szFileName, wstrFileNameAndEx.GetString());
-	int iPathLength = wstrMultiFilePath.GetLength() - lstrlen(szFileName);
-	wstrMultiFilePath.Delete(iPathLength, lstrlen(szFileName));
-	PathRemoveExtension(szFileName);
+	//CString wstrSingleFilePath = CFileInfo::ConvertRelativePath(szFileFullPath);
+	//
+	////===============멀티 텍스쳐 파일 이름 셋팅====================
+	//CString wstrFileNameAndEx = PathFindFileName(wstrSingleFilePath);
+	//CString wstrMultiFilePath = wstrSingleFilePath;
+	//
+	//TCHAR szFileName[MAX_PATH]{};
+	//lstrcpy(szFileName, wstrFileNameAndEx.GetString());
+	//int iPathLength = wstrMultiFilePath.GetLength() - lstrlen(szFileName);
+	//wstrMultiFilePath.Delete(iPathLength, lstrlen(szFileName));
+	//PathRemoveExtension(szFileName);
 
-	int i = lstrlen(szFileName)-1;
-	for (; i>=0; i--)
-	{
-		if (!isdigit(szFileName[i]))
-		{
-			break;
-		}
-		szFileName[i] = NULL;
-	}
-	lstrcat(szFileName, L"%d.png");
 
-	wstrMultiFilePath.Insert(iPathLength, szFileName);
+	//wstrMultiFilePath.Insert(iPathLength, szFileName);
 	
 	//===========================================
 	//이미지 insert
-	if (m_IsSingle.GetCheck())
-	{
-		if (m_wstrObject_Key != L"")
-		{
-			m_wstrFilePath = wstrSingleFilePath;
-			if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, wstrSingleFilePath.GetString(), m_wstrObject_Key.GetString())))
-			{
-				ERR_MSG(L"싱글 텍스쳐 실패");
-				return;
-			}
-		}
-	}
-	else
-	{
-		if (m_wstrObject_Key != L""&& m_wstrState_Key != L"")
-		{
-			m_wstrFilePath = wstrMultiFilePath;
-			if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX, wstrMultiFilePath.GetString(), m_wstrObject_Key.GetString(), m_wstrState_Key.GetString(), iShotGunCount)))
-			{
-				ERR_MSG(L"멀티 텍스쳐 실패");
-				return;
-			}
-		}
+	//if (m_IsSingle.GetCheck())
+	//{
+	//	if (m_wstrObject_Key != L"")
+	//	{
+	//		m_wstrFilePath = wstrSingleFilePath;
+	//		if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, wstrSingleFilePath.GetString(), m_wstrObject_Key.GetString())))
+	//		{
+	//			ERR_MSG(L"싱글 텍스쳐 실패");
+	//			return;
+	//		}
+	//	}
+	//}
+	//else
+	//{
+	//	if (m_wstrObject_Key != L""&& m_wstrState_Key != L"")
+	//	{
+	//		m_wstrFilePath = wstrMultiFilePath;
+	//		if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX, wstrMultiFilePath.GetString(), m_wstrObject_Key.GetString(), m_wstrState_Key.GetString(), iShotGunCount)))
+	//		{
+	//			ERR_MSG(L"멀티 텍스쳐 실패");
+	//			return;
+	//		}
+	//	}
 
-	}
+	//}
 }
 
 
@@ -234,7 +227,6 @@ void CAnimationTool::Reset_Info()
 	m_wstrState_Key = L"";
 	m_fPlay_Speed = 0.f;
 	m_iMax_Index = 0;
-	m_IsSingle.SetCheck(FALSE);
 	m_Loop.SetCheck(FALSE);
 
 }
@@ -398,112 +390,104 @@ void CAnimationTool::OnBnClickedSave()
 
 void CAnimationTool::OnBnClickedLoad()
 {
-	CFileDialog Dlg(TRUE,// TRUE면 열기. 
-		L"dat",
-		L"*.dat",
-		OFN_OVERWRITEPROMPT);
 
-	TCHAR szFilePath[MAX_PATH]{};
-	GetCurrentDirectory(MAX_PATH, szFilePath);
-	PathRemoveFileSpec(szFilePath);
-	lstrcat(szFilePath, L"\\Data");
-	Dlg.m_ofn.lpstrInitialDir = szFilePath;
+	CString strFilePath = _T("../Data/Effect.dat");
+	HANDLE hFile = CreateFile(strFilePath.GetString(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 
-	if (IDOK == Dlg.DoModal())
+	if (INVALID_HANDLE_VALUE == hFile)
 	{
-		CString strFilePath = Dlg.GetPathName();
-		HANDLE hFile = CreateFile(strFilePath.GetString(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+		CFileDialog Dlg(TRUE,// TRUE면 열기. 
+			L"dat",
+			L"*.dat",
+			OFN_OVERWRITEPROMPT);
+		
+		TCHAR szFilePath[MAX_PATH]{};
+		GetCurrentDirectory(MAX_PATH, szFilePath);
+		PathRemoveFileSpec(szFilePath);
+		lstrcat(szFilePath, L"\\Data");
+		Dlg.m_ofn.lpstrInitialDir = szFilePath;
 
-		if (INVALID_HANDLE_VALUE == hFile)
+		if (IDOK != Dlg.DoModal())
 			return;
-		for (auto& rPair : m_mapAnima)
-			Safe_Delete(rPair.second);
-		m_mapAnima.clear();
-		m_Animation_ListBox.ResetContent(); 
-
-		DWORD dwbyte = 0;
-		DWORD dwStringSize = 0;
-		ANIMATION* pAnimaInfo = 0;
-		TCHAR* pBuf = nullptr;
-
-		while (true)
-		{
-			ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-			if (0 == dwbyte)
-				break;
-			pBuf = new TCHAR[dwStringSize];
-			pAnimaInfo = new ANIMATION;
-			ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-			pAnimaInfo->wstrObjectKey = pBuf;
-			Safe_Delete(pBuf);
-				
-
-			ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-			pBuf = new TCHAR[dwStringSize];
-			ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-			pAnimaInfo->wstrStateKey = pBuf;
-			Safe_Delete(pBuf);
-
-			ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-			pBuf = new TCHAR[dwStringSize];
-			ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-			pAnimaInfo->wstrFilePath = pBuf;
-			Safe_Delete(pBuf);
-
-
-			ReadFile(hFile, &pAnimaInfo->fPlay_Speed, sizeof(float), &dwbyte, nullptr);
-			ReadFile(hFile, &pAnimaInfo->iMax_Index, sizeof(int), &dwbyte, nullptr);
-			ReadFile(hFile, &pAnimaInfo->bLoop, sizeof(bool), &dwbyte, nullptr);
-			ReadFile(hFile, &pAnimaInfo->bIsSingle, sizeof(bool), &dwbyte, nullptr);
-
-			m_mapAnima.emplace(pAnimaInfo->wstrObjectKey+pAnimaInfo->wstrStateKey, pAnimaInfo);
-			m_Animation_ListBox.AddString(pAnimaInfo->wstrObjectKey +"->"+pAnimaInfo->wstrStateKey);
-
-
-			//==============싱글 텍스쳐 파일 이름 셋팅===============
-			CString wstrSingleFilePath = pAnimaInfo->wstrFilePath;
-
-			//===============멀티 텍스쳐 파일 이름 셋팅==============
-			CString wstrFileNameAndEx = PathFindFileName(wstrSingleFilePath);
-			CString wstrMultiFilePath = wstrSingleFilePath;
-
-			TCHAR szFileName[MAX_PATH]{};
-			lstrcpy(szFileName, wstrFileNameAndEx.GetString());
-			int iPathLength = wstrMultiFilePath.GetLength() - lstrlen(szFileName);
-			wstrMultiFilePath.Delete(iPathLength, lstrlen(szFileName));
-			PathRemoveExtension(szFileName);
-
-			lstrcat(szFileName, L".png");
-
-			wstrMultiFilePath.Insert(iPathLength, szFileName);
-
-
-			//===============이미지 Insert==============
-			if (pAnimaInfo->bIsSingle)
-			{
-				if (pAnimaInfo->wstrObjectKey.GetString() != L"")
-				{
-					if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, wstrSingleFilePath.GetString(), pAnimaInfo->wstrObjectKey.GetString())))
-					{
-						ERR_MSG(L"싱글 텍스쳐 실패");
-						return;
-					}
-				}
-			}
-			else
-			{
-				if (pAnimaInfo->wstrObjectKey.GetString() != L""&& pAnimaInfo->wstrStateKey.GetString() != L"")
-				{
-					if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX, wstrMultiFilePath.GetString(), pAnimaInfo->wstrObjectKey.GetString(), pAnimaInfo->wstrStateKey.GetString(), pAnimaInfo->iMax_Index)))
-					{
-						ERR_MSG(L"멀티 텍스쳐 실패");
-						return;
-					}
-				}
-			}
-		}
-		CloseHandle(hFile);
+		
+		strFilePath = Dlg.GetPathName();
 	}
+	for (auto& rPair : m_mapAnima)
+		Safe_Delete(rPair.second);
+	m_mapAnima.clear();
+	m_Animation_ListBox.ResetContent(); 
+
+	DWORD dwbyte = 0;
+	DWORD dwStringSize = 0;
+	ANIMATION* pAnimaInfo = 0;
+	TCHAR* pBuf = nullptr;
+
+	while (true)
+	{
+		ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+		if (0 == dwbyte)
+			break;
+		pBuf = new TCHAR[dwStringSize];
+		pAnimaInfo = new ANIMATION;
+		ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
+		pAnimaInfo->wstrObjectKey = pBuf;
+		Safe_Delete(pBuf);
+
+
+		ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+		pBuf = new TCHAR[dwStringSize];
+		ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
+		pAnimaInfo->wstrStateKey = pBuf;
+		Safe_Delete(pBuf);
+
+		ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+		pBuf = new TCHAR[dwStringSize];
+		ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
+		pAnimaInfo->wstrFilePath = pBuf;
+		Safe_Delete(pBuf);
+
+
+		ReadFile(hFile, &pAnimaInfo->fPlay_Speed, sizeof(float), &dwbyte, nullptr);
+		ReadFile(hFile, &pAnimaInfo->iMax_Index, sizeof(int), &dwbyte, nullptr);
+		ReadFile(hFile, &pAnimaInfo->bLoop, sizeof(bool), &dwbyte, nullptr);
+		ReadFile(hFile, &pAnimaInfo->bIsSingle, sizeof(bool), &dwbyte, nullptr);
+
+		m_mapAnima.emplace(pAnimaInfo->wstrObjectKey + pAnimaInfo->wstrStateKey, pAnimaInfo);
+		m_Animation_ListBox.AddString(pAnimaInfo->wstrObjectKey + "->" + pAnimaInfo->wstrStateKey);
+	}
+
+	//	//==============싱글 텍스쳐 파일 이름 셋팅===============
+	//	CString wstrSingleFilePath = pAnimaInfo->wstrFilePath;
+
+	//	//===============멀티 텍스쳐 파일 이름 셋팅==============
+	//	CString wstrFileNameAndEx = PathFindFileName(wstrSingleFilePath);
+	//	CString wstrMultiFilePath = wstrSingleFilePath;
+
+	//	TCHAR szFileName[MAX_PATH]{};
+	//	lstrcpy(szFileName, wstrFileNameAndEx.GetString());
+	//	int iPathLength = wstrMultiFilePath.GetLength() - lstrlen(szFileName);
+	//	wstrMultiFilePath.Delete(iPathLength, lstrlen(szFileName));
+	//	PathRemoveExtension(szFileName);
+
+	//	lstrcat(szFileName, L".png");
+
+	//	wstrMultiFilePath.Insert(iPathLength, szFileName);
+
+
+	//	//===============이미지 Insert==============
+
+
+	//		if (pAnimaInfo->wstrObjectKey.GetString() != L""&& pAnimaInfo->wstrStateKey.GetString() != L"")
+	//		{
+	//			if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX, wstrMultiFilePath.GetString(), pAnimaInfo->wstrObjectKey.GetString(), pAnimaInfo->wstrStateKey.GetString(), pAnimaInfo->iMax_Index)))
+	//			{
+	//				ERR_MSG(L"멀티 텍스쳐 실패");
+	//				return;
+	//			}
+	//		}
+
+	//}
+	CloseHandle(hFile);
 }
 
 
@@ -539,11 +523,6 @@ void CAnimationTool::OnLbnSelchangeAnimation_List()
 		m_Loop.SetCheck(true);
 	else
 		m_Loop.SetCheck(false);
-	if (iter_find->second->bIsSingle)
-		m_IsSingle.SetCheck(true);
-	else
-		m_IsSingle.SetCheck(false);
-
 
 	//이미지 리스트박스에 저장된 파일 정보 출력 
 	int iShotGunCount = iter_find->second->iMax_Index;
@@ -664,4 +643,15 @@ void CAnimationTool::OnBnClickedPlay()
 void CAnimationTool::OnBnClickedStop()
 {
 	KillTimer(m_iKillTimer++);
+}
+
+
+BOOL CAnimationTool::OnInitDialog()
+{
+	CDialog::OnInitDialog();
+
+	OnBnClickedLoad();
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }

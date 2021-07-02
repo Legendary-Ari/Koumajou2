@@ -46,6 +46,7 @@
 #define IDC_BUTTON22_PLACE              1012
 #define IDC_ANIMATION_BOTTOM            1012
 #define IDC_RADIO6                      1013
+#define IDC_LIST_ANIMATION_RECT         1013
 #define IDC_CHECK1                      1014
 #define IDC_CHECK2                      1015
 #define IDC_PICTURE                     1015
@@ -125,6 +126,7 @@
 #define IDC_TEXT_BULLET_TYPE            1052
 #define IDC_COMBO1_PLACE                1053
 #define IDC_EDIT_OBJDEAD                1053
+#define IDC_COMBO_RENDERID              1053
 #define IDC_LIST1_PLACE                 1054
 #define IDC_BUTTON_OBJWALKADD2          1054
 #define IDC_BUTTON_OBJDEADADD           1054
@@ -145,6 +147,7 @@
 #define IDC_COMBO_OPTION_PREFAB         1071
 #define ID_NEWACTOR_OK                  1072
 #define IDC_EDIT_NEWACTOR_NAME          1074
+#define IDC_OPTION_ACTORNAME            1075
 #define ID_HIERARCHY_EDIT_NAME          58001
 #define ID_HIERARCHY_DELETE             58002
 #define ID_HIERARCHY_NEW                58003
@@ -155,7 +158,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        323
 #define _APS_NEXT_COMMAND_VALUE         32774
-#define _APS_NEXT_CONTROL_VALUE         1075
+#define _APS_NEXT_CONTROL_VALUE         1076
 #define _APS_NEXT_SYMED_VALUE           318
 #endif
 #endif

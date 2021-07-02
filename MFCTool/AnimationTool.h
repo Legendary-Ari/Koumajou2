@@ -55,7 +55,6 @@ public:
 	CStatic m_List_To_Selected_Image;
 	CListBox m_Image_ListBox;
 	CListBox m_Animation_ListBox;
-	CButton m_IsSingle;
 	CButton m_Loop;
 
 	map<CString, ANIMATION*> m_mapAnima;
@@ -68,4 +67,10 @@ public:
 	afx_msg void OnBnClickedPlay();
 	afx_msg void OnBnClickedStop();
 	int m_iPlay_Speed;
+	
+	virtual BOOL OnInitDialog();
+	int m_iTop;
+	int m_iRight;
+	int m_iBottom;
+	int m_iLeft;
 };
