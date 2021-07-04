@@ -22,46 +22,40 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public :
-	void SetImageView(CString Objectkey, int Index, const CStatic& PictureBox, CString StateKey = 0 );  
-	void Reset_Info();		//인포를 0으로 리셋함
-	void Reset_ImageList();
-
+	void SetImageView(CString Objectkey, const RECT& _rect, int Index, const CStatic& PictureBox, CString StateKey = 0 );
+protected:
+	int DeleteListRectItemAndReName(UINT _index);
 public:
 	CString m_wstrObject_Key;
 	CString m_wstrState_Key;
 	float m_fPlay_Speed;
-	int m_iMax_Index;
 	int m_iDrawID;
-	int m_iInput_Index;
-	CString m_wstrFilePath;	//끌어온 파일 저장
 	HDROP m_Drop;
 	int m_iAnimationCount;
-	int m_iTimer;
-	int m_iKillTimer;
+	const int m_TIMERHANDLE;
+	ANIMATION* m_pSelectedAnimation;
 
-	afx_msg void OnBnClickedIndex_Apply();
-	afx_msg void OnBnClickedAddAnimation();
+	afx_msg void OnBnClickedAddRect();
 	afx_msg void OnBnClickedSave();
 	afx_msg void OnLbnSelchangeAnimation_List();
 	afx_msg void OnDropFiles(HDROP hDropInfo);
 	afx_msg void OnBnClickedAddInfo();
-	afx_msg void OnBnClickedDeleteAll();
+	afx_msg void OnBnClickedDeleteRect();
 	afx_msg void OnBnClickedLoad();
 	afx_msg void OnLbnSelchangeImageList();
 
 
 	CStatic m_Start_Image;
-	CStatic m_Index_To_Selected_Image;
-	CStatic m_List_To_Selected_Image;
-	CListBox m_Image_ListBox;
+	CStatic m_Pic_Rect;
+	CStatic m_Pic_Loaded;
+	CListBox m_ListBox_Image;
 	CListBox m_Animation_ListBox;
 	CButton m_Loop;
 
 	map<CString, ANIMATION*> m_mapAnima;
+	map<CString, CString> m_mapObjectKeyToPath;
 
 	afx_msg void OnBnClickedDeleteAnimationList();
-	afx_msg void OnBnClickedClearBox();
-	afx_msg void OnBnClickedClear_Info();
 
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedPlay();
@@ -69,8 +63,24 @@ public:
 	int m_iPlay_Speed;
 	
 	virtual BOOL OnInitDialog();
-	int m_iTop;
-	int m_iRight;
-	int m_iBottom;
-	int m_iLeft;
+	union {
+		struct {
+			LONG m_lLeft;
+			LONG m_lTop;
+			LONG m_lRight;
+			LONG m_lBottom;
+		};
+		RECT m_tRect;
+	};
+	
+	afx_msg void OnDestroy();
+	CListBox m_ListBoxRect;
+	afx_msg void OnLbnSelchangeListAnimationRect();
+	afx_msg void OnBnClickedButtonEditrect();
+	
+	afx_msg void OnEnKillfocusAnimationTop();
+	afx_msg void OnEnKillfocusAnimationRight();
+	afx_msg void OnEnKillfocusAnimationLeft();
+	afx_msg void OnEnKillfocusAnimationBottom();
+	int m_iRectIndex;
 };

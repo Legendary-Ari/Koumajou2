@@ -84,11 +84,11 @@ typedef struct tagAnimationInfo
 	wstring wstrStateKey;
 	wstring wstrFilePath;
 #endif
-	float	fPlay_Speed;
-	int		iMax_Index;
-	bool	bLoop;
-	bool	bIsSingle;
 
+	vector<RECT> vecRect;
+	float	fPlay_Speed;
+	bool	bLoop;
+	
 }ANIMATION;
 
 typedef struct tagActorInfo

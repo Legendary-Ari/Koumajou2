@@ -143,6 +143,8 @@ void COptionView::Dump(CDumpContext& dc) const
 void COptionView::OnEnKillfocusEditPosx()
 {
 	UpdateData(TRUE);
+	if (m_cstrActorName == L"Folder")
+		return;
 	auto& iter_find = m_pmapActorInfo->find(m_cstrActorName);
 	iter_find->second->tInfo.vPos.x = m_fPosX;
 	m_pView->Invalidate(FALSE);
@@ -227,6 +229,8 @@ void COptionView::OnEnKillfocusOptionActorname()
 void COptionView::OnEnKillfocusEditPosy()
 {
 	UpdateData(TRUE);
+	if (m_cstrActorName == L"Folder")
+		return;
 	auto& iter_find = m_pmapActorInfo->find(m_cstrActorName);
 	iter_find->second->tInfo.vPos.y = m_fPosY;
 	m_pView->Invalidate(FALSE);
@@ -236,6 +240,8 @@ void COptionView::OnEnKillfocusEditPosy()
 void COptionView::OnEnKillfocusEditScalex()
 {
 	UpdateData(TRUE);
+	if (m_cstrActorName == L"Folder")
+		return;
 	auto& iter_find = m_pmapActorInfo->find(m_cstrActorName);
 	iter_find->second->tInfo.vSize.x = m_fScaleX;
 	m_pView->Invalidate(FALSE);
@@ -245,6 +251,8 @@ void COptionView::OnEnKillfocusEditScalex()
 void COptionView::OnEnKillfocusEditScaley()
 {
 	UpdateData(TRUE);
+	if (m_cstrActorName == L"Folder")
+		return;
 	auto& iter_find = m_pmapActorInfo->find(m_cstrActorName);
 	iter_find->second->tInfo.vSize.y = m_fScaleY;
 	m_pView->Invalidate(FALSE);
@@ -254,6 +262,8 @@ void COptionView::OnEnKillfocusEditScaley()
 void COptionView::OnEnKillfocusEditOptionAngle()
 {
 	UpdateData(TRUE);
+	if (m_cstrActorName == L"Folder")
+		return;
 	auto& iter_find = m_pmapActorInfo->find(m_cstrActorName);
 	iter_find->second->tInfo.fAngle = m_fAngle;
 	m_pView->Invalidate(FALSE);

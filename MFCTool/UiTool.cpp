@@ -48,7 +48,7 @@ void CUiTool::DoDataExchange(CDataExchange* pDX)
 {
 	CFormView::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_COMBO1_PLACE, m_ComboID);
-	DDX_Control(pDX, IDC_LIST1_PLACE, m_Image_ListBox);
+	DDX_Control(pDX, IDC_LIST1_PLACE, m_ListBox_Image);
 	DDX_Control(pDX, IDC_PICTURE_PLACE, m_Picture);
 	DDX_Control(pDX, IDC_LIST2_PLACE, m_Prefab_ListBox);
 	DDX_Control(pDX, IDC_LIST4_PLACE, m_Result_ListBox);
@@ -102,7 +102,7 @@ void CUiTool::OnDropFiles(HDROP hDropInfo)
 		TCHAR szFileName[MAX_PATH] = {};
 		lstrcpy(szFileName, wstrFileNameAndEx.GetString());
 		PathRemoveExtension(szFileName);
-		m_Image_ListBox.AddString(szFileName);
+		m_ListBox_Image.AddString(szFileName);
 		if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, {RECT()}, wstrRelativePath.GetString(), szFileName)))
 		{
 			ERR_MSG(L"싱글 텍스쳐 실패");
@@ -110,7 +110,7 @@ void CUiTool::OnDropFiles(HDROP hDropInfo)
 		}
 		m_mapFileInfo.emplace(szFileName, wstrRelativePath);
 	}
-	m_Image_ListBox.SetHorizontalExtent(500);
+	m_ListBox_Image.SetHorizontalExtent(500);
 	UpdateData(FALSE);
 	CFormView::OnDropFiles(hDropInfo);
 }
@@ -120,9 +120,9 @@ void CUiTool::OnLbnSelchangeImageListBox()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	//인덱스에 있는 파일 텍스쳐에 추가 후 출력
-	int iListCursor = m_Image_ListBox.GetCurSel();
+	int iListCursor = m_ListBox_Image.GetCurSel();
 	CString wstrFileName;
-	m_Image_ListBox.GetText(iListCursor, wstrFileName);
+	m_ListBox_Image.GetText(iListCursor, wstrFileName);
 	SetImageView(wstrFileName.GetString(), m_Picture);
 
 }
@@ -493,14 +493,14 @@ void CUiTool::OnBnClickedAdd()
 	}
 
 	//이미지 리스트 선택
-	int iImageIdx = m_Image_ListBox.GetCurSel();
+	int iImageIdx = m_ListBox_Image.GetCurSel();
 	if (LB_ERR == iImageIdx)
 	{
 		ERR_MSG(L"이미지 선택을 안했다");
 		return;
 	}
 	CString Image_Key;
-	m_Image_ListBox.GetText(iImageIdx, Image_Key);
+	m_ListBox_Image.GetText(iImageIdx, Image_Key);
 
 	//오브젝트 이름 가져오기
 	CString ObjKey = m_wstrObjID.GetString();
@@ -799,8 +799,8 @@ void CUiTool::OnBnClickedResultLoad()
 			m_mapActorInfo.emplace(pACTORINFO->wstrActorName, pACTORINFO);
 			m_mapFileInfo.emplace(pACTORINFO->wstrObjectKey, pACTORINFO->wstrFilePath);
 			m_Result_ListBox.AddString(pACTORINFO->wstrActorName);
-			if (LB_ERR == m_Image_ListBox.FindStringExact(-1, pACTORINFO->wstrObjectKey))
-				m_Image_ListBox.AddString(pACTORINFO->wstrObjectKey);
+			if (LB_ERR == m_ListBox_Image.FindStringExact(-1, pACTORINFO->wstrObjectKey))
+				m_ListBox_Image.AddString(pACTORINFO->wstrObjectKey);
 			//===============이미지 Insert==============
 
 			if (pACTORINFO->wstrObjectKey.GetString() != L"")
@@ -878,13 +878,13 @@ void CUiTool::OnLbnSelchangeResultList()
 	//}
 	int iImageIdx = 0;
 	//이미지 리스트박스에서 키값과 같은 스트링을 찾아 커서로 가리킴 
-	if ((iImageIdx = m_Image_ListBox.FindStringExact(-1, iter->second->wstrObjectKey)) != LB_ERR)
+	if ((iImageIdx = m_ListBox_Image.FindStringExact(-1, iter->second->wstrObjectKey)) != LB_ERR)
 	{
-		m_Image_ListBox.SetCurSel(iImageIdx);
+		m_ListBox_Image.SetCurSel(iImageIdx);
 	}
 	//이미지뷰 출력
 	CString wstrFileName;
-	m_Image_ListBox.GetText(iImageIdx, wstrFileName);
+	m_ListBox_Image.GetText(iImageIdx, wstrFileName);
 	SetImageView(wstrFileName.GetString(), m_Picture);
 
 	//if (iter->second->eRenderID == RENDERID::OBJECT)

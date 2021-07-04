@@ -599,7 +599,7 @@ void CObjectTool::OnTimer(UINT_PTR nIDEvent)
 
 	iter_find->second->fPlay_Speed;
 	++m_iDeathAnimationIndex;
-	if (m_iDeathAnimationIndex >= iter_find->second->iMax_Index)
+	if (m_iDeathAnimationIndex >= iter_find->second->vecRect.size())
 		m_iDeathAnimationIndex = 0;
 
 	OnLbnSelchangeAnimation();

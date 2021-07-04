@@ -14,14 +14,16 @@ IMPLEMENT_DYNAMIC(CAnimationTool, CDialog)
 CAnimationTool::CAnimationTool(CWnd* pParent /*=NULL*/)
 	: CDialog(IDD_ANIMATIONTOOL, pParent)
 	, m_wstrObject_Key(_T("")), m_wstrState_Key(_T(""))
-	,m_fPlay_Speed(0.f),m_iMax_Index(0)
-	, m_iInput_Index(0)
+	,m_fPlay_Speed(0.f)
 	, m_iDrawID(0), m_iAnimationCount(0)
 	, m_iPlay_Speed(0)
-	, m_iTop(0)
-	, m_iRight(0)
-	, m_iBottom(0)
-	, m_iLeft(0)
+	, m_lTop(0)
+	, m_lRight(0)
+	, m_lBottom(0)
+	, m_lLeft(0)
+	, m_TIMERHANDLE(10001)
+	, m_pSelectedAnimation(nullptr)
+	, m_iRectIndex(0)
 {
 
 }
@@ -41,68 +43,102 @@ void CAnimationTool::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT1, m_wstrObject_Key);
 	DDX_Text(pDX, IDC_EDIT2, m_wstrState_Key);
 	DDX_Text(pDX, IDC_EDIT3, m_fPlay_Speed);
-	DDX_Text(pDX, IDC_EDIT4, m_iMax_Index);
-	DDX_Text(pDX, IDC_EDIT5, m_iInput_Index);
 
 	DDX_Control(pDX, IDC_START_IMAGE, m_Start_Image);
-	DDX_Control(pDX, IDC_INDEX_TO_SELECTED_IMAGE, m_Index_To_Selected_Image);
-	DDX_Control(pDX, IDC_LIST_TO_SELECTED_IMAGE, m_List_To_Selected_Image);
+	DDX_Control(pDX, IDC_INDEX_TO_SELECTED_IMAGE, m_Pic_Rect);
+	DDX_Control(pDX, IDC_LIST_TO_SELECTED_IMAGE, m_Pic_Loaded);
 
-	DDX_Control(pDX, IDC_LIST2, m_Image_ListBox);
-	DDX_Control(pDX, IDC_LIST1, m_Animation_ListBox);
+	DDX_Control(pDX, IDC_LIST2, m_ListBox_Image);
+	DDX_Control(pDX, IDC_ANIMATION_LIST, m_Animation_ListBox);
 
 	DDX_Control(pDX, IDC_CHECK1, m_Loop);
 	DDX_Text(pDX, IDC_EDIT6, m_iPlay_Speed);
-	DDX_Text(pDX, IDC_ANIMATION_TOP, m_iTop);
-	DDX_Text(pDX, IDC_ANIMATION_RIGHT, m_iRight);
-	DDX_Text(pDX, IDC_ANIMATION_BOTTOM, m_iBottom);
-	DDX_Text(pDX, IDC_ANIMATION_LEFT, m_iLeft);
+	DDX_Text(pDX, IDC_ANIMATION_TOP, m_lTop);
+	DDX_Text(pDX, IDC_ANIMATION_RIGHT, m_lRight);
+	DDX_Text(pDX, IDC_ANIMATION_BOTTOM, m_lBottom);
+	DDX_Text(pDX, IDC_ANIMATION_LEFT, m_lLeft);
+	DDX_Control(pDX, IDC_LIST_ANIMATION_RECT, m_ListBoxRect);
+	DDX_Text(pDX, IDC_EDIT_ANIMATION_INDEX, m_iRectIndex);
 }
 
 
 BEGIN_MESSAGE_MAP(CAnimationTool, CDialog)
-	ON_BN_CLICKED(IDC_BUTTON5, &CAnimationTool::OnBnClickedIndex_Apply)
-	ON_BN_CLICKED(IDC_BUTTON3, &CAnimationTool::OnBnClickedAddAnimation)
+	ON_BN_CLICKED(IDC_BUTTON3, &CAnimationTool::OnBnClickedAddRect)
 	ON_BN_CLICKED(IDC_BUTTON1, &CAnimationTool::OnBnClickedSave)
 	ON_BN_CLICKED(IDC_BUTTON2, &CAnimationTool::OnBnClickedLoad)
 	ON_LBN_SELCHANGE(IDC_LIST2, &CAnimationTool::OnLbnSelchangeImageList)
 
-	ON_LBN_SELCHANGE(IDC_LIST1, &CAnimationTool::OnLbnSelchangeAnimation_List)
+	ON_LBN_SELCHANGE(IDC_ANIMATION_LIST, &CAnimationTool::OnLbnSelchangeAnimation_List)
 	ON_WM_DROPFILES()
 
 	ON_BN_CLICKED(IDC_BUTTON10_ANIM, &CAnimationTool::OnBnClickedAddInfo)
-	ON_BN_CLICKED(IDC_BUTTON11, &CAnimationTool::OnBnClickedDeleteAll)
+	ON_BN_CLICKED(IDC_BUTTON11, &CAnimationTool::OnBnClickedDeleteRect)
 	ON_BN_CLICKED(IDC_BUTTON12, &CAnimationTool::OnBnClickedDeleteAnimationList)
-	ON_BN_CLICKED(IDC_BUTTON13, &CAnimationTool::OnBnClickedClearBox)
-	ON_BN_CLICKED(IDC_BUTTON14, &CAnimationTool::OnBnClickedClear_Info)
 
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON16, &CAnimationTool::OnBnClickedPlay)
 	ON_BN_CLICKED(IDC_BUTTON15, &CAnimationTool::OnBnClickedStop)
+	ON_WM_DESTROY()
+	ON_LBN_SELCHANGE(IDC_LIST_ANIMATION_RECT, &CAnimationTool::OnLbnSelchangeListAnimationRect)
+	ON_BN_CLICKED(IDC_BUTTON_EDITRECT, &CAnimationTool::OnBnClickedButtonEditrect)
+	ON_EN_KILLFOCUS(IDC_ANIMATION_TOP, &CAnimationTool::OnEnKillfocusAnimationTop)
+	ON_EN_KILLFOCUS(IDC_ANIMATION_RIGHT, &CAnimationTool::OnEnKillfocusAnimationRight)
+	ON_EN_KILLFOCUS(IDC_ANIMATION_LEFT, &CAnimationTool::OnEnKillfocusAnimationLeft)
+	ON_EN_KILLFOCUS(IDC_ANIMATION_BOTTOM, &CAnimationTool::OnEnKillfocusAnimationBottom)
 END_MESSAGE_MAP()
 
 
 // addinfo 버튼 클릭
-void CAnimationTool::OnBnClickedAddInfo()
+void CAnimationTool::OnBnClickedAddInfo()//여기 진행중..
 {
 	UpdateData(TRUE);
 	//==========animation 정보 입력=======================
-	ANIMATION* pAnima = new ANIMATION{};
+
 	CString AnimationName = m_wstrObject_Key + m_wstrState_Key; //두개objkey와 statekey를 더한것이 키값 
 
-	pAnima->wstrObjectKey = m_wstrObject_Key;
+	int iImage = m_ListBox_Image.GetCurSel();
+	if (iImage == LB_ERR)
+	{
+		ERR_MSG(L"이미지 선택해주세요");
+		return;
+	}
+	ANIMATION* pAnima = nullptr;
+	auto& iter_Animation_find = m_mapAnima.find(AnimationName);
+	int iResult = -1;
+	if (iter_Animation_find == m_mapAnima.end())
+		pAnima = new ANIMATION{};
+	else
+	{
+		iResult = AfxMessageBox(_T("수정하시겠습니까?"), MB_YESNO);
+		if (iResult == IDYES)
+			pAnima = iter_Animation_find->second;
+		else
+			return;
+	}
+
+	CString cstrPath_Key;
+	m_ListBox_Image.GetText(iImage, cstrPath_Key);
+
+	pAnima->wstrObjectKey = cstrPath_Key;
 	pAnima->wstrStateKey = m_wstrState_Key;
 	pAnima->fPlay_Speed = m_fPlay_Speed;
-	pAnima->iMax_Index = m_iMax_Index;
+
+	auto& iter_Anim_find = m_mapObjectKeyToPath.find(cstrPath_Key);
+	CString cstrPath = iter_Anim_find->second;
+	CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX, vector<RECT>(), cstrPath.GetString(), m_wstrObject_Key.GetString(), m_wstrState_Key.GetString());
+	pAnima->wstrFilePath = iter_Anim_find->second;
 
 	if (m_Loop.GetCheck())
 		pAnima->bLoop = true;
 	else
 		pAnima->bLoop = false;
 	//=====================================================
-
-	m_mapAnima.emplace(AnimationName, pAnima);
-	ERR_MSG(L"정보 입력 성공");
+	if (iResult != IDYES)
+	{
+		m_mapAnima.emplace(AnimationName, pAnima);
+		m_Animation_ListBox.AddString(m_wstrObject_Key + L"->" + m_wstrState_Key);
+	}
+	
 	UpdateData(FALSE);
 }
 
@@ -127,210 +163,129 @@ void CAnimationTool::OnDropFiles(HDROP hDropInfo)
 		TCHAR szFileName[MAX_PATH]{};
 		lstrcpy(szFileName, wstrFileNameAndEx.GetString());
 		PathRemoveExtension(szFileName);
-		m_Image_ListBox.AddString(szFileName);
-		CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, {RECT()}, wstrRelativePath.GetString(), szFileName);
+		if (m_ListBox_Image.FindString(-1, szFileName) != LB_ERR)
+			continue;
+		m_ListBox_Image.AddString(szFileName);
+		CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, { RECT{} }, wstrRelativePath.GetString(), szFileName);
+		m_mapObjectKeyToPath.emplace(szFileName, wstrRelativePath);
 	}
-	m_Image_ListBox.SetHorizontalExtent(500);
+	//m_ListBox_Image.SetHorizontalExtent(500);
 	UpdateData(FALSE);
 	CDialog::OnDropFiles(hDropInfo);
 
-
-
-	//CString wstrSingleFilePath = CFileInfo::ConvertRelativePath(szFileFullPath);
-	//
-	////===============멀티 텍스쳐 파일 이름 셋팅====================
-	//CString wstrFileNameAndEx = PathFindFileName(wstrSingleFilePath);
-	//CString wstrMultiFilePath = wstrSingleFilePath;
-	//
-	//TCHAR szFileName[MAX_PATH]{};
-	//lstrcpy(szFileName, wstrFileNameAndEx.GetString());
-	//int iPathLength = wstrMultiFilePath.GetLength() - lstrlen(szFileName);
-	//wstrMultiFilePath.Delete(iPathLength, lstrlen(szFileName));
-	//PathRemoveExtension(szFileName);
-
-
-	//wstrMultiFilePath.Insert(iPathLength, szFileName);
-	
-	//===========================================
-	//이미지 insert
-	//if (m_IsSingle.GetCheck())
-	//{
-	//	if (m_wstrObject_Key != L"")
-	//	{
-	//		m_wstrFilePath = wstrSingleFilePath;
-	//		if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, wstrSingleFilePath.GetString(), m_wstrObject_Key.GetString())))
-	//		{
-	//			ERR_MSG(L"싱글 텍스쳐 실패");
-	//			return;
-	//		}
-	//	}
-	//}
-	//else
-	//{
-	//	if (m_wstrObject_Key != L""&& m_wstrState_Key != L"")
-	//	{
-	//		m_wstrFilePath = wstrMultiFilePath;
-	//		if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX, wstrMultiFilePath.GetString(), m_wstrObject_Key.GetString(), m_wstrState_Key.GetString(), iShotGunCount)))
-	//		{
-	//			ERR_MSG(L"멀티 텍스쳐 실패");
-	//			return;
-	//		}
-	//	}
-
-	//}
 }
 
 
 //끌어넣은 이미지 리스트 선택 후 확인
-void CAnimationTool::OnLbnSelchangeImageList()
+void CAnimationTool::OnLbnSelchangeImageList() // 
 {
-	int iListCursor = m_Image_ListBox.GetCurSel();
-	CString wstrFileName;
-	m_Image_ListBox.GetText(iListCursor, wstrFileName);
-
-	int i = wstrFileName.GetLength()-1;
-	for (; i >= 0; --i)
-	{
-		if (!isdigit(wstrFileName[i]))
-			break;
-	}
-	wstrFileName.Delete(0, i+1);
-	m_iDrawID = _ttoi(wstrFileName.GetString());
-	SetImageView(m_wstrObject_Key.GetString(), m_iDrawID, m_List_To_Selected_Image, m_wstrState_Key.GetString());
+	UpdateData(TRUE);
+	int iListCursor = m_ListBox_Image.GetCurSel();
+	int iRectCursor = m_ListBoxRect.GetCurSel();
+	if (iRectCursor == LB_ERR || iListCursor == LB_ERR)
+		return;
+	
+	SetImageView(m_wstrObject_Key.GetString(), RECT(),-1, m_Pic_Loaded, m_wstrState_Key.GetString());
+	
 }
 
 
 //스테틱 박스에 이미지 출력을 위한 함수
-void CAnimationTool::SetImageView(CString Objectkey, int Index,const CStatic& PictureBox, CString StateKey)
+void CAnimationTool::SetImageView(CString Objectkey, const RECT& _rect, int Index,const CStatic& PictureBox, CString StateKey)
 {
 	CGraphic_Device::Get_Instance()->Render_Begin();
+	if (_rect.bottom == 0)
+		Index = -1;
 	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()
-		->Get_TexInfo(Objectkey.GetString(), StateKey.GetString(), Index);
+		->Get_TexInfo(Objectkey.GetString(), StateKey.GetString(), (Index == -1) ? 0 : Index);
 	if (nullptr == pTexInfo)
 		return;
+	float fCenterX;
+	float fCenterY;
+	if (Index != -1)
+	{
+		fCenterX = float(((_rect.left + _rect.right) * 0.5f));
+		fCenterY = float(((_rect.top + _rect.bottom) * 0.5f));
+	}
+	else
+	{
+		fCenterX = float(pTexInfo->tImageInfo.Width >> 1);
+		fCenterY = float(pTexInfo->tImageInfo.Height >> 1);
+	}
 	D3DXMATRIX matScale, matTrans, matWorld;
-	D3DXMatrixScaling(&matScale, WINCX / TILECX, WINCX / TILECX, 0.f);
+	if (Index != -1)
+	{
+		if(fCenterX > fCenterY)
+			D3DXMatrixScaling(&matScale, WINCX / (_rect.left + _rect.right), WINCX / (_rect.left + _rect.right), 0.f);
+		else
+			D3DXMatrixScaling(&matScale, WINCY / (_rect.top + _rect.bottom), WINCY / (_rect.top + _rect.bottom), 0.f);
+	}		
+	else
+		D3DXMatrixScaling(&matScale, float(WINCX) / (pTexInfo->tImageInfo.Width), float(WINCY) / (pTexInfo->tImageInfo.Height), 0.f);
 	D3DXMatrixTranslation(&matTrans, 400.f, 300.f, 0.f);
 	matWorld = matScale * matTrans;
-	float fCenterX = float(pTexInfo->tImageInfo.Width >> 1);
-	float fCenterY = float(pTexInfo->tImageInfo.Height >> 1);
+
 	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
-	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, nullptr, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
+	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, (Index == -1) ? nullptr : &_rect, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
 	CGraphic_Device::Get_Instance()->Render_End(PictureBox.m_hWnd);
 }
 
-//인포를 리셋시킴
-void CAnimationTool::Reset_Info()
+int CAnimationTool::DeleteListRectItemAndReName(UINT _index)
 {
+	int iReturn = m_ListBoxRect.DeleteString(_index);
+	m_pSelectedAnimation->vecRect.erase(m_pSelectedAnimation->vecRect.begin() + _index);
+	OnLbnSelchangeAnimation_List();
 
-	m_wstrObject_Key = L"";
-	m_wstrState_Key = L"";
-	m_fPlay_Speed = 0.f;
-	m_iMax_Index = 0;
-	m_Loop.SetCheck(FALSE);
-
+	return iReturn;
 }
 
-//이미지 리스트박스를 리셋시킴
-void CAnimationTool::Reset_ImageList()
-{
-	if (m_Image_ListBox.GetCount() != 0)
-		m_Image_ListBox.ResetContent();
-}
-
-//애니메이션 최종으로 합쳐서 추가
-//파일 정보 map에 저장 후 listbox에 추가 
-void CAnimationTool::OnBnClickedAddAnimation()
+void CAnimationTool::OnBnClickedAddRect()
 {
 	UpdateData(TRUE);
 
-	auto& iter_find = m_mapAnima.find(m_wstrObject_Key + m_wstrState_Key);
+	int iIndex = m_Animation_ListBox.GetCurSel();
+	CString wstrFindName;
+	m_Animation_ListBox.GetText(iIndex, wstrFindName);
+
+	// 키에서 -> 문자 삭제 
+	int i = 0;
+	for (; i < wstrFindName.GetLength(); ++i)
+	{
+		if (wstrFindName[i] == L'>')
+			break;
+	}
+
+	wstrFindName.Delete(i - 1, 2);
+
+	auto& iter_find = m_mapAnima.find(wstrFindName);
 	//맵에 키가 없을 때 리턴 
 	if (iter_find == m_mapAnima.end())
 	{
 		ERR_MSG(L"맵에 일치하는 키가 없다");
 		return;
 	}
-	//파일 리스트가 저장이 안되어있으면 리턴
-	if (m_wstrFilePath.IsEmpty())
-	{
-		ERR_MSG(L"파일 경로 저장되어 있지 않다");
-		return;
-	}
-	//사진 정보 저장
-	iter_find->second->wstrFilePath = m_wstrFilePath;
+	RECT rc{m_lLeft, m_lTop, m_lRight, m_lBottom};
+	iter_find->second->vecRect.emplace_back(rc);
+	CString cstrRectName;
+	cstrRectName.Format(L"%02d RECT{%d,%d // %d,%d }", iter_find->second->vecRect.size()-1, m_lLeft, m_lTop, m_lRight, m_lBottom);
+	m_ListBoxRect.AddString(cstrRectName);
 
-	//리스트 클리어 후 넣기
-	//추가 후 이미지 리스트 박스 삭제 
-	for (int i = 0; i <m_Image_ListBox.GetCount();i++)
-		m_Image_ListBox.ResetContent();
-
-
-	m_Animation_ListBox.AddString(m_wstrObject_Key+"->"+m_wstrState_Key);
-
-	//start_Image와 End_Index 이미지 출력 
-	Reset_Info();
-
-
+	m_lLeft = 0;
+	m_lTop = 0;
+	m_lRight = 0;
+	m_lBottom = 0;
 	UpdateData(FALSE);
 }
 
-//인덱스에 있는 그림을 확인함
-void CAnimationTool::OnBnClickedIndex_Apply()
+void CAnimationTool::OnBnClickedDeleteRect()
 {
-	UpdateData(TRUE);
-	int iIndex = m_Animation_ListBox.GetCurSel();
-
+	int iIndex = m_ListBoxRect.GetCurSel();
 	if (iIndex == LB_ERR)
-		return;
-
-	CString wstrFindName;
-	m_Animation_ListBox.GetText(iIndex, wstrFindName);
-	int i = 0;
-	// "->" 문자 삭제
-	for (; i < wstrFindName.GetLength(); ++i)
 	{
-		if (wstrFindName[i] == L'>')
-			break;
-	}
-	wstrFindName.Delete(i - 1, 2);
-
-	auto& iter_find = m_mapAnima.find(wstrFindName);
-
-	SetImageView(iter_find->second->wstrObjectKey, m_iInput_Index, m_Index_To_Selected_Image, iter_find->second->wstrStateKey);
-	UpdateData(FALSE);
-
-}
-
-
-void CAnimationTool::OnBnClickedDeleteAll()
-{
-	UpdateData(TRUE);
-
-	//인포와 이미지 박스 전부 삭제 
-	auto& iter_find = m_mapAnima.find(m_wstrObject_Key+m_wstrState_Key);
-	CString wstrKey = iter_find->second->wstrObjectKey + "->" + iter_find->second->wstrStateKey;
-	for (int i = 0; i < m_Animation_ListBox.GetCount(); i++)
-	{
-		CString wstrBoxKey;
-		m_Animation_ListBox.GetText(i, wstrBoxKey);
-		if (wstrKey == wstrBoxKey)
-		{
-			ERR_MSG(L"이미 만든 이펙트는 여기서 지우면 안된다");
-			return;
-		}
-	}
-
-	if (iter_find == m_mapAnima.end())
-	{
-		ERR_MSG(L"일치하는 정보가 없다");
 		return;
 	}
-	Reset_ImageList();
-	Safe_Delete(iter_find->second);
-	m_mapAnima.erase(iter_find);
-
-	Reset_Info();
+	DeleteListRectItemAndReName(iIndex);
+	ZeroMemory(&m_tRect, sizeof(RECT));
 	UpdateData(FALSE);
 }
 
@@ -378,9 +333,14 @@ void CAnimationTool::OnBnClickedSave()
 
 
 			WriteFile(hFile, &rPair.second->fPlay_Speed, sizeof(float), &dwbyte, nullptr);
-			WriteFile(hFile, &rPair.second->iMax_Index, sizeof(int), &dwbyte, nullptr);
 			WriteFile(hFile, &rPair.second->bLoop, sizeof(bool), &dwbyte, nullptr);
-			WriteFile(hFile, &rPair.second->bIsSingle, sizeof(bool), &dwbyte, nullptr);
+
+			UINT iRectSize = rPair.second->vecRect.size();
+			WriteFile(hFile, &iRectSize, sizeof(UINT), &dwbyte, nullptr);
+			for (auto& rect : rPair.second->vecRect)
+			{
+				WriteFile(hFile, &rect, sizeof(RECT), &dwbyte, nullptr);
+			}
 		}
 		CloseHandle(hFile);
 	}
@@ -391,7 +351,7 @@ void CAnimationTool::OnBnClickedSave()
 void CAnimationTool::OnBnClickedLoad()
 {
 
-	CString strFilePath = _T("../Data/Effect.dat");
+	CString strFilePath = _T("../Data/AnimationData.dat");
 	HANDLE hFile = CreateFile(strFilePath.GetString(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 
 	if (INVALID_HANDLE_VALUE == hFile)
@@ -448,12 +408,22 @@ void CAnimationTool::OnBnClickedLoad()
 
 
 		ReadFile(hFile, &pAnimaInfo->fPlay_Speed, sizeof(float), &dwbyte, nullptr);
-		ReadFile(hFile, &pAnimaInfo->iMax_Index, sizeof(int), &dwbyte, nullptr);
 		ReadFile(hFile, &pAnimaInfo->bLoop, sizeof(bool), &dwbyte, nullptr);
-		ReadFile(hFile, &pAnimaInfo->bIsSingle, sizeof(bool), &dwbyte, nullptr);
+
+		UINT iRectSize = 0;
+		ReadFile(hFile, &iRectSize, sizeof(UINT), &dwbyte, nullptr);
+		pAnimaInfo->vecRect.reserve(iRectSize);
+		for (UINT i=0; i<iRectSize; ++i)
+		{
+			RECT rect;
+			ReadFile(hFile, &rect, sizeof(RECT), &dwbyte, nullptr);
+			pAnimaInfo->vecRect.emplace_back(rect);
+		}
 
 		m_mapAnima.emplace(pAnimaInfo->wstrObjectKey + pAnimaInfo->wstrStateKey, pAnimaInfo);
 		m_Animation_ListBox.AddString(pAnimaInfo->wstrObjectKey + "->" + pAnimaInfo->wstrStateKey);
+		m_mapObjectKeyToPath.emplace(pAnimaInfo->wstrObjectKey, pAnimaInfo->wstrFilePath);
+		CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX, pAnimaInfo->vecRect, pAnimaInfo->wstrFilePath.GetString(), pAnimaInfo->wstrObjectKey.GetString(), pAnimaInfo->wstrStateKey.GetString());
 	}
 
 	//	//==============싱글 텍스쳐 파일 이름 셋팅===============
@@ -495,8 +465,6 @@ void CAnimationTool::OnBnClickedLoad()
 void CAnimationTool::OnLbnSelchangeAnimation_List()
 {
 	UpdateData(TRUE);
-	Reset_Info();
-	Reset_ImageList();
 
 	int iIndex = m_Animation_ListBox.GetCurSel();
 	CString wstrFindName;
@@ -512,40 +480,44 @@ void CAnimationTool::OnLbnSelchangeAnimation_List()
 
 	wstrFindName.Delete(i-1, 2);
 	auto& iter_find = m_mapAnima.find(wstrFindName);
-
-	m_wstrObject_Key = iter_find->second->wstrObjectKey;
-	m_wstrState_Key = iter_find->second->wstrStateKey;
-	m_fPlay_Speed = iter_find->second->fPlay_Speed;
-	m_iMax_Index = iter_find->second->iMax_Index;
+	m_pSelectedAnimation = iter_find->second;
+	m_wstrObject_Key = m_pSelectedAnimation->wstrObjectKey;
+	m_wstrState_Key = m_pSelectedAnimation->wstrStateKey;
+	m_fPlay_Speed = m_pSelectedAnimation->fPlay_Speed;
 
 	
-	if (iter_find->second->bLoop)
+	if (m_pSelectedAnimation->bLoop)
 		m_Loop.SetCheck(true);
 	else
 		m_Loop.SetCheck(false);
 
-	//이미지 리스트박스에 저장된 파일 정보 출력 
-	int iShotGunCount = iter_find->second->iMax_Index;
-	TCHAR szFileFullPath[MAX_PATH]{};
-
-	for (int i = 0; i < iShotGunCount; ++i)
+	int iImage = m_ListBox_Image.FindString(-1, m_pSelectedAnimation->wstrObjectKey);
+	if (iImage == LB_ERR)
 	{
-		TCHAR szFilePath[MAX_PATH] = L"";
-		swprintf_s(szFilePath, iter_find->second->wstrFilePath, i);
-		
-		CString wstrFileNameAndEx = PathFindFileName(szFilePath);
-		TCHAR szFileName[MAX_PATH]{};
-		lstrcpy(szFileName, wstrFileNameAndEx.GetString());
-		PathRemoveExtension(szFileName);
-		
-		m_Image_ListBox.AddString(szFileName);
+		CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX, m_pSelectedAnimation->vecRect, m_pSelectedAnimation->wstrFilePath.GetString(), m_pSelectedAnimation->wstrObjectKey.GetString(), m_pSelectedAnimation->wstrStateKey.GetString());
+		m_mapObjectKeyToPath.emplace(m_pSelectedAnimation->wstrObjectKey, m_pSelectedAnimation->wstrFilePath);
+		m_ListBox_Image.AddString(m_pSelectedAnimation->wstrObjectKey);
+		iImage = m_ListBox_Image.GetTopIndex();
 	}
+	m_ListBox_Image.SetCurSel(iImage);
 
-	m_Image_ListBox.SetHorizontalExtent(500);
+	m_ListBoxRect.ResetContent();
+	int iRect = 0;
+	for (auto& rect : m_pSelectedAnimation->vecRect)
+	{
+		CString cstrRectName;
+		cstrRectName.Format(L"%02d RECT{%d,%d // %d,%d }", iRect++, rect.left, rect.top, rect.right, rect.bottom);
+		m_ListBoxRect.AddString(cstrRectName);
+	}
+	if(m_ListBoxRect.GetCount() != 0)
+		m_ListBoxRect.SetCurSel(0);
 
-	//start 이미지, end 이미지 출력 
-	SetImageView(iter_find->second->wstrObjectKey.GetString(), 0, m_Start_Image, iter_find->second->wstrStateKey.GetString());
-	
+	SetImageView(m_pSelectedAnimation->wstrObjectKey.GetString(), RECT(), -1, m_Pic_Loaded, m_pSelectedAnimation->wstrStateKey.GetString());
+	if(m_ListBoxRect.GetCount() != 0)
+		SetImageView(m_pSelectedAnimation->wstrObjectKey.GetString(), RECT(), -1, m_Start_Image, m_pSelectedAnimation->wstrStateKey.GetString());
+	else
+		SetImageView(m_pSelectedAnimation->wstrObjectKey.GetString(), m_pSelectedAnimation->vecRect[0], 0, m_Start_Image, m_pSelectedAnimation->wstrStateKey.GetString());
+	OnLbnSelchangeListAnimationRect();
 
 	UpdateData(FALSE);
 }
@@ -577,54 +549,19 @@ void CAnimationTool::OnBnClickedDeleteAnimationList()
 	Safe_Delete(iter_find->second);
 	m_mapAnima.erase(iter_find);
 
-	Reset_Info();
-	Reset_ImageList();
-
 	m_Animation_ListBox.DeleteString(iIndex);
+	m_pSelectedAnimation = iter_find->second;
 
 	UpdateData(FALSE);
 }
-
-
-void CAnimationTool::OnBnClickedClearBox()
-{
-	UpdateData(TRUE);
-	Reset_ImageList();
-	UpdateData(FALSE);
-}
-
-
-void CAnimationTool::OnBnClickedClear_Info()
-{
-	UpdateData(TRUE);
-	Reset_Info();
-	UpdateData(FALSE);
-}
-
 
 void CAnimationTool::OnTimer(UINT_PTR nIDEvent)
 {
 
-	CString wstrFindName;
-	int i = 0;
-	int iIndex = m_Animation_ListBox.GetCurSel();
-
-	if (iIndex == LB_ERR)
-		return;
-	m_Animation_ListBox.GetText(iIndex, wstrFindName);
-	// "->" 문자 삭제
-	for (; i < wstrFindName.GetLength(); ++i)
-	{
-		if (wstrFindName[i] == L'>')
-			break;
-	}
-	wstrFindName.Delete(i - 1, 2);
-	auto& iter_find = m_mapAnima.find(wstrFindName);
-
 	if ((nIDEvent)<100)
 	{
-		SetImageView(iter_find->second->wstrObjectKey, m_iAnimationCount, m_Index_To_Selected_Image, iter_find->second->wstrStateKey);
-		if (++m_iAnimationCount >= iter_find->second->iMax_Index)
+		SetImageView(m_pSelectedAnimation->wstrObjectKey, m_pSelectedAnimation->vecRect[m_iAnimationCount],m_iAnimationCount, m_Pic_Rect, m_pSelectedAnimation->wstrStateKey);
+		if (++m_iAnimationCount >= m_pSelectedAnimation->vecRect.size())
 			m_iAnimationCount = 0;
 	}
 
@@ -635,14 +572,14 @@ void CAnimationTool::OnTimer(UINT_PTR nIDEvent)
 void CAnimationTool::OnBnClickedPlay()
 {
 	UpdateData(TRUE);
-	SetTimer(m_iTimer++, m_iPlay_Speed, NULL);
+	SetTimer(m_TIMERHANDLE, m_iPlay_Speed, NULL);
 	UpdateData(FALSE);
 }
 
 
 void CAnimationTool::OnBnClickedStop()
 {
-	KillTimer(m_iKillTimer++);
+	KillTimer(m_TIMERHANDLE);
 }
 
 
@@ -654,4 +591,70 @@ BOOL CAnimationTool::OnInitDialog()
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
+}
+
+
+void CAnimationTool::OnDestroy()
+{
+	int iResult = AfxMessageBox(L"애니메이션을 저장하시겠습니까?", MB_YESNO);
+	if (iResult == IDYES)
+		OnBnClickedSave();
+
+	CDialog::OnDestroy();
+}
+
+
+void CAnimationTool::OnLbnSelchangeListAnimationRect()
+{
+	int iIndex = m_ListBoxRect.GetCurSel();
+	if (iIndex == LB_ERR)
+	{
+		return;
+	}
+
+	m_tRect = m_pSelectedAnimation->vecRect[iIndex];
+
+	SetImageView(m_pSelectedAnimation->wstrObjectKey.GetString(), m_pSelectedAnimation->vecRect[iIndex], iIndex, m_Pic_Rect, m_pSelectedAnimation->wstrStateKey.GetString());
+
+
+	m_iRectIndex = iIndex;
+
+	UpdateData(FALSE);
+}
+
+void CAnimationTool::OnBnClickedButtonEditrect()
+{
+	UpdateData(TRUE);
+	int iIndex = m_ListBoxRect.GetCurSel();
+	if (iIndex == LB_ERR)
+	{
+		return;
+	}
+	CString cstrRectName;
+	m_pSelectedAnimation->vecRect[iIndex] = m_tRect;
+	OnLbnSelchangeAnimation_List();
+}
+
+
+void CAnimationTool::OnEnKillfocusAnimationTop()
+{
+	OnBnClickedButtonEditrect();
+}
+
+
+void CAnimationTool::OnEnKillfocusAnimationRight()
+{
+	OnBnClickedButtonEditrect();
+}
+
+
+void CAnimationTool::OnEnKillfocusAnimationLeft()
+{
+	OnBnClickedButtonEditrect();
+}
+
+
+void CAnimationTool::OnEnKillfocusAnimationBottom()
+{
+	OnBnClickedButtonEditrect();
 }

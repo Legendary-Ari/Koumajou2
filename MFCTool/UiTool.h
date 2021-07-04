@@ -56,7 +56,7 @@ public :
 	CStatic m_Picture_Prefab;
 
 	CComboBox m_ComboID;
-	CListBox m_Image_ListBox;
+	CListBox m_ListBox_Image;
 	CListBox m_Prefab_ListBox;
 	CListBox m_Result_ListBox;
 	afx_msg void OnBnClickedMouseTrans();

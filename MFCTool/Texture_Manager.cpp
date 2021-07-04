@@ -162,6 +162,7 @@ const TEXINFO * CTexture_Manager::Get_TexInfo(const wstring & wstrObjectKey, con
 	//return m_mapTexture[wstrObjectKey]->Get_TexInfo(wstrStateKey, dwIndex); 
 }
 
+
 void CTexture_Manager::Release_Texture_Manager()
 {
 	for (pair<const wstring, CTexture*>& rPair : m_mapTexture)
