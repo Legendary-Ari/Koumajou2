@@ -21,23 +21,25 @@ public:
 #endif
 #endif
 public:
-		enum TVI_TYPE { FOLDER, ACTOR, TYPE_END };
 
 protected:
 	DECLARE_MESSAGE_MAP()
 public:
-	void CreateNewTreeItem(TVI_TYPE _type, CString& _cstrName, OBJECTINFO* _pPrefab = nullptr);
-	void InsertTreeItem(TVI_TYPE _type, CString& _cstrName);
+	void CreateNewTreeItem(bool _bIsFolder, CString& _cstrName, OBJECTINFO* _pPrefab = nullptr);
+	void InsertTreeItem(bool _bIsFolder, CString& _cstrName);
 	void InsertNewEmptyActorToMap(CString& _cstrName, OBJECTINFO* _pPrefab);
+	void SaveTreeItems();
+	void LoadTreeItems(UINT _iStageFirst, UINT _iStageSecond);
 private:
 	bool		m_bDestroying;
 	COptionView*	m_pOptionView;
 	CString		m_cstrEditFrom;
+	UINT		m_iStageFirstIdx;
+	UINT		m_iStageSecondIdx;
 public:
 	CMFCToolView* m_pView;
 	CHierarchyNewActorDialog m_tNewActorDialog;
 	map<CString, ACTORINFO*> m_mapActorInfo;
-	map<CString, TVI_TYPE> m_mapTreeItem;
 public:
 
 	afx_msg void OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult);

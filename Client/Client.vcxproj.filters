@@ -76,6 +76,9 @@
     <Filter Include="01.GameObject\05.Gui">
       <UniqueIdentifier>{e30d83e8-7bb3-4808-89ed-8a68f7ef528f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.GameObject\06.Enemy">
+      <UniqueIdentifier>{026faa3b-49a4-4fed-b6a3-0d854422f934}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -159,6 +162,9 @@
     <ClInclude Include="Gui.h">
       <Filter>01.GameObject\05.Gui</Filter>
     </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>01.GameObject\06.Enemy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -235,6 +241,9 @@
     </ClCompile>
     <ClCompile Include="Gui.cpp">
       <Filter>01.GameObject\05.Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>01.GameObject\06.Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

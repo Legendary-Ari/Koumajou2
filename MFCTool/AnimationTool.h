@@ -22,7 +22,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public :
-	void SetImageView(CString Objectkey, const RECT& _rect, int Index, const CStatic& PictureBox, CString StateKey = 0 );
+
 protected:
 	int DeleteListRectItemAndReName(UINT _index);
 public:
@@ -34,6 +34,7 @@ public:
 	int m_iAnimationCount;
 	const int m_TIMERHANDLE;
 	ANIMATION* m_pSelectedAnimation;
+	bool		m_bPlay;
 
 	afx_msg void OnBnClickedAddRect();
 	afx_msg void OnBnClickedSave();
@@ -59,7 +60,6 @@ public:
 
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedPlay();
-	afx_msg void OnBnClickedStop();
 	int m_iPlay_Speed;
 	
 	virtual BOOL OnInitDialog();
@@ -83,4 +83,9 @@ public:
 	afx_msg void OnEnKillfocusAnimationLeft();
 	afx_msg void OnEnKillfocusAnimationBottom();
 	int m_iRectIndex;
+	UINT m_iAnimSize;
+	UINT m_iWidth;
+	UINT m_iHeight;
+	UINT m_iHMount;
+	afx_msg void OnBnClickedButtonEditInfo();
 };

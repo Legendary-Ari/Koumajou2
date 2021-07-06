@@ -38,13 +38,13 @@ HRESULT CBullet::Ready_GameObject()
 
 int CBullet::Update_GameObject()
 {
-	if (m_bDead)
+	if (m_bDestroyed)
 	{
-		const ANIMATION* pPrefab = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(m_pObjectInfo->wstrDeathAnimImage_ObjectKey + m_pObjectInfo->wstrDeathAnimImage_StateKey);
+		const ANIMATION* pPrefab = nullptr; //CPrefab_Manager::Get_Instance()->Get_AnimationPrefab();
 		CGameObject * pObject = CEffect::Create(pPrefab, m_tInfo.vPos);
 		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::UI, pObject);
 		pObject = nullptr;
-		return OBJ_DEAD;
+		return OBJ_DESTROYED;
 	}
 		
 
@@ -59,7 +59,7 @@ int CBullet::Update_GameObject()
 void CBullet::Late_Update_GameObject()
 {
 	if (m_tInfo.vPos.x > WINCX - 100)
-		m_bDead = true;
+		m_bDestroyed = true;
 }
 
 void CBullet::Render_GameObject()

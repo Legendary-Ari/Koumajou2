@@ -26,5 +26,5 @@ void CGameObject::Set_Prefab(const OBJECTINFO * _pPrefab)
 
 void CGameObject::Set_Placement(const ACTORINFO * _pPlacement)
 {
-	m_pPlacement = _pPlacement;
+	m_pActorInfo = _pPlacement;
 }

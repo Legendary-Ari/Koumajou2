@@ -28,6 +28,8 @@ private:
 public:
 	map<CString, OBJECTINFO*>	m_mapObject;
 	map<CString, CString>		m_mapKeyToPath;
+private:
+	OBJECTINFO*	m_pObjectInfoSelected;
 public:
 	CStatic m_GroupBox;
 	CComboBox m_BulletTypeSelectControl;
@@ -53,7 +55,8 @@ public:
 	float m_fObjMoveSpeed;
 	CComboBox m_ComboOBJID;
 	afx_msg void OnBnClickedButtonObjPlaystop();
-
+	void SetSingleVisibility(bool _bVisible);
+	void SetMultiVisibility(bool _bVisible);
 private:
 	bool	m_bIsPlaying_DeathAnimation;
 	int		m_iDeathAnimationIndex;
@@ -66,4 +69,22 @@ public:
 	CListBox m_ListBox_ObjImage;
 	virtual BOOL OnInitDialog();
 	CComboBox m_ComboRenderId;
+	CButton m_RadioImageType[2];
+	afx_msg void OnBnClickedRadioStatic();
+	afx_msg void OnBnClickedRadioAnimation();
+	afx_msg void OnEnKillfocusEditObjectTop();
+	afx_msg void OnEnKillfocusEditObjectLeft();
+	afx_msg void OnEnKillfocusEditObjectRight();
+	afx_msg void OnEnKillfocusEditObjectBottom();
+	union {
+		struct {
+			LONG m_lLeft;
+			LONG m_lTop;
+			LONG m_lRight;
+			LONG m_lBottom;
+		};
+		RECT m_tRect;
+	};
+
+	CStatic m_Pic_Rect;
 };

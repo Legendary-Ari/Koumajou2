@@ -19,12 +19,12 @@ public:
 private:
 	HRESULT LoadObjectPrefab();
 	HRESULT LoadAnimationPrefab();
-	HRESULT LoadPlacementPrefab(const wstring& _path);
+	HRESULT LoadActorPrefab(const wstring& _path);
 private:
 	map<wstring, OBJECTINFO*> m_mapObjectPrefab;
 	map<wstring, ANIMATION*> m_mapAnimationPrefab;
-	map<wstring, ACTORINFO*> m_mapPlacementPrefab;
+	map<wstring, ACTORINFO*> m_mapActorPrefab;
 
-	const wstring m_wstrPlacementPath;
+	const wstring m_wstrActorPath;
 };
 

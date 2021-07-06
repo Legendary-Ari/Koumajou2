@@ -18,12 +18,12 @@ public:
 	inline const RENDERID::ID&	Get_RenderId() const { return m_eRenderId; }
 protected:
 	bool	m_bDestroyed;
-#define m_bDead m_bDestroyed
 	
 	INFO m_tInfo; 
 	float m_fAngle = 0.f;
 	const OBJECTINFO*	m_pObjectInfo;
-	const ACTORINFO*	m_pPlacement;
+	const ACTORINFO*	m_pActorInfo;
+	vector<const ANIMATION*> m_vecAnimation;
 
 	RENDERID::ID		m_eRenderId;
 	//INFO* m_pInfo; 

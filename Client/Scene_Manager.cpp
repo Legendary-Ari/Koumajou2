@@ -31,6 +31,7 @@ HRESULT CScene_Manager::Change_Scene_Manager(const ID eID)
 		case CScene_Manager::END:
 			break;
 		default:
+			m_pScene = CStage::Create();
 			break;
 		}
 		m_eCurScene = m_eNextScene; 

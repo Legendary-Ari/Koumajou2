@@ -24,6 +24,7 @@ public:
 	CUiTool* m_pUiTool;
 	CHierarchyView* m_pHierarchyView;
 	map<CString, OBJECTINFO*>* m_pmapPrefab;
+	map<CString, ANIMATION*>* m_pmapAnimation;
 	float m_fAngle = 0.f;
 	float m_fAlpha = 0.f; 
 	float m_fBulletSpeed = 10.f; 

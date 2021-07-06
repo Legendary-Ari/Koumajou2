@@ -18,9 +18,16 @@ HRESULT CPlayer::Ready_GameObject()
 	m_tInfo.vPos.y = 300.f; 
 	m_tInfo.vDir = { 0.f, 0.f, 0.f }; 
 	m_tInfo.vSize = D3DXVECTOR3(100.f, 100.f, 0.f); 
-
-	CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, m_pObjectInfo->wstrObjectImage_Path, m_pObjectInfo->wstrObjectImage_ObjectKey);
-
+	
+	const ANIMATION* pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(m_pObjectInfo->cstrIdleAnimImage_ObjectKey + m_pObjectInfo->wstrIdleAnimImage_StateKey);
+	if (!pAnim)
+	{
+		ERR_MSG(L"플레이어의 이미지를 찾지 못했습니다.");
+		return E_FAIL;
+	}
+		
+	m_vecAnimation.emplace_back(pAnim);
+	
 	m_eRenderId = RENDERID::OBJECT;
 
 	return S_OK;
@@ -28,8 +35,8 @@ HRESULT CPlayer::Ready_GameObject()
 
 int CPlayer::Update_GameObject()
 {
-	if (m_bDead)
-		return OBJ_DEAD;
+	if (m_bDestroyed)
+		return OBJ_DESTROYED;
 
 	m_tInfo.vDir = {0.f, 0.f, 0.f};
 
@@ -63,7 +70,7 @@ void CPlayer::Late_Update_GameObject()
 
 void CPlayer::Render_GameObject()
 {
-	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()->Get_TexInfo(m_pObjectInfo->wstrObjectImage_ObjectKey);
+	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()->Get_TexInfo(m_vecAnimation[0]->wstrObjectKey + m_vecAnimation[0]->wstrStateKey);
 	if (nullptr == pTexInfo)
 		return;
 	D3DXVECTOR3 vScroll = CScroll_Manager::Get_Scroll();
@@ -73,10 +80,12 @@ void CPlayer::Render_GameObject()
 	D3DXMatrixRotationZ(&matRotZ, D3DXToRadian(-m_fAngle));
 	D3DXMatrixTranslation(&matTrans, m_tInfo.vPos.x + vScroll.x, m_tInfo.vPos.y + vScroll.y, 0.f);
 	matWorld = matScale * matRotZ * matTrans;
-	float fCenterX = float(pTexInfo->tImageInfo.Width >> 1);
-	float fCenterY = float(pTexInfo->tImageInfo.Height >> 1);
+	const RECT& rect = m_vecAnimation[0]->vecRect[0];
+	float 	fCenterX = float(((rect.right - rect.left)*0.5f));
+	float 	fCenterY = float(((rect.bottom - rect.top) * 0.5f));
+	
 	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
-	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, nullptr, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
+	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, &rect, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
 }
 
 void CPlayer::Release_GameObject()

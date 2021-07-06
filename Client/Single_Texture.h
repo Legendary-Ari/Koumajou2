@@ -8,11 +8,11 @@ public:
 	virtual ~CSingle_Texture();
 public:
 	// CTexture을(를) 통해 상속됨
-	virtual HRESULT Insert_Texture(const wstring & wstrFilePath, const wstring & wstrStateKey = L"", const DWORD dwCount = 0) override;
-	virtual const TEXINFO * Get_TexInfo(const wstring & wstrStateKey = L"", const DWORD dwIndex = 0) override;
+	virtual HRESULT Insert_Texture(const vector<RECT>& vecRect, const TEXINFO* _pTexInfo, const wstring & wstrStateKey = L"") override;
+	virtual const TEXINFO * Get_TexInfo() override;
+	virtual RECT Get_Rect(const wstring& wstrStateKey = L"", const DWORD dwIndex = 0)override;
 	virtual void Release_Texture() override;
-
 private:
-	TEXINFO m_tTexInfo; 
+	RECT	m_tRect;
 };
 

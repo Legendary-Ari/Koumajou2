@@ -24,6 +24,7 @@
 #define IDC_BUTTON8                     1003
 #define IDC_EDIT4                       1004
 #define IDC_BUTTON9                     1004
+#define IDC_ANIM_EDIT_SIZE              1004
 #define IDC_EDIT5                       1005
 #define IDC_BUTTON17_PLACE              1005
 #define IDC_EDIT_ANIMATION_INDEX        1005
@@ -34,21 +35,27 @@
 #define IDC_RADIO1                      1008
 #define IDC_BUTTON12                    1008
 #define IDC_LIST4_PLACE                 1008
+#define IDC_RADIO_STATIC                1008
 #define IDC_RADIO2                      1009
 #define IDC_EDIT6                       1009
 #define IDC_BUTTON19_PLACE              1009
 #define IDC_ANIMATION_LEFT              1009
+#define IDC_RADIO_ANIMATION             1009
 #define IDC_RADIO3                      1010
 #define IDC_BUTTON20_PLACE              1010
 #define IDC_ANIMATION_TOP               1010
+#define IDC_EDIT_OBJECT_LEFT            1010
 #define IDC_RADIO4                      1011
 #define IDC_BUTTON21_PLACE              1011
 #define IDC_ANIMATION_RIGHT             1011
+#define IDC_EDIT_OBJECT_TOP             1011
 #define IDC_RADIO5                      1012
 #define IDC_BUTTON22_PLACE              1012
 #define IDC_ANIMATION_BOTTOM            1012
+#define IDC_EDIT_OBJECT_RIGHT           1012
 #define IDC_RADIO6                      1013
 #define IDC_LIST_ANIMATION_RECT         1013
+#define IDC_EDIT_OBJECT_BOTTOM          1013
 #define IDC_CHECK1                      1014
 #define IDC_CHECK2                      1015
 #define IDC_PICTURE                     1015
@@ -57,13 +64,15 @@
 #define IDC_COMBO1                      1016
 #define IDC_COMBO_BULLET_TYPE           1016
 #define IDC_COMBO_NEWACTOR              1016
+#define IDC_ANIM_EDIT_WIDTH             1016
 #define IDC_BUTTON3                     1017
 #define IDC_BT_PIC                      1017
 #define IDC_BUTTON4                     1018
 #define IDC_GROUP                       1018
 #define IDC_GROUP_SG                    1018
-#define IDC_BUTTON_EDITRECT             1018
+#define IDC_ANIM_EDIT_HIEGHT            1018
 #define IDC_BUTTON5                     1019
+#define IDC_ANIM_EDIT_HMOUNT            1019
 #define IDC_START_IMAGE                 1020
 #define IDC_END_IMAGE                   1021
 #define IDC_INDEX_TO_SELECTED_IMAGE     1022
@@ -87,9 +96,12 @@
 #define IDC_LIST_OBJPIC                 1030
 #define IDC_BUTTON10                    1031
 #define IDC_BUTTON10_ANIM               1031
+#define IDC_PIC_RECT                    1031
 #define IDC_BUTTON11                    1032
 #define IDC_EDIT1_BULLET                1033
 #define IDC_EDIT_OBJNAME                1033
+#define IDC_BUTTON10_ANIM2              1033
+#define IDC_BUTTON_EDIT_INFO            1033
 #define IDC_EDIT2_BULLET                1034
 #define IDC_EDIT_OBJHP                  1034
 #define IDC_EDIT3_BULLET                1035
@@ -153,6 +165,13 @@
 #define IDC_EDIT_NEWACTOR_NAME          1074
 #define IDC_OPTION_ACTORNAME            1075
 #define IDC_ANIMATION_LIST              1076
+#define IDC_GROUP_SINGLE                1077
+#define IDC_GROUP_MULTI                 1079
+#define IDC_TEXT_TOP                    1080
+#define IDC_TEXT_RIGHT                  1081
+#define IDC_TEXT_LEFT                   1082
+#define IDC_TEXT_BOTTOM                 1083
+#define IDC_TEXT_IDLEANIM               1084
 #define ID_HIERARCHY_EDIT_NAME          58001
 #define ID_HIERARCHY_DELETE             58002
 #define ID_HIERARCHY_NEW                58003
@@ -163,7 +182,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        323
 #define _APS_NEXT_COMMAND_VALUE         32774
-#define _APS_NEXT_CONTROL_VALUE         1077
+#define _APS_NEXT_CONTROL_VALUE         1085
 #define _APS_NEXT_SYMED_VALUE           318
 #endif
 #endif

@@ -4,7 +4,7 @@
 
 IMPLEMENT_SINGLETON(CPrefab_Manager)
 CPrefab_Manager::CPrefab_Manager()
-	:m_wstrPlacementPath(L"../Data/Placement%d.dat")
+	:m_wstrActorPath(L"../Data/TreeItem %02d-%02d.dat")
 {
 }
 
@@ -21,11 +21,11 @@ CPrefab_Manager::~CPrefab_Manager()
 		Safe_Delete(rPair.second);
 	}
 	m_mapObjectPrefab.clear();
-	for (auto & rPair : m_mapPlacementPrefab)
+	for (auto & rPair : m_mapActorPrefab)
 	{
 		Safe_Delete(rPair.second);
 	}
-	m_mapPlacementPrefab.clear();
+	m_mapActorPrefab.clear();
 }
 
 HRESULT CPrefab_Manager::Ready_Prefab_Manager()
@@ -67,7 +67,7 @@ HRESULT CPrefab_Manager::LoadObjectPrefab()
 		if (dwbyte == 0)
 			break;
 
-		pObject = new OBJECTINFO;
+		pObject = new OBJECTINFO{};
 
 		pBuff = new TCHAR[strLen]{};
 		ReadFile(hFile, pBuff, sizeof(TCHAR) * strLen, &dwbyte, nullptr);
@@ -89,28 +89,29 @@ HRESULT CPrefab_Manager::LoadObjectPrefab()
 		ReadFile(hFile, &strLen, sizeof(DWORD), &dwbyte, nullptr);
 		pBuff = new TCHAR[strLen]{};
 		ReadFile(hFile, pBuff, sizeof(TCHAR) * strLen, &dwbyte, nullptr);
-		pObject->wstrDeathAnimImage_ObjectKey = pBuff;
+		pObject->cstrIdleAnimImage_ObjectKey = pBuff;
 		Safe_Delete(pBuff);
 
 		ReadFile(hFile, &strLen, sizeof(DWORD), &dwbyte, nullptr);
 		pBuff = new TCHAR[strLen]{};
 		ReadFile(hFile, pBuff, sizeof(TCHAR) * strLen, &dwbyte, nullptr);
-		pObject->wstrDeathAnimImage_StateKey = pBuff;
+		pObject->wstrIdleAnimImage_StateKey = pBuff;
 		Safe_Delete(pBuff);
 
+		ReadFile(hFile, &pObject->bIsSingle, sizeof(bool), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->fMaxHp, sizeof(float), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->fAtk, sizeof(float), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->fAtkRatio, sizeof(float), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->fMoveSpeed, sizeof(float), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->eObjId, sizeof(BYTE), &dwbyte, nullptr);
+		ReadFile(hFile, &pObject->eRenderId, sizeof(BYTE), &dwbyte, nullptr);
+		ReadFile(hFile, &pObject->tRect, sizeof(RECT), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->bDestructable, sizeof(bool), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->eBulletType, sizeof(BYTE), &dwbyte, nullptr);
-		ReadFile(hFile, &pObject->fShotGunAngle, sizeof(float), &dwbyte, nullptr);
-		ReadFile(hFile, &pObject->iShotGunCount, sizeof(int), &dwbyte, nullptr);
 
 		m_mapObjectPrefab.emplace(pObject->wstrPrefabName, pObject);
 
-		if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, pObject->wstrObjectImage_Path, pObject->wstrObjectImage_ObjectKey)))
+		if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, { pObject->tRect }, pObject->wstrObjectImage_Path, pObject->wstrObjectImage_ObjectKey)))
 		{
 			ERR_MSG(L"싱글 텍스쳐 실패");
 			return E_FAIL;
@@ -123,7 +124,7 @@ HRESULT CPrefab_Manager::LoadObjectPrefab()
 HRESULT CPrefab_Manager::LoadAnimationPrefab()
 {
 
-	HANDLE hFile = CreateFile(L"../Data/Effect.dat", GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+	HANDLE hFile = CreateFile(L"../Data/AnimationData.dat", GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 
 	if (INVALID_HANDLE_VALUE == hFile)
 		return E_FAIL;
@@ -134,143 +135,104 @@ HRESULT CPrefab_Manager::LoadAnimationPrefab()
 	DWORD dwbyte = 0;
 	DWORD dwStringSize = 0;
 	ANIMATION* pAnimaInfo = 0;
-	TCHAR* pBuf = nullptr;
+	TCHAR* pBuff = nullptr;
 
 	while (true)
 	{
 		ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
 		if (0 == dwbyte)
 			break;
-		pBuf = new TCHAR[dwStringSize];
+		pBuff = new TCHAR[dwStringSize];
 		pAnimaInfo = new ANIMATION;
-		ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-		pAnimaInfo->wstrObjectKey = pBuf;
-		Safe_Delete(pBuf);
+		ReadFile(hFile, pBuff, dwStringSize, &dwbyte, nullptr);
+		pAnimaInfo->wstrObjectKey = pBuff;
+		Safe_Delete(pBuff);
 
 
 		ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-		pBuf = new TCHAR[dwStringSize];
-		ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-		pAnimaInfo->wstrStateKey = pBuf;
-		Safe_Delete(pBuf);
+		pBuff = new TCHAR[dwStringSize];
+		ReadFile(hFile, pBuff, dwStringSize, &dwbyte, nullptr);
+		pAnimaInfo->wstrStateKey = pBuff;
+		Safe_Delete(pBuff);
 
 		ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-		pBuf = new TCHAR[dwStringSize];
-		ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-		pAnimaInfo->wstrFilePath = pBuf;
-		Safe_Delete(pBuf);
+		pBuff = new TCHAR[dwStringSize];
+		ReadFile(hFile, pBuff, dwStringSize, &dwbyte, nullptr);
+		pAnimaInfo->wstrFilePath = pBuff;
+		Safe_Delete(pBuff);
 
 
 		ReadFile(hFile, &pAnimaInfo->fPlay_Speed, sizeof(float), &dwbyte, nullptr);
-		ReadFile(hFile, &pAnimaInfo->iMax_Index, sizeof(int), &dwbyte, nullptr);
 		ReadFile(hFile, &pAnimaInfo->bLoop, sizeof(bool), &dwbyte, nullptr);
-		ReadFile(hFile, &pAnimaInfo->bIsSingle, sizeof(bool), &dwbyte, nullptr);
 
+		UINT iRectSize = 0;
+		ReadFile(hFile, &iRectSize, sizeof(UINT), &dwbyte, nullptr);
+		pAnimaInfo->vecRect.reserve(iRectSize);
+		for (UINT i = 0; i<iRectSize; ++i)
+		{
+			RECT rect;
+			ReadFile(hFile, &rect, sizeof(RECT), &dwbyte, nullptr);
+			pAnimaInfo->vecRect.emplace_back(rect);
+		}
 		m_mapAnimationPrefab.emplace(pAnimaInfo->wstrObjectKey + pAnimaInfo->wstrStateKey, pAnimaInfo);
-
-		//===============이미지 Insert==============
-		if (pAnimaInfo->bIsSingle)
-		{
-			if (pAnimaInfo->wstrObjectKey != L"")
-			{
-				if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, pAnimaInfo->wstrFilePath, pAnimaInfo->wstrObjectKey)))
-				{
-					ERR_MSG(L"싱글 텍스쳐 실패");
-					return E_FAIL;
-				}
-			}
-		}
-		else
-		{
-			if (pAnimaInfo->wstrObjectKey != L"" && pAnimaInfo->wstrStateKey != L"")
-			{
-				if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX, pAnimaInfo->wstrFilePath, pAnimaInfo->wstrObjectKey, pAnimaInfo->wstrStateKey, pAnimaInfo->iMax_Index)))
-				{
-					ERR_MSG(L"멀티 텍스쳐 실패");
-					return E_FAIL;
-				}
-			}
-		}
+		CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX, pAnimaInfo->vecRect, pAnimaInfo->wstrFilePath, pAnimaInfo->wstrObjectKey, pAnimaInfo->wstrStateKey);
 	}
 	CloseHandle(hFile);
 
 	return S_OK;
 }
 
-HRESULT CPrefab_Manager::LoadPlacementPrefab(const wstring & _path)
+HRESULT CPrefab_Manager::LoadActorPrefab(const wstring & _path)
 {
 	HANDLE hFile = CreateFile(_path.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 
 	if (INVALID_HANDLE_VALUE == hFile)
 	{
-		ERR_MSG(L"Placement 파일이 없습니다");
+		ERR_MSG(L"Actor 파일이 없습니다");
 		return E_FAIL;
 	}
 
-	for (auto& rPair : m_mapPlacementPrefab)
+	for (auto& rPair : m_mapActorPrefab)
 		Safe_Delete(rPair.second);
-	m_mapPlacementPrefab.clear();
+	m_mapActorPrefab.clear();
 
 	DWORD dwbyte = 0;
-	DWORD dwStringSize = 0;
-
-	TCHAR* pBuf = nullptr;
-	ACTORINFO* pPlacement = nullptr;
-
+	DWORD strLen = 0;
+	UINT mIDX;
+	TCHAR* pBuff = nullptr;
+	ACTORINFO* pActorInfo = nullptr;
+	ReadFile(hFile, &mIDX, sizeof(UINT), &dwbyte, nullptr);
+	if (dwbyte == 0)
+	{
+		ERR_MSG(L"Actor 읽을거리 없음");
+		return E_FAIL;
+	}
+	ReadFile(hFile, &mIDX, sizeof(UINT), &dwbyte, nullptr);
 	while (true)
 	{
-		pPlacement = new ACTORINFO;
-		ReadFile(hFile, &pPlacement->eRenderID, sizeof(int), &dwbyte, nullptr);
-		if (0 == dwbyte)
-		{
-			Safe_Delete(pPlacement);
+		ReadFile(hFile, &strLen, sizeof(DWORD), &dwbyte, nullptr);
+
+		if (dwbyte == 0)
 			break;
-		}
-		ReadFile(hFile, &pPlacement->m_tMatInfo.mat[MATID::TRANS], sizeof(D3DXVECTOR3), &dwbyte, nullptr);
-		ReadFile(hFile, &pPlacement->m_tMatInfo.mat[MATID::ROT], sizeof(D3DXVECTOR3), &dwbyte, nullptr);
-		ReadFile(hFile, &pPlacement->m_tMatInfo.mat[MATID::SCALE], sizeof(D3DXVECTOR3), &dwbyte, nullptr);
 
-		ReadFile(hFile, &pPlacement->m_bRender, sizeof(bool), &dwbyte, nullptr);
+		pActorInfo = new ACTORINFO{};
+		pBuff = new TCHAR[strLen]{};
+		ReadFile(hFile, pBuff, sizeof(TCHAR) * strLen, &dwbyte, nullptr);
+		pActorInfo->wstrActorName = pBuff;
+		Safe_Delete(pBuff);
 
+		ReadFile(hFile, &strLen, sizeof(DWORD), &dwbyte, nullptr);
+		pBuff = new TCHAR[strLen]{};
+		ReadFile(hFile, pBuff, sizeof(TCHAR) * strLen, &dwbyte, nullptr);
+		pActorInfo->wstrPrefabName = pBuff;
+		Safe_Delete(pBuff);
 
-		ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-		pBuf = new TCHAR[dwStringSize];
-		ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-		pPlacement->wstrActorName = pBuf;
-
-		Safe_Delete(pBuf);
-
-		//	}
-
-		ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-		pBuf = new TCHAR[dwStringSize];
-		ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-		pPlacement->wstrPrefabName = pBuf;
-		Safe_Delete(pBuf);
-
-		ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-		pBuf = new TCHAR[dwStringSize];
-		ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-		pPlacement->wstrObjectKey = pBuf;
-		Safe_Delete(pBuf);
-
-		ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-		pBuf = new TCHAR[dwStringSize];
-		ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-		pPlacement->wstrFilePath = pBuf;
-		Safe_Delete(pBuf);
-
-		m_mapPlacementPrefab.emplace(pPlacement->wstrPrefabName, pPlacement);
-		//===============이미지 Insert==============
-
-		if (pPlacement->wstrObjectKey != L"")
-		{
-			if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, pPlacement->wstrFilePath, pPlacement->wstrPrefabName)))
-			{
-				ERR_MSG(L"싱글 텍스쳐 실패");
-				return E_FAIL;
-			}
-		}
+		ReadFile(hFile, &pActorInfo->bIsFolder, sizeof(bool), &dwbyte, nullptr);
+		ReadFile(hFile, &pActorInfo->tInfo, sizeof(INFO), &dwbyte, nullptr);
+		if (!pActorInfo->bIsFolder)
+			m_mapActorPrefab.emplace(pActorInfo->wstrActorName, pActorInfo);
+		else
+			Safe_Delete(pActorInfo);
 	}
 	CloseHandle(hFile);
 
@@ -295,31 +257,53 @@ const ANIMATION * CPrefab_Manager::Get_AnimationPrefab(const wstring & _key) con
 
 const ACTORINFO * CPrefab_Manager::Get_PlacementPrefab(const wstring & _key) const
 {
-	auto& iter_find = m_mapPlacementPrefab.find(_key);
-	if (iter_find == m_mapPlacementPrefab.end())
+	auto& iter_find = m_mapActorPrefab.find(_key);
+	if (iter_find == m_mapActorPrefab.end())
 		return nullptr;
 	return iter_find->second;
 }
 
 HRESULT CPrefab_Manager::SpawnObjectbyScene(const CScene_Manager::ID & _id)
 {
-	TCHAR szFilePath[MAX_PATH] = L"";
-	swprintf_s(szFilePath, m_wstrPlacementPath.c_str(), (int)_id);
-	LoadPlacementPrefab(szFilePath);
-
-	ACTORINFO* pPlacement = nullptr;
-	for (auto& rPair : m_mapPlacementPrefab)
+	UINT uiFirst = 0, uiSecond = 0;
+	switch (_id)
 	{
-		pPlacement = rPair.second;
-		auto& iter_find = m_mapObjectPrefab.find(pPlacement->wstrActorName);
+	case CScene_Manager::STAGE_1_1:
+		uiFirst = 1;
+		uiSecond = 1;
+		break;
+	case CScene_Manager::STAGE_1_2:
+		uiFirst = 1;
+		uiSecond = 2;
+		break;
+	case CScene_Manager::STAGE_1_3:
+		uiFirst = 1;
+		uiSecond = 3;
+		break;
+	case CScene_Manager::STAGE_1_4:
+		uiFirst = 1;
+		uiSecond = 4;
+		break;
+	default:
+		break;
+	}
+	TCHAR szFilePath[MAX_PATH] = L"";
+	swprintf_s(szFilePath, m_wstrActorPath.c_str(), uiFirst,uiSecond);
+	LoadActorPrefab(szFilePath);
+
+	ACTORINFO* pActor = nullptr;
+	for (auto& rPair : m_mapActorPrefab)
+	{
+		pActor = rPair.second;
+		auto& iter_find = m_mapObjectPrefab.find(pActor->wstrPrefabName);
 		if (iter_find == m_mapObjectPrefab.end())
 		{
 			//ERR_MSG(L"키값 오류");
-			CSpawn_Manager::Spawn(L"", pPlacement, nullptr);
+			CSpawn_Manager::Spawn(L"", pActor, nullptr);
 		}
 		else
 		{
-			CSpawn_Manager::Spawn(iter_find->second->wstrPrefabName, pPlacement, iter_find->second);
+			CSpawn_Manager::Spawn(iter_find->second->wstrPrefabName, pActor, iter_find->second);
 		}
 		
 		

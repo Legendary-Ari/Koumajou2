@@ -24,6 +24,11 @@ CAnimationTool::CAnimationTool(CWnd* pParent /*=NULL*/)
 	, m_TIMERHANDLE(10001)
 	, m_pSelectedAnimation(nullptr)
 	, m_iRectIndex(0)
+	, m_bPlay(false)
+	, m_iAnimSize(0)
+	, m_iWidth(0)
+	, m_iHeight(0)
+	, m_iHMount(0)
 {
 
 }
@@ -59,6 +64,10 @@ void CAnimationTool::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_ANIMATION_LEFT, m_lLeft);
 	DDX_Control(pDX, IDC_LIST_ANIMATION_RECT, m_ListBoxRect);
 	DDX_Text(pDX, IDC_EDIT_ANIMATION_INDEX, m_iRectIndex);
+	DDX_Text(pDX, IDC_ANIM_EDIT_SIZE, m_iAnimSize);
+	DDX_Text(pDX, IDC_ANIM_EDIT_WIDTH, m_iWidth);
+	DDX_Text(pDX, IDC_ANIM_EDIT_HIEGHT, m_iHeight);
+	DDX_Text(pDX, IDC_ANIM_EDIT_HMOUNT, m_iHMount);
 }
 
 
@@ -77,14 +86,13 @@ BEGIN_MESSAGE_MAP(CAnimationTool, CDialog)
 
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON16, &CAnimationTool::OnBnClickedPlay)
-	ON_BN_CLICKED(IDC_BUTTON15, &CAnimationTool::OnBnClickedStop)
 	ON_WM_DESTROY()
 	ON_LBN_SELCHANGE(IDC_LIST_ANIMATION_RECT, &CAnimationTool::OnLbnSelchangeListAnimationRect)
-	ON_BN_CLICKED(IDC_BUTTON_EDITRECT, &CAnimationTool::OnBnClickedButtonEditrect)
 	ON_EN_KILLFOCUS(IDC_ANIMATION_TOP, &CAnimationTool::OnEnKillfocusAnimationTop)
 	ON_EN_KILLFOCUS(IDC_ANIMATION_RIGHT, &CAnimationTool::OnEnKillfocusAnimationRight)
 	ON_EN_KILLFOCUS(IDC_ANIMATION_LEFT, &CAnimationTool::OnEnKillfocusAnimationLeft)
 	ON_EN_KILLFOCUS(IDC_ANIMATION_BOTTOM, &CAnimationTool::OnEnKillfocusAnimationBottom)
+	ON_BN_CLICKED(IDC_BUTTON10_ANIM2, &CAnimationTool::OnBnClickedButtonEditInfo)
 END_MESSAGE_MAP()
 
 
@@ -122,6 +130,7 @@ void CAnimationTool::OnBnClickedAddInfo()//여기 진행중..
 	pAnima->wstrObjectKey = cstrPath_Key;
 	pAnima->wstrStateKey = m_wstrState_Key;
 	pAnima->fPlay_Speed = m_fPlay_Speed;
+	
 
 	auto& iter_Anim_find = m_mapObjectKeyToPath.find(cstrPath_Key);
 	CString cstrPath = iter_Anim_find->second;
@@ -137,6 +146,28 @@ void CAnimationTool::OnBnClickedAddInfo()//여기 진행중..
 	{
 		m_mapAnima.emplace(AnimationName, pAnima);
 		m_Animation_ListBox.AddString(m_wstrObject_Key + L"->" + m_wstrState_Key);
+	}
+
+	//------------------Reset Rect--------------------
+	m_pSelectedAnimation->vecRect.clear();
+	m_pSelectedAnimation->vecRect.reserve(m_iAnimSize);
+	m_ListBoxRect.ResetContent();
+
+	//------------------ReAdd Rect---------------------
+	for (int i = 0; i < m_iAnimSize; ++i)
+	{
+
+		RECT rect =
+		{
+			m_iWidth * (i % (m_iHMount )),
+			m_iHeight * (i / (m_iHMount)),
+			m_iWidth * ((i % (m_iHMount)) + 1)-1,
+			m_iHeight * ((i / (m_iHMount)) + 1)-1
+		};
+		m_pSelectedAnimation->vecRect.emplace_back(rect);
+		CString cstrRectName;
+		cstrRectName.Format(L"%02d RECT{%d,%d // %d,%d }", i, rect);
+		m_ListBoxRect.AddString(cstrRectName);
 	}
 	
 	UpdateData(FALSE);
@@ -185,49 +216,8 @@ void CAnimationTool::OnLbnSelchangeImageList() //
 	if (iRectCursor == LB_ERR || iListCursor == LB_ERR)
 		return;
 	
-	SetImageView(m_wstrObject_Key.GetString(), RECT(),-1, m_Pic_Loaded, m_wstrState_Key.GetString());
+	CTexture_Manager::Get_Instance()->DrawPic(m_wstrObject_Key.GetString(), RECT(),-1, m_Pic_Loaded, m_wstrState_Key.GetString());
 	
-}
-
-
-//스테틱 박스에 이미지 출력을 위한 함수
-void CAnimationTool::SetImageView(CString Objectkey, const RECT& _rect, int Index,const CStatic& PictureBox, CString StateKey)
-{
-	CGraphic_Device::Get_Instance()->Render_Begin();
-	if (_rect.bottom == 0)
-		Index = -1;
-	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()
-		->Get_TexInfo(Objectkey.GetString(), StateKey.GetString(), (Index == -1) ? 0 : Index);
-	if (nullptr == pTexInfo)
-		return;
-	float fCenterX;
-	float fCenterY;
-	if (Index != -1)
-	{
-		fCenterX = float(((_rect.left + _rect.right) * 0.5f));
-		fCenterY = float(((_rect.top + _rect.bottom) * 0.5f));
-	}
-	else
-	{
-		fCenterX = float(pTexInfo->tImageInfo.Width >> 1);
-		fCenterY = float(pTexInfo->tImageInfo.Height >> 1);
-	}
-	D3DXMATRIX matScale, matTrans, matWorld;
-	if (Index != -1)
-	{
-		if(fCenterX > fCenterY)
-			D3DXMatrixScaling(&matScale, WINCX / (_rect.left + _rect.right), WINCX / (_rect.left + _rect.right), 0.f);
-		else
-			D3DXMatrixScaling(&matScale, WINCY / (_rect.top + _rect.bottom), WINCY / (_rect.top + _rect.bottom), 0.f);
-	}		
-	else
-		D3DXMatrixScaling(&matScale, float(WINCX) / (pTexInfo->tImageInfo.Width), float(WINCY) / (pTexInfo->tImageInfo.Height), 0.f);
-	D3DXMatrixTranslation(&matTrans, 400.f, 300.f, 0.f);
-	matWorld = matScale * matTrans;
-
-	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
-	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, (Index == -1) ? nullptr : &_rect, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
-	CGraphic_Device::Get_Instance()->Render_End(PictureBox.m_hWnd);
 }
 
 int CAnimationTool::DeleteListRectItemAndReName(UINT _index)
@@ -269,7 +259,8 @@ void CAnimationTool::OnBnClickedAddRect()
 	CString cstrRectName;
 	cstrRectName.Format(L"%02d RECT{%d,%d // %d,%d }", iter_find->second->vecRect.size()-1, m_lLeft, m_lTop, m_lRight, m_lBottom);
 	m_ListBoxRect.AddString(cstrRectName);
-
+	m_ListBoxRect.SetCurSel(m_ListBoxRect.GetTopIndex());
+	OnLbnSelchangeListAnimationRect();
 	m_lLeft = 0;
 	m_lTop = 0;
 	m_lRight = 0;
@@ -293,57 +284,63 @@ void CAnimationTool::OnBnClickedDeleteRect()
 void CAnimationTool::OnBnClickedSave()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	CFileDialog Dlg(FALSE,// FALSE가 다른이름으로 저장. 
-		L"dat",
-		L"*.dat",
-		OFN_OVERWRITEPROMPT);
-	TCHAR szFilePath[MAX_PATH]{};
 
-	GetCurrentDirectory(MAX_PATH, szFilePath);
-	PathRemoveFileSpec(szFilePath);
+	CString strFilePath = L"../Data/AnimationData.dat";
+	HANDLE hFile = CreateFile(strFilePath.GetString(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 
-	lstrcat(szFilePath, L"\\Data");
-	Dlg.m_ofn.lpstrInitialDir = szFilePath;
-	if (IDOK == Dlg.DoModal())
+	if (INVALID_HANDLE_VALUE == hFile)
 	{
-		CString strFilePath = Dlg.GetPathName();
-		HANDLE hFile = CreateFile(strFilePath.GetString(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+		CFileDialog Dlg(FALSE,// FALSE가 다른이름으로 저장. 
+			L"dat",
+			L"*.dat",
+			OFN_OVERWRITEPROMPT);
+		TCHAR szFilePath[MAX_PATH]{};
 
-		if (INVALID_HANDLE_VALUE == hFile)
-			return;
+		GetCurrentDirectory(MAX_PATH, szFilePath);
+		PathRemoveFileSpec(szFilePath);
 
-		//하나씩 저장 해야지. 폴문 돌면서 . 
-		DWORD dwbyte = 0;
-		DWORD dwStringSize = 0;
-		// 난 쓸수 있어. 너넨 쓰지마 . 
-		for (auto& rPair : m_mapAnima)
+		lstrcat(szFilePath, L"\\Data");
+		Dlg.m_ofn.lpstrInitialDir = szFilePath;
+		if (IDOK != Dlg.DoModal())
 		{
-
-			dwStringSize = (rPair.second->wstrObjectKey.GetLength() + 1) * sizeof(TCHAR);
-			WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-			WriteFile(hFile, rPair.second->wstrObjectKey.GetString(), dwStringSize, &dwbyte, nullptr);
-
-			dwStringSize = (rPair.second->wstrStateKey.GetLength() + 1) * sizeof(TCHAR);
-			WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-			WriteFile(hFile, rPair.second->wstrStateKey.GetString(), dwStringSize, &dwbyte, nullptr);
-
-			dwStringSize = (rPair.second->wstrFilePath.GetLength() + 1) * sizeof(TCHAR);
-			WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-			WriteFile(hFile, rPair.second->wstrFilePath.GetString(), dwStringSize, &dwbyte, nullptr);
-
-
-			WriteFile(hFile, &rPair.second->fPlay_Speed, sizeof(float), &dwbyte, nullptr);
-			WriteFile(hFile, &rPair.second->bLoop, sizeof(bool), &dwbyte, nullptr);
-
-			UINT iRectSize = rPair.second->vecRect.size();
-			WriteFile(hFile, &iRectSize, sizeof(UINT), &dwbyte, nullptr);
-			for (auto& rect : rPair.second->vecRect)
-			{
-				WriteFile(hFile, &rect, sizeof(RECT), &dwbyte, nullptr);
-			}
+			ERR_MSG(L"파일열기 실패");
+			return;
 		}
-		CloseHandle(hFile);
+		strFilePath = Dlg.GetPathName();
+		hFile = CreateFile(strFilePath.GetString(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 	}
+	
+	//하나씩 저장 해야지. 폴문 돌면서 . 
+	DWORD dwbyte = 0;
+	DWORD dwStringSize = 0;
+	// 난 쓸수 있어. 너넨 쓰지마 . 
+	for (auto& rPair : m_mapAnima)
+	{
+
+		dwStringSize = (rPair.second->wstrObjectKey.GetLength() + 1) * sizeof(TCHAR);
+		WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+		WriteFile(hFile, rPair.second->wstrObjectKey.GetString(), dwStringSize, &dwbyte, nullptr);
+
+		dwStringSize = (rPair.second->wstrStateKey.GetLength() + 1) * sizeof(TCHAR);
+		WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+		WriteFile(hFile, rPair.second->wstrStateKey.GetString(), dwStringSize, &dwbyte, nullptr);
+
+		dwStringSize = (rPair.second->wstrFilePath.GetLength() + 1) * sizeof(TCHAR);
+		WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+		WriteFile(hFile, rPair.second->wstrFilePath.GetString(), dwStringSize, &dwbyte, nullptr);
+
+
+		WriteFile(hFile, &rPair.second->fPlay_Speed, sizeof(float), &dwbyte, nullptr);
+		WriteFile(hFile, &rPair.second->bLoop, sizeof(bool), &dwbyte, nullptr);
+
+		UINT iRectSize = rPair.second->vecRect.size();
+		WriteFile(hFile, &iRectSize, sizeof(UINT), &dwbyte, nullptr);
+		for (auto& rect : rPair.second->vecRect)
+		{
+			WriteFile(hFile, &rect, sizeof(RECT), &dwbyte, nullptr);
+		}
+	}
+	CloseHandle(hFile);
 
 }
 
@@ -371,6 +368,7 @@ void CAnimationTool::OnBnClickedLoad()
 			return;
 		
 		strFilePath = Dlg.GetPathName();
+		hFile = CreateFile(strFilePath.GetString(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 	}
 	for (auto& rPair : m_mapAnima)
 		Safe_Delete(rPair.second);
@@ -512,11 +510,11 @@ void CAnimationTool::OnLbnSelchangeAnimation_List()
 	if(m_ListBoxRect.GetCount() != 0)
 		m_ListBoxRect.SetCurSel(0);
 
-	SetImageView(m_pSelectedAnimation->wstrObjectKey.GetString(), RECT(), -1, m_Pic_Loaded, m_pSelectedAnimation->wstrStateKey.GetString());
+	CTexture_Manager::Get_Instance()->DrawPic(m_pSelectedAnimation->wstrObjectKey.GetString(), RECT(), -1, m_Pic_Loaded, m_pSelectedAnimation->wstrStateKey.GetString());
 	if(m_ListBoxRect.GetCount() != 0)
-		SetImageView(m_pSelectedAnimation->wstrObjectKey.GetString(), RECT(), -1, m_Start_Image, m_pSelectedAnimation->wstrStateKey.GetString());
+		CTexture_Manager::Get_Instance()->DrawPic(m_pSelectedAnimation->wstrObjectKey.GetString(), RECT(), -1, m_Start_Image, m_pSelectedAnimation->wstrStateKey.GetString());
 	else
-		SetImageView(m_pSelectedAnimation->wstrObjectKey.GetString(), m_pSelectedAnimation->vecRect[0], 0, m_Start_Image, m_pSelectedAnimation->wstrStateKey.GetString());
+		CTexture_Manager::Get_Instance()->DrawPic(m_pSelectedAnimation->wstrObjectKey.GetString(), m_pSelectedAnimation->vecRect[0], 0, m_Start_Image, m_pSelectedAnimation->wstrStateKey.GetString());
 	OnLbnSelchangeListAnimationRect();
 
 	UpdateData(FALSE);
@@ -557,14 +555,13 @@ void CAnimationTool::OnBnClickedDeleteAnimationList()
 
 void CAnimationTool::OnTimer(UINT_PTR nIDEvent)
 {
-
-	if ((nIDEvent)<100)
+	if (m_TIMERHANDLE == nIDEvent)
 	{
-		SetImageView(m_pSelectedAnimation->wstrObjectKey, m_pSelectedAnimation->vecRect[m_iAnimationCount],m_iAnimationCount, m_Pic_Rect, m_pSelectedAnimation->wstrStateKey);
 		if (++m_iAnimationCount >= m_pSelectedAnimation->vecRect.size())
 			m_iAnimationCount = 0;
+		CTexture_Manager::Get_Instance()->DrawPic(m_pSelectedAnimation->wstrObjectKey, m_pSelectedAnimation->vecRect[m_iAnimationCount], m_iAnimationCount, m_Pic_Rect, m_pSelectedAnimation->wstrStateKey);
+		SetTimer(m_TIMERHANDLE, m_pSelectedAnimation->fPlay_Speed * 1000.f, NULL);
 	}
-
 	CDialog::OnTimer(nIDEvent);
 }
 
@@ -572,14 +569,19 @@ void CAnimationTool::OnTimer(UINT_PTR nIDEvent)
 void CAnimationTool::OnBnClickedPlay()
 {
 	UpdateData(TRUE);
-	SetTimer(m_TIMERHANDLE, m_iPlay_Speed, NULL);
+	if (m_bPlay)
+	{
+		KillTimer(m_TIMERHANDLE);
+		GetDlgItem(IDC_BUTTON16)->SetWindowText(L"Play");
+	}		
+	else
+	{
+		SetTimer(m_TIMERHANDLE, m_pSelectedAnimation->fPlay_Speed * 1000.f, NULL);
+		GetDlgItem(IDC_BUTTON16)->SetWindowText(L"Stop");
+	}
+		
+	m_bPlay = !m_bPlay;
 	UpdateData(FALSE);
-}
-
-
-void CAnimationTool::OnBnClickedStop()
-{
-	KillTimer(m_TIMERHANDLE);
 }
 
 
@@ -614,7 +616,7 @@ void CAnimationTool::OnLbnSelchangeListAnimationRect()
 
 	m_tRect = m_pSelectedAnimation->vecRect[iIndex];
 
-	SetImageView(m_pSelectedAnimation->wstrObjectKey.GetString(), m_pSelectedAnimation->vecRect[iIndex], iIndex, m_Pic_Rect, m_pSelectedAnimation->wstrStateKey.GetString());
+	CTexture_Manager::Get_Instance()->DrawPic(m_pSelectedAnimation->wstrObjectKey.GetString(), m_pSelectedAnimation->vecRect[iIndex], iIndex, m_Pic_Rect, m_pSelectedAnimation->wstrStateKey.GetString());
 
 
 	m_iRectIndex = iIndex;
@@ -632,7 +634,15 @@ void CAnimationTool::OnBnClickedButtonEditrect()
 	}
 	CString cstrRectName;
 	m_pSelectedAnimation->vecRect[iIndex] = m_tRect;
-	OnLbnSelchangeAnimation_List();
+	m_ListBoxRect.ResetContent();
+	int iRect = 0;
+	for (auto& rect : m_pSelectedAnimation->vecRect)
+	{
+		CString cstrRectName;
+		cstrRectName.Format(L"%02d RECT{%d,%d // %d,%d }", iRect++, rect.left, rect.top, rect.right, rect.bottom);
+		m_ListBoxRect.AddString(cstrRectName);
+	}
+	m_ListBoxRect.SetCurSel(iIndex);
 }
 
 
@@ -657,4 +667,20 @@ void CAnimationTool::OnEnKillfocusAnimationLeft()
 void CAnimationTool::OnEnKillfocusAnimationBottom()
 {
 	OnBnClickedButtonEditrect();
+}
+
+
+void CAnimationTool::OnBnClickedButtonEditInfo()
+{
+	int iAnimationSelected = m_Animation_ListBox.GetCurSel();
+	if (iAnimationSelected == LB_ERR)
+	{
+		ERR_MSG(L"수정할 anim을 선택해 주세요");
+	}
+
+	UpdateData(TRUE);
+	m_pSelectedAnimation->wstrStateKey = m_wstrState_Key;
+	m_pSelectedAnimation->fPlay_Speed = m_fPlay_Speed;
+	m_pSelectedAnimation->bLoop = m_Loop.GetCheck();
+	UpdateData(FALSE);
 }

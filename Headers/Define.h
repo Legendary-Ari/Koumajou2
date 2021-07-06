@@ -5,7 +5,7 @@
 #define ºÀ	0x02
 // 0000 0100
 #define °Ë	0x04
-#define OBJ_DEAD 1 
+#define OBJ_DESTROYED 1 
 #define OBJ_NOEVENT 0 
 #ifdef _AFX
 #define ERR_MSG(msg)		AfxMessageBox(msg)

@@ -210,18 +210,14 @@ void COptionView::OnCbnSelchangeComboOptionPrefab()
 void COptionView::OnEnKillfocusOptionActorname()
 {
 	auto& iter_find = m_pmapActorInfo->find(m_cstrActorName);
-	auto& iter_tree_find = m_pHierarchyView->m_mapTreeItem.find(m_cstrActorName);
 	UpdateData(TRUE);	
 	iter_find->second->wstrActorName = m_cstrActorName;
 	CTreeCtrl& tree = m_pHierarchyView->GetTreeCtrl();
 	tree.SetItemText(tree.GetSelectedItem(), m_cstrActorName);
 	ACTORINFO* pTempActorInfo = iter_find->second;
+
 	m_pmapActorInfo->erase(iter_find);
 	m_pmapActorInfo->emplace(m_cstrActorName, pTempActorInfo);
-	
-	CHierarchyView::TVI_TYPE type = iter_tree_find->second;
-	m_pHierarchyView->m_mapTreeItem.erase(iter_tree_find);
-	m_pHierarchyView->m_mapTreeItem.emplace(m_cstrActorName, type);
 	
 }
 

@@ -162,6 +162,45 @@ const TEXINFO * CTexture_Manager::Get_TexInfo(const wstring & wstrObjectKey, con
 	//return m_mapTexture[wstrObjectKey]->Get_TexInfo(wstrStateKey, dwIndex); 
 }
 
+void CTexture_Manager::DrawPic(CString Objectkey, const RECT & _rect, int Index, const CStatic & PictureBox, CString StateKey)
+{
+	CGraphic_Device::Get_Instance()->Render_Begin();
+	if (_rect.bottom == 0)
+		Index = -1;
+	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()
+		->Get_TexInfo(Objectkey.GetString(), StateKey.GetString(), (Index == -1) ? 0 : Index);
+	if (nullptr == pTexInfo)
+		return;
+	float fCenterX;
+	float fCenterY;
+	if (Index != -1)
+	{
+		fCenterX = float(((_rect.right - _rect.left)*0.5f));
+		fCenterY = float(((_rect.bottom - _rect.top) * 0.5f));
+	}
+	else
+	{
+		fCenterX = float(pTexInfo->tImageInfo.Width >> 1);
+		fCenterY = float(pTexInfo->tImageInfo.Height >> 1);
+	}
+	D3DXMATRIX matScale, matTrans, matWorld;
+	if (Index != -1)
+	{
+		if (fCenterX > fCenterY)
+			D3DXMatrixScaling(&matScale, WINCX / (_rect.right - _rect.left), WINCX / (_rect.right - _rect.left), 0.f);
+		else
+			D3DXMatrixScaling(&matScale, WINCY / (_rect.bottom - _rect.top), WINCY / (_rect.bottom - _rect.top), 0.f);
+	}
+	else
+		D3DXMatrixScaling(&matScale, float(WINCX) / (pTexInfo->tImageInfo.Width), float(WINCY) / (pTexInfo->tImageInfo.Height), 0.f);
+	D3DXMatrixTranslation(&matTrans, 400.f, 300.f, 0.f);
+	matWorld = matScale * matTrans;
+
+	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
+	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, (Index == -1) ? nullptr : &_rect, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
+	CGraphic_Device::Get_Instance()->Render_End(PictureBox.m_hWnd);
+}
+
 
 void CTexture_Manager::Release_Texture_Manager()
 {

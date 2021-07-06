@@ -20,7 +20,7 @@ HRESULT CStage::Ready_Scene()
 	//CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::BACKGROUND, pObject);
 	//pObject = nullptr;
 
-	CPrefab_Manager::Get_Instance()->SpawnObjectbyScene(CScene_Manager::SCENE_STAGE);
+	CPrefab_Manager::Get_Instance()->SpawnObjectbyScene(CScene_Manager::STAGE_1_1);
 
 
 	return S_OK;

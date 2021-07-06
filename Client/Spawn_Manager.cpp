@@ -6,6 +6,7 @@
 #include "BackGround.h"
 #include "Gui.h"
 #include "GameObject_Manager.h"
+#include "Enemy.h"
 
 CSpawn_Manager::CSpawn_Manager()
 {
@@ -16,37 +17,14 @@ CSpawn_Manager::~CSpawn_Manager()
 {
 }
 
-HRESULT CSpawn_Manager::Spawn(const wstring _wstrObjName, const ACTORINFO * _pPlacement, const OBJECTINFO * _pObjectInfo)
+HRESULT CSpawn_Manager::Spawn(const wstring _wstrObjName, const ACTORINFO * _pActorInfo, const OBJECTINFO * _pObjectInfo)
 {
-	CGameObject* pObject = nullptr;
-	if (_wstrObjName == L"Player")
+	wstring wstrPrefab = _pObjectInfo->wstrPrefabName;
+	if (wstrPrefab == L"Ruler_Body")
 	{
-		pObject = CPlayer::Create(_pObjectInfo, _pPlacement);
-		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)_pObjectInfo->eObjId, pObject);
-		pObject = nullptr;
+		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)_pObjectInfo->eObjId, CEnemy::Create(_pObjectInfo, _pActorInfo));
 	}
-	else if (_wstrObjName == L"Monster")
-	{
 
-	}
-	else if (!_pObjectInfo)
-	{
-		switch ((RENDERID::ID)_pPlacement->eRenderID)
-		{
-		case RENDERID::BACKGROUND:
-			pObject = CBackGround::Create(_pPlacement);
-			CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::BACKGROUND), pObject);
-			pObject = nullptr;
-			break;
-		case RENDERID::UI:
-			pObject = CGui::Create(_pPlacement);
-			CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::UI), pObject);
-			pObject = nullptr;
-			break;
-		default:
-			break;
-		}
-	}
 
 	return S_OK;
 }

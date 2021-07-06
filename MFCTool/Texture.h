@@ -11,6 +11,7 @@ public:
 	virtual RECT Get_Rect(const wstring& wstrStateKey = L"",
 		const DWORD dwIndex = 0)PURE;
 	virtual void Release_Texture() PURE; 
+	
 protected:
 	const TEXINFO*	m_pTexInfo;
 	// ObjectKey, StateKey

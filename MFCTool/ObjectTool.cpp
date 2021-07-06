@@ -24,6 +24,11 @@ CObjectTool::CObjectTool(CWnd* pParent /*=NULL*/)
 	, m_fObjMoveSpeed(0.f)
 	, m_bIsPlaying_DeathAnimation(false)
 	, m_iDeathAnimationIndex(0)
+	, m_lLeft(0)
+	, m_lTop(0)
+	, m_lRight(0)
+	, m_lBottom(0)
+	, m_pObjectInfoSelected(nullptr)
 {
 
 }
@@ -53,6 +58,13 @@ void CObjectTool::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO_BULLET_TYPE, m_BulletTypeSelectControl);
 	DDX_Control(pDX, IDC_LIST_OBJPIC, m_ListBox_ObjImage);
 	DDX_Control(pDX, IDC_COMBO_RENDERID, m_ComboRenderId);
+	DDX_Control(pDX, IDC_RADIO_STATIC, m_RadioImageType[0]);
+	DDX_Control(pDX, IDC_RADIO_ANIMATION, m_RadioImageType[1]);
+	DDX_Text(pDX, IDC_EDIT_OBJECT_LEFT, m_lLeft);
+	DDX_Text(pDX, IDC_EDIT_OBJECT_TOP, m_lTop);
+	DDX_Text(pDX, IDC_EDIT_OBJECT_RIGHT, m_lRight);
+	DDX_Text(pDX, IDC_EDIT_OBJECT_BOTTOM, m_lBottom);
+	DDX_Control(pDX, IDC_PIC_RECT, m_Pic_Rect);
 }
 
 void CObjectTool::Update_Group_Bullet()
@@ -91,6 +103,12 @@ BEGIN_MESSAGE_MAP(CObjectTool, CDialog)
 	ON_WM_TIMER()
 	ON_CBN_SELCHANGE(IDC_COMBO_OBJID, &CObjectTool::OnCbnSelchangeComboObjid)
 	ON_LBN_SELCHANGE(IDC_LIST_OBJPIC, &CObjectTool::OnLbnSelchangeListObjpic)
+	ON_BN_CLICKED(IDC_RADIO_STATIC, &CObjectTool::OnBnClickedRadioStatic)
+	ON_BN_CLICKED(IDC_RADIO_ANIMATION, &CObjectTool::OnBnClickedRadioAnimation)
+	ON_EN_KILLFOCUS(IDC_EDIT_OBJECT_TOP, &CObjectTool::OnEnKillfocusEditObjectTop)
+	ON_EN_KILLFOCUS(IDC_EDIT_OBJECT_LEFT, &CObjectTool::OnEnKillfocusEditObjectLeft)
+	ON_EN_KILLFOCUS(IDC_EDIT_OBJECT_RIGHT, &CObjectTool::OnEnKillfocusEditObjectRight)
+	ON_EN_KILLFOCUS(IDC_EDIT_OBJECT_BOTTOM, &CObjectTool::OnEnKillfocusEditObjectBottom)
 END_MESSAGE_MAP()
 
 
@@ -160,7 +178,7 @@ void CObjectTool::OnBnClickedAdd()
 		iBulletTypeIndex = 2;
 	}
 
-	OBJECTINFO*	pObjectData = new OBJECTINFO;
+	OBJECTINFO*	pObjectData = new OBJECTINFO{};
 	pObjectData->cstrName = m_cstrName;
 	pObjectData->fMaxHp = m_fMaxHp;
 	pObjectData->fAtk = m_fObjAtk;
@@ -191,19 +209,20 @@ void CObjectTool::OnBnClickedAdd()
 	}
 	if (iter_find != map.end())
 	{
-		pObjectData->cstrDeathAnimImage_ObjectKey = iter_find->second->wstrObjectKey;
-		pObjectData->cstrDeathAnimImage_StateKey = iter_find->second->wstrStateKey;
+		pObjectData->cstrIdleAnimImage_ObjectKey = iter_find->second->wstrObjectKey;
+		pObjectData->cstrIdleAnimImage_StateKey = iter_find->second->wstrStateKey;
 	}
 	else
 	{
-		pObjectData->cstrDeathAnimImage_ObjectKey = L"";
-		pObjectData->cstrDeathAnimImage_StateKey = L"";
+		pObjectData->cstrIdleAnimImage_ObjectKey = L"";
+		pObjectData->cstrIdleAnimImage_StateKey = L"";
 	}
 	
+	pObjectData->bIsSingle = m_RadioImageType[0].GetCheck();
 
-	//Bullet Data	
 	pObjectData->bDestructable = (bool)m_CheckBoxDestructable.GetCheck();
 	pObjectData->eBulletType = (OBJECTINFO::BULLET_TYPE)iBulletTypeIndex;
+	pObjectData->tRect = m_tRect;
 
 	auto& iter = m_mapObject.find(m_cstrName);
 	if (iter != m_mapObject.end())
@@ -259,16 +278,18 @@ void CObjectTool::OnLbnSelchangeObjectList()
 	if (iter == m_mapObject.end())
 		return;
 
-	OBJECTINFO* pObjectData = iter->second;
+	m_pObjectInfoSelected = iter->second;
 		
-	m_cstrName = pObjectData->cstrName;
-	m_fMaxHp = pObjectData->fMaxHp;
-	m_fObjAtk = pObjectData->fAtk;
-	m_fObjAtkRatio = pObjectData->fAtkRatio;
-	m_fObjMoveSpeed = pObjectData->fMoveSpeed;
-	m_ComboOBJID.SetCurSel(pObjectData->eObjId);
+	m_cstrName = m_pObjectInfoSelected->cstrName;
+	m_fMaxHp = m_pObjectInfoSelected->fMaxHp;
+	m_fObjAtk = m_pObjectInfoSelected->fAtk;
+	m_fObjAtkRatio = m_pObjectInfoSelected->fAtkRatio;
+	m_fObjMoveSpeed = m_pObjectInfoSelected->fMoveSpeed;
+	m_ComboOBJID.SetCurSel(m_pObjectInfoSelected->eObjId);
+	m_ComboRenderId.SetCurSel(m_pObjectInfoSelected->eRenderId);
+	m_tRect = m_pObjectInfoSelected->tRect;
 
-	int findIndex = m_ListBox_AnimList.FindStringExact(-1, pObjectData->cstrDeathAnimImage_ObjectKey + L"->" + pObjectData->cstrDeathAnimImage_StateKey);
+	int findIndex = m_ListBox_AnimList.FindStringExact(-1, m_pObjectInfoSelected->cstrIdleAnimImage_ObjectKey + L"->" + m_pObjectInfoSelected->cstrIdleAnimImage_StateKey);
 	if (findIndex != -1)
 	{
 		m_ListBox_AnimList.SetCurSel(findIndex);
@@ -276,7 +297,7 @@ void CObjectTool::OnLbnSelchangeObjectList()
 	}
 		
 
-	findIndex = m_ListBox_ObjImage.FindStringExact(-1, pObjectData->cstrObjectImage_ObjectKey);
+	findIndex = m_ListBox_ObjImage.FindStringExact(-1, m_pObjectInfoSelected->cstrObjectImage_ObjectKey);
 	if (findIndex != -1)
 	{
 		m_ListBox_ObjImage.SetCurSel(findIndex);
@@ -284,10 +305,19 @@ void CObjectTool::OnLbnSelchangeObjectList()
 	}
 		
 
-	m_BulletTypeSelectControl.SetCurSel(pObjectData->eBulletType);
-	m_CheckBoxDestructable.SetCheck(pObjectData->bDestructable);
-
+	m_BulletTypeSelectControl.SetCurSel(m_pObjectInfoSelected->eBulletType);
+	
+	m_CheckBoxDestructable.SetCheck(m_pObjectInfoSelected->bDestructable);
+	m_RadioImageType[0].SetCheck(m_pObjectInfoSelected->bIsSingle);
+	m_RadioImageType[1].SetCheck(!m_pObjectInfoSelected->bIsSingle);
+	if (m_pObjectInfoSelected->bIsSingle)
+		OnBnClickedRadioStatic();
+	else
+		OnBnClickedRadioAnimation();
 	Update_Group_Bullet();
+
+
+	CTexture_Manager::Get_Instance()->DrawPic(m_pObjectInfoSelected->cstrObjectImage_ObjectKey, m_pObjectInfoSelected->tRect, 0, m_PictureObject);
 
 	UpdateData(FALSE);
 }
@@ -346,7 +376,7 @@ void CObjectTool::OnBnClickedSave()
 		if (IDOK != Dlg.DoModal())
 			return;
 		strFilePath = Dlg.GetPathName();
-		
+		hFile = CreateFile(strFilePath.GetString(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 	}
 
 	DWORD dwbyte = 0;
@@ -367,20 +397,22 @@ void CObjectTool::OnBnClickedSave()
 		WriteFile(hFile, &strLen, sizeof(DWORD), &dwbyte, nullptr);
 		WriteFile(hFile, pObject->cstrObjectImage_Path.GetString(), sizeof(TCHAR) * strLen, &dwbyte, nullptr);
 
-		strLen = pObject->cstrDeathAnimImage_ObjectKey.GetLength() + 1;
+		strLen = pObject->cstrIdleAnimImage_ObjectKey.GetLength() + 1;
 		WriteFile(hFile, &strLen, sizeof(DWORD), &dwbyte, nullptr);
-		WriteFile(hFile, pObject->cstrDeathAnimImage_ObjectKey.GetString(), sizeof(TCHAR) * strLen, &dwbyte, nullptr);
+		WriteFile(hFile, pObject->cstrIdleAnimImage_ObjectKey.GetString(), sizeof(TCHAR) * strLen, &dwbyte, nullptr);
 
-		strLen = pObject->cstrDeathAnimImage_StateKey.GetLength() + 1;
+		strLen = pObject->cstrIdleAnimImage_StateKey.GetLength() + 1;
 		WriteFile(hFile, &strLen, sizeof(DWORD), &dwbyte, nullptr);
-		WriteFile(hFile, pObject->cstrDeathAnimImage_StateKey.GetString(), sizeof(TCHAR) * strLen, &dwbyte, nullptr);
+		WriteFile(hFile, pObject->cstrIdleAnimImage_StateKey.GetString(), sizeof(TCHAR) * strLen, &dwbyte, nullptr);
 
+		WriteFile(hFile, &pObject->bIsSingle, sizeof(bool), &dwbyte, nullptr);
 		WriteFile(hFile, &pObject->fMaxHp, sizeof(float), &dwbyte, nullptr);
 		WriteFile(hFile, &pObject->fAtk, sizeof(float), &dwbyte, nullptr);
 		WriteFile(hFile, &pObject->fAtkRatio, sizeof(float), &dwbyte, nullptr);
 		WriteFile(hFile, &pObject->fMoveSpeed, sizeof(float), &dwbyte, nullptr);
 		WriteFile(hFile, &pObject->eObjId, sizeof(BYTE), &dwbyte, nullptr);
 		WriteFile(hFile, &pObject->eRenderId, sizeof(BYTE), &dwbyte, nullptr);
+		WriteFile(hFile, &pObject->tRect, sizeof(RECT), &dwbyte, nullptr);
 		WriteFile(hFile, &pObject->bDestructable, sizeof(bool), &dwbyte, nullptr);
 		WriteFile(hFile, &pObject->eBulletType, sizeof(BYTE), &dwbyte, nullptr);
 	}
@@ -421,6 +453,7 @@ void CObjectTool::OnBnClickedButtonLoad()
 		if (IDOK != Dlg.DoModal())
 			return;
 		strFilePath = Dlg.GetPathName();
+		hFile = CreateFile(strFilePath.GetString(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 	}
 
 	for (auto& rPair : m_mapObject)
@@ -445,7 +478,7 @@ void CObjectTool::OnBnClickedButtonLoad()
 		if (dwbyte == 0)
 			break;
 
-		pObject = new OBJECTINFO;
+		pObject = new OBJECTINFO{};
 
 		pBuff = new TCHAR[strLen]{};
 		ReadFile(hFile, pBuff, sizeof(TCHAR) * strLen, &dwbyte, nullptr);
@@ -467,21 +500,23 @@ void CObjectTool::OnBnClickedButtonLoad()
 		ReadFile(hFile, &strLen, sizeof(DWORD), &dwbyte, nullptr);
 		pBuff = new TCHAR[strLen]{};
 		ReadFile(hFile, pBuff, sizeof(TCHAR) * strLen, &dwbyte, nullptr);
-		pObject->cstrDeathAnimImage_ObjectKey = pBuff;
+		pObject->cstrIdleAnimImage_ObjectKey = pBuff;
 		Safe_Delete(pBuff);
 
 		ReadFile(hFile, &strLen, sizeof(DWORD), &dwbyte, nullptr);
 		pBuff = new TCHAR[strLen]{};
 		ReadFile(hFile, pBuff, sizeof(TCHAR) * strLen, &dwbyte, nullptr);
-		pObject->cstrDeathAnimImage_StateKey = pBuff;
+		pObject->cstrIdleAnimImage_StateKey = pBuff;
 		Safe_Delete(pBuff);
 
+		ReadFile(hFile, &pObject->bIsSingle, sizeof(bool), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->fMaxHp, sizeof(float), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->fAtk, sizeof(float), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->fAtkRatio, sizeof(float), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->fMoveSpeed, sizeof(float), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->eObjId, sizeof(BYTE), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->eRenderId, sizeof(BYTE), &dwbyte, nullptr);
+		ReadFile(hFile, &pObject->tRect, sizeof(RECT), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->bDestructable, sizeof(bool), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->eBulletType, sizeof(BYTE), &dwbyte, nullptr);
 
@@ -572,6 +607,61 @@ void CObjectTool::OnBnClickedButtonObjPlaystop()
 	}
 }
 
+void CObjectTool::SetSingleVisibility(bool _bVisible)
+{
+	if (_bVisible)
+	{
+		GetDlgItem(IDC_GROUP_SINGLE)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_PIC_RECT)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_EDIT_OBJECT_TOP)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_EDIT_OBJECT_RIGHT)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_EDIT_OBJECT_LEFT)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_EDIT_OBJECT_BOTTOM)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_TEXT_TOP)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_TEXT_LEFT)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_TEXT_BOTTOM)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_TEXT_RIGHT)->ShowWindow(SW_SHOW);
+	}
+	else
+	{
+		GetDlgItem(IDC_GROUP_SINGLE)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_PIC_RECT)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_EDIT_OBJECT_TOP)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_EDIT_OBJECT_RIGHT)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_EDIT_OBJECT_LEFT)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_EDIT_OBJECT_BOTTOM)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_TEXT_TOP)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_TEXT_LEFT)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_TEXT_BOTTOM)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_TEXT_RIGHT)->ShowWindow(SW_HIDE);
+	}
+
+}
+
+void CObjectTool::SetMultiVisibility(bool _bVisible)
+{
+	if (_bVisible)
+	{
+		GetDlgItem(IDC_GROUP_MULTI)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_ANIM_PIC)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_TEXT_IDLEANIM)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_LIST3_OBJ)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_BUTTON_OBJLOADANIM)->ShowWindow(SW_SHOW);
+		GetDlgItem(IDC_BUTTON_OBJ_PLAYSTOP)->ShowWindow(SW_SHOW);
+
+	}
+	else
+	{
+		GetDlgItem(IDC_GROUP_MULTI)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_ANIM_PIC)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_TEXT_IDLEANIM)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_LIST3_OBJ)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_BUTTON_OBJLOADANIM)->ShowWindow(SW_HIDE);
+		GetDlgItem(IDC_BUTTON_OBJ_PLAYSTOP)->ShowWindow(SW_HIDE);
+
+	}
+}
+
 
 void CObjectTool::OnTimer(UINT_PTR nIDEvent)
 {
@@ -616,37 +706,14 @@ void CObjectTool::OnCbnSelchangeComboObjid()
 
 void CObjectTool::OnLbnSelchangeListObjpic()
 {
-	int iIndex = m_ListBox_ObjImage.GetCurSel();
 
-	if (iIndex == LB_ERR)
-	{
-		return;
-	}
-
-	CString cstrName;
-	m_ListBox_ObjImage.GetText(iIndex, cstrName);
-
-	CGraphic_Device::Get_Instance()->Render_Begin();
-	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()->Get_TexInfo(cstrName.GetString());
-	if (nullptr == pTexInfo)
-		return;
-	D3DXMATRIX matScale, matTrans, matWorld;
-	D3DXMatrixScaling(&matScale, WINCX / pTexInfo->tImageInfo.Width, WINCX / pTexInfo->tImageInfo.Height, 0.f);
-	D3DXMatrixTranslation(&matTrans, 400.f, 300.f, 0.f);
-	matWorld = matScale * matTrans;
-	float fCenterX = float(pTexInfo->tImageInfo.Width >> 1);
-	float fCenterY = float(pTexInfo->tImageInfo.Height >> 1);
-	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
-	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, nullptr, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
-
-	CGraphic_Device::Get_Instance()->Render_End(m_PictureObject.m_hWnd);
 }
 
 
 BOOL CObjectTool::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-
+	
 	CString cstrFormat;
 
 	m_ComboOBJID.ResetContent();
@@ -669,6 +736,122 @@ BOOL CObjectTool::OnInitDialog()
 
 	OnBnClickedButtonLoad();
 
+	m_RadioImageType[0].SetCheck(true);
+	m_ListBox_ObjectList.SetCurSel(0);
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
+}
+
+
+void CObjectTool::OnBnClickedRadioStatic()
+{
+	if (m_RadioImageType[0].GetCheck())
+	{
+		SetSingleVisibility(true);
+		SetMultiVisibility(false);
+		m_pObjectInfoSelected->bIsSingle = true;
+	}
+	else if (m_RadioImageType[1].GetCheck())
+	{
+		SetSingleVisibility(false);
+		SetMultiVisibility(true);
+		m_pObjectInfoSelected->bIsSingle = false;
+	}
+}
+
+
+void CObjectTool::OnBnClickedRadioAnimation()
+{
+	if (m_RadioImageType[0].GetCheck())
+	{
+		SetSingleVisibility(true);
+		SetMultiVisibility(false);
+		m_pObjectInfoSelected->bIsSingle = true;
+	}
+	else if (m_RadioImageType[1].GetCheck())
+	{
+		SetSingleVisibility(false);
+		SetMultiVisibility(true);
+		m_pObjectInfoSelected->bIsSingle = false;
+	}
+}
+
+
+void CObjectTool::OnEnKillfocusEditObjectTop()
+{
+	int iImage = m_ListBox_ObjImage.GetCurSel();
+	if (iImage == LB_ERR)
+	{
+		ERR_MSG(L"Image를 선택해주세요");
+		return;
+	}
+	CString cstrObjectKey;
+	m_ListBox_ObjImage.GetText(iImage, cstrObjectKey);
+
+	if (!m_pObjectInfoSelected)
+		return;
+	UpdateData(TRUE);
+	m_pObjectInfoSelected->tRect.top = m_tRect.top;
+	UpdateData(FALSE);
+	CTexture_Manager::Get_Instance()->DrawPic(cstrObjectKey, m_pObjectInfoSelected->tRect, 0, m_Pic_Rect);
+}
+
+
+void CObjectTool::OnEnKillfocusEditObjectLeft()
+{
+	int iImage = m_ListBox_ObjImage.GetCurSel();
+	if (iImage == LB_ERR)
+	{
+		ERR_MSG(L"Image를 선택해주세요");
+		return;
+	}
+	CString cstrObjectKey;
+	m_ListBox_ObjImage.GetText(iImage, cstrObjectKey);
+
+	if (!m_pObjectInfoSelected)
+		return;
+	UpdateData(TRUE);
+	m_pObjectInfoSelected->tRect.left = m_tRect.left;
+	UpdateData(FALSE);
+	CTexture_Manager::Get_Instance()->DrawPic(cstrObjectKey, m_pObjectInfoSelected->tRect, 0, m_Pic_Rect);
+}
+
+
+void CObjectTool::OnEnKillfocusEditObjectRight()
+{
+	int iImage = m_ListBox_ObjImage.GetCurSel();
+	if (iImage == LB_ERR)
+	{
+		ERR_MSG(L"Image를 선택해주세요");
+		return;
+	}
+	CString cstrObjectKey;
+	m_ListBox_ObjImage.GetText(iImage, cstrObjectKey);
+
+	if (!m_pObjectInfoSelected)
+		return;
+	UpdateData(TRUE);
+	m_pObjectInfoSelected->tRect.right = m_tRect.right;
+	UpdateData(FALSE);
+	CTexture_Manager::Get_Instance()->DrawPic(cstrObjectKey, m_pObjectInfoSelected->tRect, 0, m_Pic_Rect);
+}
+
+
+void CObjectTool::OnEnKillfocusEditObjectBottom()
+{
+	int iImage = m_ListBox_ObjImage.GetCurSel();
+	if (iImage == LB_ERR)
+	{
+		ERR_MSG(L"Image를 선택해주세요");
+		return;
+	}
+	CString cstrObjectKey;
+	m_ListBox_ObjImage.GetText(iImage, cstrObjectKey);
+
+	if (!m_pObjectInfoSelected)
+		return;
+	UpdateData(TRUE);
+	m_pObjectInfoSelected->tRect.bottom = m_tRect.bottom;
+	UpdateData(FALSE);
+	CTexture_Manager::Get_Instance()->DrawPic(cstrObjectKey, m_pObjectInfoSelected->tRect, 0, m_Pic_Rect);
 }

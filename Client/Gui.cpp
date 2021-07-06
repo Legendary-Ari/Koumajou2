@@ -27,15 +27,16 @@ CGameObject * CGui::Create(const ACTORINFO * _pPlacement)
 
 HRESULT CGui::Ready_GameObject()
 {
-	m_eRenderId = m_pPlacement->eRenderID;
+	m_eRenderId = (RENDERID::ID)m_pObjectInfo->eRenderId;
+	m_tInfo = m_pActorInfo->tInfo;
 
 	return S_OK;
 }
 
 int CGui::Update_GameObject()
 {
-	if (m_bDead)
-		return OBJ_DEAD;
+	if (m_bDestroyed)
+		return OBJ_DESTROYED;
 
 	return OBJ_NOEVENT;
 }
@@ -46,7 +47,7 @@ void CGui::Late_Update_GameObject()
 
 void CGui::Render_GameObject()
 {
-	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()->Get_TexInfo(m_pPlacement->wstrPrefabName);
+	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()->Get_TexInfo(m_pActorInfo->wstrPrefabName);
 	if (nullptr == pTexInfo)
 		return;
 	D3DXMATRIX matScale, matTrans, matRotZ, matWorld;
@@ -55,9 +56,9 @@ void CGui::Render_GameObject()
 	D3DXMatrixIdentity(&matScale);
 	D3DXMatrixIdentity(&matTrans);
 	D3DXMatrixIdentity(&matRotZ);
-	D3DXMatrixScaling(&matScale, m_pPlacement->m_tMatInfo.mat[MATID::SCALE].x, m_pPlacement->m_tMatInfo.mat[MATID::SCALE].y, 0.f);
-	D3DXMatrixRotationZ(&matRotZ, -D3DXToRadian(m_pPlacement->m_tMatInfo.mat[MATID::ROT].z));
-	D3DXMatrixTranslation(&matTrans, m_pPlacement->m_tMatInfo.mat[MATID::TRANS].x, m_pPlacement->m_tMatInfo.mat[MATID::TRANS].y, 0.f);
+	D3DXMatrixScaling(&matScale, m_tInfo.vSize.x, m_tInfo.vSize.y, 0.f);
+	D3DXMatrixRotationZ(&matRotZ, -D3DXToRadian(m_tInfo.fAngle));
+	D3DXMatrixTranslation(&matTrans, m_tInfo.vPos.x, m_tInfo.vPos.y, 0.f);
 	matWorld = matScale *matRotZ* matTrans;
 	float fCenterX = float(pTexInfo->tImageInfo.Width >> 1);
 	float fCenterY = float(pTexInfo->tImageInfo.Height >> 1);

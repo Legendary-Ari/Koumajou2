@@ -83,15 +83,45 @@ void CMFCToolView::OnDraw(CDC* /*pDC*/)
 
 	for (auto& rPair : m_pHierarchyView->m_mapActorInfo)
 	{
+		if (rPair.second->bIsFolder)
+			continue;
+
 		auto& iter = m_pmapPrefab->find(rPair.second->wstrPrefabName);
 		if (iter == m_pmapPrefab->end())
 		{
-			ERR_MSG(L"CMFCToolView::OnDraw 맵에 해당 키가 없다");
+			ERR_MSG(L"CMFCToolView::OnDraw 맵에 해당 키가 없습니다");
 			return;
 		}
-
+		ACTORINFO* pActorInfo = rPair.second;
+		OBJECTINFO* pObjectInfo = iter->second;
 		const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()
-			->Get_TexInfo(iter->second->cstrObjectImage_ObjectKey.GetString());
+			->Get_TexInfo(pObjectInfo->cstrObjectImage_ObjectKey.GetString());
+		if (!pTexInfo)
+		{
+			ERR_MSG(L"CMFCToolView::OnDraw Texture에 해당 키가 없습니다");
+			return;
+		}
+		float fCenterX;
+		float fCenterY;
+
+		RECT rect{};
+
+		if (pObjectInfo->bIsSingle)
+			rect = pObjectInfo->tRect;
+		else
+		{
+			auto& iter_Anim_find = m_pmapAnimation->find( pObjectInfo->cstrIdleAnimImage_ObjectKey );
+			if (iter_Anim_find == m_pmapAnimation->end())
+			{
+				ERR_MSG(L"Multi로 설정되어있으나 애니메이션을 찾지 못했습니다. MFCToolView::OnDraw");
+				return;
+			}
+			rect = iter_Anim_find->second->vecRect[0];
+		}
+			
+
+		fCenterX = float(((rect.right - rect.left)*0.5f));
+		fCenterY = float(((rect.bottom - rect.top) * 0.5f));
 
 		D3DXMATRIX matScale, matTrans, matRotZ, matWorld;
 
@@ -99,15 +129,13 @@ void CMFCToolView::OnDraw(CDC* /*pDC*/)
 		D3DXMatrixIdentity(&matScale);
 		D3DXMatrixIdentity(&matTrans);
 		D3DXMatrixIdentity(&matRotZ);
-		float fCenterX = float(pTexInfo->tImageInfo.Width >> 1);
-		float fCenterY = float(pTexInfo->tImageInfo.Height >> 1);
-		D3DXMatrixScaling(&matScale, rPair.second->tInfo.vSize.x, rPair.second->tInfo.vSize.y, 0.f);
-		D3DXMatrixRotationZ(&matRotZ, D3DXToRadian(-rPair.second->tInfo.fAngle));
-		D3DXMatrixTranslation(&matTrans, rPair.second->tInfo.vPos.x - GetScrollPos(SB_HORZ), rPair.second->tInfo.vPos.y - GetScrollPos(SB_VERT), 0.f);
+		D3DXMatrixScaling(&matScale, pActorInfo->tInfo.vSize.x, pActorInfo->tInfo.vSize.y, 0.f);
+		D3DXMatrixRotationZ(&matRotZ, D3DXToRadian(-pActorInfo->tInfo.fAngle));
+		D3DXMatrixTranslation(&matTrans, pActorInfo->tInfo.vPos.x - GetScrollPos(SB_HORZ), pActorInfo->tInfo.vPos.y - GetScrollPos(SB_VERT), 0.f);
 		matWorld = matScale *matRotZ* matTrans;
 
 		CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
-		CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, nullptr, &D3DXVECTOR3{ fCenterX,fCenterY,0.f }, nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
+		CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, &rect, &D3DXVECTOR3{ fCenterX,fCenterY,0.f }, nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
 	}
 
 	CGraphic_Device::Get_Instance()->Render_End(GetSafeHwnd());
@@ -165,6 +193,8 @@ void CMFCToolView::OnInitialUpdate()
 	//GetScrollPos()
 	g_hWND = m_hWnd; 
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd()); 
+	CForm* pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
+	m_pmapAnimation = &pForm->m_tAnimationTool.m_mapAnima;
 	RECT rcMain = {}; 
 	pMain->GetWindowRect(&rcMain);
 
@@ -183,7 +213,6 @@ void CMFCToolView::OnInitialUpdate()
 	pMain->SetWindowPos(nullptr, 0, 0, CLIENTCX + iGapX, CLIENTCY + iGapY, SWP_NOMOVE);
 
 	m_pHierarchyView = dynamic_cast<CHierarchyView*>(pMain->m_tRightSplitter.GetPane(0, 0));
-	CForm* pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
 	m_pmapPrefab = &(pForm->m_tObjectTool.m_mapObject);
 
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.

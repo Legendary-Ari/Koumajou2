@@ -49,14 +49,14 @@ typedef struct tagOBJECTINFO
 	CString cstrName;
 	CString cstrObjectImage_ObjectKey;
 	CString cstrObjectImage_Path;
-	CString cstrDeathAnimImage_ObjectKey;
-	CString cstrDeathAnimImage_StateKey;
+	CString cstrIdleAnimImage_ObjectKey;
+	CString cstrIdleAnimImage_StateKey;
 #else
 	wstring wstrPrefabName;
 	wstring wstrObjectImage_ObjectKey;
 	wstring wstrObjectImage_Path;
-	wstring wstrDeathAnimImage_ObjectKey;
-	wstring wstrDeathAnimImage_StateKey;
+	wstring cstrIdleAnimImage_ObjectKey;
+	wstring wstrIdleAnimImage_StateKey;
 #endif
 	float	fMaxHp;
 	float	fAtk;
@@ -64,6 +64,9 @@ typedef struct tagOBJECTINFO
 	float	fMoveSpeed;
 	BYTE	eObjId;
 	BYTE	eRenderId;
+	bool	bIsSingle;
+// IfSingle
+	RECT	tRect;
 //Bullet
 	bool	bDestructable;
 	BYTE	eBulletType;
@@ -95,16 +98,13 @@ typedef struct tagActorInfo
 {	
 
 	INFO	tInfo;
-	
+	bool	bIsFolder;
 #ifdef _AFX
 	CString wstrPrefabName;
-	CString wstrObjectKey;
-	CString	wstrFilePath;
 	CString wstrActorName;
+
 #else
 	wstring wstrPrefabName;
-	wstring wstrObjectKey;
-	wstring wstrFilePath;
 	wstring wstrActorName;
 #endif
 }ACTORINFO;

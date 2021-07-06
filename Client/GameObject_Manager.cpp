@@ -28,7 +28,7 @@ void CGameObject_Manager::Update_GameObject_Manager()
 		for (auto& iter = m_listGameObject[i].begin() ; iter != m_listGameObject[i].end() ; )
 		{
 			int iEvent = (*iter)->Update_GameObject(); 
-			if (OBJ_DEAD == iEvent)
+			if (OBJ_DESTROYED == iEvent)
 			{
 				Safe_Delete(*iter); 
 				iter = m_listGameObject[i].erase(iter); 

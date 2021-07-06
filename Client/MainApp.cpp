@@ -22,14 +22,10 @@ HRESULT CMainApp::Ready_MainApp()
 	if (FAILED(CGraphic_Device::Get_Instance()->Ready_Graphic_Device()))
 		goto ERR;
 
-	if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX,
-		L"../Texture/Stage/Terrain/Tile/Tile%d.png", L"Terrain", L"Tile", 38)))
-		goto ERR;
-
 	if (FAILED(CPrefab_Manager::Get_Instance()->Ready_Prefab_Manager()))
 		goto ERR;
 
-	CScene_Manager::Get_Instance()->Change_Scene_Manager(CScene_Manager::SCENE_STAGE);
+	CScene_Manager::Get_Instance()->Change_Scene_Manager(CScene_Manager::STAGE_1_1);
 	return S_OK;
 
 ERR:

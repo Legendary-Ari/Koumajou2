@@ -27,15 +27,15 @@ CGameObject * CBackGround::Create(const ACTORINFO * _pPlacement)
 
 HRESULT CBackGround::Ready_GameObject()
 {
-	m_eRenderId = m_pPlacement->eRenderID;
+	m_eRenderId = (RENDERID::ID)m_pObjectInfo->eRenderId;
 
 	return S_OK;
 }
 
 int CBackGround::Update_GameObject()
 {
-	if (m_bDead)
-		return OBJ_DEAD;
+	if (m_bDestroyed)
+		return OBJ_DESTROYED;
 
 	return OBJ_NOEVENT;
 }
@@ -46,25 +46,24 @@ void CBackGround::Late_Update_GameObject()
 
 void CBackGround::Render_GameObject()
 {
-	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()->Get_TexInfo(m_pPlacement->wstrPrefabName);
+	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()->Get_TexInfo(m_pActorInfo->wstrPrefabName);
 	if (nullptr == pTexInfo)
 		return;
 	D3DXMATRIX matScale, matTrans, matRotZ, matWorld;
-
 	D3DXVECTOR3 vScroll = CScroll_Manager::Get_Scroll();
-
 	//ÃÊ±âÈ­
 	D3DXMatrixIdentity(&matScale);
 	D3DXMatrixIdentity(&matTrans);
 	D3DXMatrixIdentity(&matRotZ);
+	D3DXMatrixScaling(&matScale, m_tInfo.vSize.x + vScroll.x, m_tInfo.vSize.y + vScroll.y, 0.f);
+	D3DXMatrixRotationZ(&matRotZ, -D3DXToRadian(m_tInfo.fAngle));
+	D3DXMatrixTranslation(&matTrans, m_tInfo.vPos.x, m_tInfo.vPos.y, 0.f);
+	matWorld = matScale *matRotZ* matTrans;
 	float fCenterX = float(pTexInfo->tImageInfo.Width >> 1);
 	float fCenterY = float(pTexInfo->tImageInfo.Height >> 1);
-	D3DXMatrixScaling(&matScale, m_pPlacement->m_tMatInfo.mat[MATID::SCALE].x, m_pPlacement->m_tMatInfo.mat[MATID::SCALE].y, 0.f);
-	D3DXMatrixRotationZ(&matRotZ, -D3DXToRadian(m_pPlacement->m_tMatInfo.mat[MATID::ROT].z));
-	D3DXMatrixTranslation(&matTrans, m_pPlacement->m_tMatInfo.mat[MATID::TRANS].x + vScroll.x, m_pPlacement->m_tMatInfo.mat[MATID::TRANS].y + vScroll.y, 0.f);
-	matWorld = matScale *matRotZ* matTrans;
 	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
 	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, nullptr, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
+
 }
 
 void CBackGround::Release_GameObject()

@@ -20,6 +20,10 @@ public:
 		 const wstring & wstrStateKey = L"",
 		 const DWORD dwIndex = 0);
 
+#ifdef _AFX
+	 void DrawPic(CString Objectkey, const RECT& _rect, int Index, const CStatic& PictureBox, CString StateKey = 0);
+#endif
+
 	 void Release_Texture_Manager() ;
 
 	 void Release_Texture(const wstring& wstrObjectKey);

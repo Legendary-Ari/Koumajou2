@@ -164,130 +164,133 @@ void CUiTool::SetImageView(CString Objectkey, const CStatic& PictureBox)
 // 툴뷰에 띄어줄 이미지의 메트릭스를 정의 
 void CUiTool::Render_UI()
 {
-	int iMax_Idx = m_Result_ListBox.GetCount();
-	if (0 == iMax_Idx)
-		return;
+	//int iMax_Idx = m_Result_ListBox.GetCount();
+	//if (0 == iMax_Idx)
+	//	return;
 
-	for (int i = 0; i < iMax_Idx; i++)
-	{
-		CString wstrName;
-		m_Result_ListBox.GetText(i, wstrName);
-		auto& iter = m_mapActorInfo.find(wstrName);
-		if (iter == m_mapActorInfo.end())
-		{
-			ERR_MSG(L"맵에 해당 키가 없다");
-			return;
-		}
+	//for (int i = 0; i < iMax_Idx; i++)
+	//{
+	//	CString wstrName;
+	//	m_Result_ListBox.GetText(i, wstrName);
+	//	auto& iter = m_mapActorInfo.find(wstrName);
+	//	if (iter == m_mapActorInfo.end())
+	//	{
+	//		ERR_MSG(L"맵에 해당 키가 없다");
+	//		return;
+	//	}
 
-		const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()
-			->Get_TexInfo(iter->second->wstrObjectKey.GetString());
+	//	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()
+	//		->Get_TexInfo(iter->second->wstrObjectKey.GetString());
 
-		D3DXMATRIX matScale, matTrans, matRotZ, matWorld;
+	//	D3DXMATRIX matScale, matTrans, matRotZ, matWorld;
 
-		//초기화
-		D3DXMatrixIdentity(&matScale);
-		D3DXMatrixIdentity(&matTrans);
-		D3DXMatrixIdentity(&matRotZ);
-		float fCenterX = float(pTexInfo->tImageInfo.Width >> 1);
-		float fCenterY = float(pTexInfo->tImageInfo.Height >> 1);
-		D3DXMatrixScaling(&matScale, iter->second->tInfo.vSize.x, iter->second->tInfo.vSize.y, 0.f);
-		D3DXMatrixRotationZ(&matRotZ, -D3DXToRadian(iter->second->tInfo.fAngle));
-		D3DXMatrixTranslation(&matTrans, iter->second->tInfo.vPos.x - m_pView->GetScrollPos(SB_HORZ), iter->second->tInfo.vPos.y - m_pView->GetScrollPos(SB_VERT), 0.f);
-		matWorld = matScale *matRotZ* matTrans;
+	//	//초기화
+	//	D3DXMatrixIdentity(&matScale);
+	//	D3DXMatrixIdentity(&matTrans);
+	//	D3DXMatrixIdentity(&matRotZ);
+	//	float fCenterX = float(pTexInfo->tImageInfo.Width >> 1);
+	//	float fCenterY = float(pTexInfo->tImageInfo.Height >> 1);
+	//	D3DXMatrixScaling(&matScale, iter->second->tInfo.vSize.x, iter->second->tInfo.vSize.y, 0.f);
+	//	D3DXMatrixRotationZ(&matRotZ, -D3DXToRadian(iter->second->tInfo.fAngle));
+	//	D3DXMatrixTranslation(&matTrans, iter->second->tInfo.vPos.x - m_pView->GetScrollPos(SB_HORZ), iter->second->tInfo.vPos.y - m_pView->GetScrollPos(SB_VERT), 0.f);
+	//	matWorld = matScale *matRotZ* matTrans;
 
-		CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
-		CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, nullptr, &D3DXVECTOR3{ fCenterX,fCenterY,0.f }, nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
+	//	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
+	//	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, nullptr, &D3DXVECTOR3{ fCenterX,fCenterY,0.f }, nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
 
 
-		if (i == m_iNowResultIdx)
-		{
-			if (m_bMatTrans || m_bMatScale)
-			{
-				D3DXVECTOR3 vPos = iter->second->tInfo.vPos;
-				vPos.x -= m_pView->GetScrollPos(SB_HORZ);
-				vPos.y -= m_pView->GetScrollPos(SB_VERT);
-				CGraphic_Device::Get_Instance()->Get_Sprite()->End();
-				D3DXVECTOR2 vLinePosX[3] = { { vPos.x,vPos.y }
-				,{ vPos.x + 100.f, vPos.y },{ vPos.x + 100.f - 10.f,vPos.y - 10.f } };
-				CGraphic_Device::Get_Instance()->Get_Line()->Draw(vLinePosX, 3, D3DCOLOR_ARGB(255, 255, 0, 0));
-				D3DXVECTOR2 vLinePosY[3] = { { vPos.x, vPos.y },{ vPos.x,vPos.y - 100.f },{ vPos.x - 10.f,vPos.y - 100 + 10.f } };
-				CGraphic_Device::Get_Instance()->Get_Line()->Draw(vLinePosY, 3, D3DCOLOR_ARGB(255, 0, 255, 0));
-				CGraphic_Device::Get_Instance()->Get_Sprite()->Begin(D3DXSPRITE_ALPHABLEND);
-			}
-			if (m_bMatRot)
-			{
-				D3DXVECTOR3 vPos = iter->second->tInfo.vPos;
-				vPos.x -= m_pView->GetScrollPos(SB_HORZ);
-				vPos.y -= m_pView->GetScrollPos(SB_VERT);
-				CGraphic_Device::Get_Instance()->Get_Sprite()->End();
-				float fAngle = 360.f;
-				D3DXVECTOR2	vCirclePos[31];
-				for (int i = 0; i < 30; i++)
-				{
-					vCirclePos[i].x = vPos.x + cosf(D3DXToRadian((360.f / 30.f)*i))*100.f;
-					vCirclePos[i].y = vPos.y - sinf(D3DXToRadian((360.f / 30.f)*i))*100.f;
-				}
-				vCirclePos[30] = vCirclePos[0];
-				CGraphic_Device::Get_Instance()->Get_Line()->Draw(vCirclePos, 31, D3DCOLOR_ARGB(255, 0, 255, 0));
-				CGraphic_Device::Get_Instance()->Get_Sprite()->Begin(D3DXSPRITE_ALPHABLEND);
-			}
+	//	if (i == m_iNowResultIdx)
+	//	{
+	//		if (m_bMatTrans || m_bMatScale)
+	//		{
+	//			D3DXVECTOR3 vPos = iter->second->tInfo.vPos;
+	//			vPos.x -= m_pView->GetScrollPos(SB_HORZ);
+	//			vPos.y -= m_pView->GetScrollPos(SB_VERT);
+	//			CGraphic_Device::Get_Instance()->Get_Sprite()->End();
+	//			D3DXVECTOR2 vLinePosX[3] = { { vPos.x,vPos.y }
+	//			,{ vPos.x + 100.f, vPos.y },{ vPos.x + 100.f - 10.f,vPos.y - 10.f } };
+	//			CGraphic_Device::Get_Instance()->Get_Line()->Draw(vLinePosX, 3, D3DCOLOR_ARGB(255, 255, 0, 0));
+	//			D3DXVECTOR2 vLinePosY[3] = { { vPos.x, vPos.y },{ vPos.x,vPos.y - 100.f },{ vPos.x - 10.f,vPos.y - 100 + 10.f } };
+	//			CGraphic_Device::Get_Instance()->Get_Line()->Draw(vLinePosY, 3, D3DCOLOR_ARGB(255, 0, 255, 0));
+	//			CGraphic_Device::Get_Instance()->Get_Sprite()->Begin(D3DXSPRITE_ALPHABLEND);
+	//		}
+	//		if (m_bMatRot)
+	//		{
+	//			D3DXVECTOR3 vPos = iter->second->tInfo.vPos;
+	//			vPos.x -= m_pView->GetScrollPos(SB_HORZ);
+	//			vPos.y -= m_pView->GetScrollPos(SB_VERT);
+	//			CGraphic_Device::Get_Instance()->Get_Sprite()->End();
+	//			float fAngle = 360.f;
+	//			D3DXVECTOR2	vCirclePos[31];
+	//			for (int i = 0; i < 30; i++)
+	//			{
+	//				vCirclePos[i].x = vPos.x + cosf(D3DXToRadian((360.f / 30.f)*i))*100.f;
+	//				vCirclePos[i].y = vPos.y - sinf(D3DXToRadian((360.f / 30.f)*i))*100.f;
+	//			}
+	//			vCirclePos[30] = vCirclePos[0];
+	//			CGraphic_Device::Get_Instance()->Get_Line()->Draw(vCirclePos, 31, D3DCOLOR_ARGB(255, 0, 255, 0));
+	//			CGraphic_Device::Get_Instance()->Get_Sprite()->Begin(D3DXSPRITE_ALPHABLEND);
+	//		}
 
-		}
-	}
+	//	}
+	//}
 }
 
 bool CUiTool::ColArrow(D3DXVECTOR3 vMouse, RECT rc)
 {
 	//에로우와 충돌 체크
-	CString wstrResultName;
-	int iresultIdx = m_Result_ListBox.GetCurSel();
-	m_Result_ListBox.GetText(iresultIdx, wstrResultName);
-
-	auto& iter_find = m_mapActorInfo.find(wstrResultName);
-
-	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()
-		->Get_TexInfo(iter_find->second->wstrObjectKey.GetString());
-
-
-	float fArrowLeft = iter_find->second->tInfo.vPos.x + (float)rc.left;
-	float fArrowTop = iter_find->second->tInfo.vPos.y + (float)rc.top;
-	float fArrowRight = iter_find->second->tInfo.vPos.x + (float)rc.right;
-	float fArrowBottom = iter_find->second->tInfo.vPos.y + (float)rc.bottom;
-	//{-5.f,-5.f,100.f,5.f}; X
-	//{-5.f,-100.f,5.f,5.f}; Y
-
-	//float fArrowLeft = iter_fine->second->tInfo.vPos.x-5.f ;
-	//float fArrowUp = iter_fine->second->tInfo.vPos.y - 5.f;
-	//float fArrowRight = iter_fine->second->tInfo.vPos.x +100.f;
-	//float fArrowBottom = iter_fine->second->tInfo.vPos.y +5.f;
-
-	RECT MouseColRect = { (LONG)vMouse.x - 5,(LONG)vMouse.y - 5,(LONG)vMouse.x + 5,(LONG)vMouse.y + 5 };
-	RECT ArrowXColRect = { (LONG)fArrowLeft,(LONG)fArrowTop,(LONG)fArrowRight,(LONG)fArrowBottom };
-	RECT rect = {};
-	if (IntersectRect(&rect, &MouseColRect, &ArrowXColRect))
-		return true;
+//	CString wstrResultName;
+//	int iresultIdx = m_Result_ListBox.GetCurSel();
+//	m_Result_ListBox.GetText(iresultIdx, wstrResultName);
+//
+//	auto& iter_find = m_mapActorInfo.find(wstrResultName);
+//
+//	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()
+//		->Get_TexInfo(iter_find->second->wstrObjectKey.GetString());
+//
+//
+//	float fArrowLeft = iter_find->second->tInfo.vPos.x + (float)rc.left;
+//	float fArrowTop = iter_find->second->tInfo.vPos.y + (float)rc.top;
+//	float fArrowRight = iter_find->second->tInfo.vPos.x + (float)rc.right;
+//	float fArrowBottom = iter_find->second->tInfo.vPos.y + (float)rc.bottom;
+//	//{-5.f,-5.f,100.f,5.f}; X
+//	//{-5.f,-100.f,5.f,5.f}; Y
+//
+//	//float fArrowLeft = iter_fine->second->tInfo.vPos.x-5.f ;
+//	//float fArrowUp = iter_fine->second->tInfo.vPos.y - 5.f;
+//	//float fArrowRight = iter_fine->second->tInfo.vPos.x +100.f;
+//	//float fArrowBottom = iter_fine->second->tInfo.vPos.y +5.f;
+//
+//	RECT MouseColRect = { (LONG)vMouse.x - 5,(LONG)vMouse.y - 5,(LONG)vMouse.x + 5,(LONG)vMouse.y + 5 };
+//	RECT ArrowXColRect = { (LONG)fArrowLeft,(LONG)fArrowTop,(LONG)fArrowRight,(LONG)fArrowBottom };
+//	RECT rect = {};
+//	if (IntersectRect(&rect, &MouseColRect, &ArrowXColRect))
+//		return true;
+//	return false;
+//
 	return false;
 }
 
 bool CUiTool::ColCircle(D3DXVECTOR3 vMouse)
 {
-	//에로우와 충돌 체크
-	CString wstrResultName;
-	int iresultIdx = m_Result_ListBox.GetCurSel();
-	m_Result_ListBox.GetText(iresultIdx, wstrResultName);
+	////에로우와 충돌 체크
+	//CString wstrResultName;
+	//int iresultIdx = m_Result_ListBox.GetCurSel();
+	//m_Result_ListBox.GetText(iresultIdx, wstrResultName);
 
-	auto& iter_find = m_mapActorInfo.find(wstrResultName);
+	//auto& iter_find = m_mapActorInfo.find(wstrResultName);
 
-	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()
-		->Get_TexInfo(iter_find->second->wstrObjectKey.GetString());
+	//const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()
+	//	->Get_TexInfo(iter_find->second->wstrObjectKey.GetString());
 
-	D3DXVECTOR3 vDis = vMouse - iter_find->second->tInfo.vPos;
-	float fDia = D3DXVec3Length(&vDis);
+	//D3DXVECTOR3 vDis = vMouse - iter_find->second->tInfo.vPos;
+	//float fDia = D3DXVec3Length(&vDis);
 
-	float fDis = float((100 + 10));
+	//float fDis = float((100 + 10));
 
-	if (fDia <= fDis)
-		return true;
+	//if (fDia <= fDis)
+	//	return true;
+	//return false;
 	return false;
 }
 
@@ -479,75 +482,75 @@ void CUiTool::OnBnClickedApply()
 
 void CUiTool::OnBnClickedAdd()
 {
-	UpdateData(TRUE);
-	ACTORINFO* tActorInfo = new ACTORINFO{};
-	//콤보 박스 선택
-	int iIdx = m_ComboID.GetCurSel();
-	CString strID;
-	m_ComboID.GetLBText(iIdx, strID);
+	//UpdateData(TRUE);
+	//ACTORINFO* tActorInfo = new ACTORINFO{};
+	////콤보 박스 선택
+	//int iIdx = m_ComboID.GetCurSel();
+	//CString strID;
+	//m_ComboID.GetLBText(iIdx, strID);
 
-	if (strID.IsEmpty())
-	{
-		ERR_MSG(L"아이디 선택안함");
-		return;
-	}
+	//if (strID.IsEmpty())
+	//{
+	//	ERR_MSG(L"아이디 선택안함");
+	//	return;
+	//}
 
-	//이미지 리스트 선택
-	int iImageIdx = m_ListBox_Image.GetCurSel();
-	if (LB_ERR == iImageIdx)
-	{
-		ERR_MSG(L"이미지 선택을 안했다");
-		return;
-	}
-	CString Image_Key;
-	m_ListBox_Image.GetText(iImageIdx, Image_Key);
+	////이미지 리스트 선택
+	//int iImageIdx = m_ListBox_Image.GetCurSel();
+	//if (LB_ERR == iImageIdx)
+	//{
+	//	ERR_MSG(L"이미지 선택을 안했다");
+	//	return;
+	//}
+	//CString Image_Key;
+	//m_ListBox_Image.GetText(iImageIdx, Image_Key);
 
-	//오브젝트 이름 가져오기
-	CString ObjKey = m_wstrObjID.GetString();
-	if (ObjKey.IsEmpty())
-	{
-		ERR_MSG(L"이름을 안적었다");
-		return;
-	}
-	//이전과 아이디가 다르면 뒤에 붙일 이름 인덱스 초기화
-	if (m_wstrID != ObjKey)
-		m_KeyIndex = 0;
-	m_wstrID = ObjKey;
+	////오브젝트 이름 가져오기
+	//CString ObjKey = m_wstrObjID.GetString();
+	//if (ObjKey.IsEmpty())
+	//{
+	//	ERR_MSG(L"이름을 안적었다");
+	//	return;
+	//}
+	////이전과 아이디가 다르면 뒤에 붙일 이름 인덱스 초기화
+	//if (m_wstrID != ObjKey)
+	//	m_KeyIndex = 0;
+	//m_wstrID = ObjKey;
 
 
-	auto& iter_find = m_mapFileInfo.find(Image_Key);
+	//auto& iter_find = m_mapFileInfo.find(Image_Key);
 
-	if (iter_find == m_mapFileInfo.end())
-	{
-		ERR_MSG(L"파일 맵에 이미지가 없다");
-		return;
-	}
+	//if (iter_find == m_mapFileInfo.end())
+	//{
+	//	ERR_MSG(L"파일 맵에 이미지가 없다");
+	//	return;
+	//}
 
-	tActorInfo->wstrObjectKey = iter_find->first;
-	tActorInfo->wstrFilePath = iter_find->second;
+	//tActorInfo->wstrObjectKey = iter_find->first;
+	//tActorInfo->wstrFilePath = iter_find->second;
 
-	//이름뒤에 인덱스를 붙여줌
-	//마지막 인덱스를 찾음
-	while (true)
-	{
-		CString index;
-		CString ObjName = m_wstrObjID.GetString();
-		index.Format(_T("_%d"), m_KeyIndex);
-		ObjName.Append(index);
-		auto& iter_mapPalce = m_mapActorInfo.find(ObjName);
+	////이름뒤에 인덱스를 붙여줌
+	////마지막 인덱스를 찾음
+	//while (true)
+	//{
+	//	CString index;
+	//	CString ObjName = m_wstrObjID.GetString();
+	//	index.Format(_T("_%d"), m_KeyIndex);
+	//	ObjName.Append(index);
+	//	auto& iter_mapPalce = m_mapActorInfo.find(ObjName);
 
-		if (iter_mapPalce == m_mapActorInfo.end())
-		{
-			tActorInfo->wstrActorName = ObjName;
-			m_mapActorInfo.emplace(ObjName, tActorInfo);
-			m_Result_ListBox.AddString(ObjName);
-			m_KeyIndex++;
-			break;
-		}
-		else
-			m_KeyIndex++;
-	}
-	UpdateData(FALSE);
+	//	if (iter_mapPalce == m_mapActorInfo.end())
+	//	{
+	//		tActorInfo->wstrActorName = ObjName;
+	//		m_mapActorInfo.emplace(ObjName, tActorInfo);
+	//		m_Result_ListBox.AddString(ObjName);
+	//		m_KeyIndex++;
+	//		break;
+	//	}
+	//	else
+	//		m_KeyIndex++;
+	//}
+	//UpdateData(FALSE);
 }
 
 
@@ -667,167 +670,167 @@ void CUiTool::OnBnClickedPrefabLoad()
 // 
 void CUiTool::OnBnClickedResultSave()
 {
-	CFileDialog Dlg(FALSE,// FALSE가 다른이름으로 저장. 
-		L"dat",
-		L"*.dat",
-		OFN_OVERWRITEPROMPT);
-	TCHAR szFilePath[MAX_PATH]{};
+	//CFileDialog Dlg(FALSE,// FALSE가 다른이름으로 저장. 
+	//	L"dat",
+	//	L"*.dat",
+	//	OFN_OVERWRITEPROMPT);
+	//TCHAR szFilePath[MAX_PATH]{};
 
-	GetCurrentDirectory(MAX_PATH, szFilePath);
-	PathRemoveFileSpec(szFilePath);
+	//GetCurrentDirectory(MAX_PATH, szFilePath);
+	//PathRemoveFileSpec(szFilePath);
 
-	lstrcat(szFilePath, L"\\Data");
-	Dlg.m_ofn.lpstrInitialDir = szFilePath;
-	if (IDOK == Dlg.DoModal())
-	{
-		CString strFilePath = Dlg.GetPathName();
-		HANDLE hFile = CreateFile(strFilePath.GetString(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+	//lstrcat(szFilePath, L"\\Data");
+	//Dlg.m_ofn.lpstrInitialDir = szFilePath;
+	//if (IDOK == Dlg.DoModal())
+	//{
+	//	CString strFilePath = Dlg.GetPathName();
+	//	HANDLE hFile = CreateFile(strFilePath.GetString(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 
-		if (INVALID_HANDLE_VALUE == hFile)
-			return;
+	//	if (INVALID_HANDLE_VALUE == hFile)
+	//		return;
 
-		DWORD dwbyte = 0;
-		DWORD dwStringSize = 0;
+	//	DWORD dwbyte = 0;
+	//	DWORD dwStringSize = 0;
 
-		for (auto& rPair : m_mapActorInfo)
-		{
+	//	for (auto& rPair : m_mapActorInfo)
+	//	{
 
-			WriteFile(hFile, &rPair.second->tInfo, sizeof(INFO), &dwbyte, nullptr);
+	//		WriteFile(hFile, &rPair.second->tInfo, sizeof(INFO), &dwbyte, nullptr);
 
-			//if (rPair.second->eRenderID == RENDERID::OBJECT)
-			//{
-			if (rPair.second->wstrPrefabName.IsEmpty())
-			{
-				dwStringSize = 0;
-				WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-				WriteFile(hFile, rPair.second->wstrPrefabName.GetString(), dwStringSize, &dwbyte, nullptr);
-			}
-			else
-			{
-				dwStringSize = (rPair.second->wstrPrefabName.GetLength() + 1) * sizeof(TCHAR);
-				WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-				WriteFile(hFile, rPair.second->wstrPrefabName.GetString(), dwStringSize, &dwbyte, nullptr);
-			}
-			dwStringSize = (rPair.second->wstrActorName.GetLength() + 1) * sizeof(TCHAR);
-			WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-			WriteFile(hFile, rPair.second->wstrActorName.GetString(), dwStringSize, &dwbyte, nullptr);
+	//		//if (rPair.second->eRenderID == RENDERID::OBJECT)
+	//		//{
+	//		if (rPair.second->wstrPrefabName.IsEmpty())
+	//		{
+	//			dwStringSize = 0;
+	//			WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+	//			WriteFile(hFile, rPair.second->wstrPrefabName.GetString(), dwStringSize, &dwbyte, nullptr);
+	//		}
+	//		else
+	//		{
+	//			dwStringSize = (rPair.second->wstrPrefabName.GetLength() + 1) * sizeof(TCHAR);
+	//			WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+	//			WriteFile(hFile, rPair.second->wstrPrefabName.GetString(), dwStringSize, &dwbyte, nullptr);
+	//		}
+	//		dwStringSize = (rPair.second->wstrActorName.GetLength() + 1) * sizeof(TCHAR);
+	//		WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+	//		WriteFile(hFile, rPair.second->wstrActorName.GetString(), dwStringSize, &dwbyte, nullptr);
 
-			dwStringSize = (rPair.second->wstrObjectKey.GetLength() + 1) * sizeof(TCHAR);
-			WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-			WriteFile(hFile, rPair.second->wstrObjectKey.GetString(), dwStringSize, &dwbyte, nullptr);
+	//		dwStringSize = (rPair.second->wstrObjectKey.GetLength() + 1) * sizeof(TCHAR);
+	//		WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+	//		WriteFile(hFile, rPair.second->wstrObjectKey.GetString(), dwStringSize, &dwbyte, nullptr);
 
-			dwStringSize = (rPair.second->wstrFilePath.GetLength() + 1) * sizeof(TCHAR);
-			WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-			WriteFile(hFile, rPair.second->wstrFilePath.GetString(), dwStringSize, &dwbyte, nullptr);
+	//		dwStringSize = (rPair.second->wstrFilePath.GetLength() + 1) * sizeof(TCHAR);
+	//		WriteFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+	//		WriteFile(hFile, rPair.second->wstrFilePath.GetString(), dwStringSize, &dwbyte, nullptr);
 
-		}
-		CloseHandle(hFile);
-	}
+	//	}
+	//	CloseHandle(hFile);
+	//}
 }
 
 
 void CUiTool::OnBnClickedResultLoad()
 {
-	CFileDialog Dlg(TRUE,// TRUE면 열기. 
-		L"dat",
-		L"*.dat",
-		OFN_OVERWRITEPROMPT);
+	//CFileDialog Dlg(TRUE,// TRUE면 열기. 
+	//	L"dat",
+	//	L"*.dat",
+	//	OFN_OVERWRITEPROMPT);
 
-	TCHAR szFilePath[MAX_PATH]{};
-	GetCurrentDirectory(MAX_PATH, szFilePath);
-	PathRemoveFileSpec(szFilePath);
-	lstrcat(szFilePath, L"\\Data");
-	Dlg.m_ofn.lpstrInitialDir = szFilePath;
+	//TCHAR szFilePath[MAX_PATH]{};
+	//GetCurrentDirectory(MAX_PATH, szFilePath);
+	//PathRemoveFileSpec(szFilePath);
+	//lstrcat(szFilePath, L"\\Data");
+	//Dlg.m_ofn.lpstrInitialDir = szFilePath;
 
-	if (IDOK == Dlg.DoModal())
-	{
-		CString strFilePath = Dlg.GetPathName();
-		HANDLE hFile = CreateFile(strFilePath.GetString(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+	//if (IDOK == Dlg.DoModal())
+	//{
+	//	CString strFilePath = Dlg.GetPathName();
+	//	HANDLE hFile = CreateFile(strFilePath.GetString(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 
-		if (INVALID_HANDLE_VALUE == hFile)
-			return;
-		for (auto& rPair : m_mapActorInfo)
-			Safe_Delete(rPair.second);
-		m_mapActorInfo.clear();
-		m_Result_ListBox.ResetContent();
+	//	if (INVALID_HANDLE_VALUE == hFile)
+	//		return;
+	//	for (auto& rPair : m_mapActorInfo)
+	//		Safe_Delete(rPair.second);
+	//	m_mapActorInfo.clear();
+	//	m_Result_ListBox.ResetContent();
 
-		DWORD dwbyte = 0;
-		DWORD dwStringSize = 0;
+	//	DWORD dwbyte = 0;
+	//	DWORD dwStringSize = 0;
 
-		TCHAR* pBuf = nullptr;
-		ACTORINFO* pACTORINFO = nullptr;
+	//	TCHAR* pBuf = nullptr;
+	//	ACTORINFO* pACTORINFO = nullptr;
 
-		while (true)
-		{
-			pACTORINFO = new ACTORINFO;
+	//	while (true)
+	//	{
+	//		pACTORINFO = new ACTORINFO;
 
-			ReadFile(hFile, &pACTORINFO->tInfo, sizeof(INFO), &dwbyte, nullptr);
-			if (0 == dwbyte)
-			{
-				Safe_Delete(pACTORINFO);
-				break;
-			}
+	//		ReadFile(hFile, &pACTORINFO->tInfo, sizeof(INFO), &dwbyte, nullptr);
+	//		if (0 == dwbyte)
+	//		{
+	//			Safe_Delete(pACTORINFO);
+	//			break;
+	//		}
 
-			ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-			pBuf = new TCHAR[dwStringSize];
-			ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-			pACTORINFO->wstrPrefabName = pBuf;
-			if (pBuf != NULL)
-				m_beIDObject = true;
-			Safe_Delete(pBuf);
+	//		ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+	//		pBuf = new TCHAR[dwStringSize];
+	//		ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
+	//		pACTORINFO->wstrPrefabName = pBuf;
+	//		if (pBuf != NULL)
+	//			m_beIDObject = true;
+	//		Safe_Delete(pBuf);
 
-			//	}
+	//		//	}
 
-			ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-			pBuf = new TCHAR[dwStringSize];
-			ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-			pACTORINFO->wstrActorName = pBuf;
-			Safe_Delete(pBuf);
+	//		ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+	//		pBuf = new TCHAR[dwStringSize];
+	//		ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
+	//		pACTORINFO->wstrActorName = pBuf;
+	//		Safe_Delete(pBuf);
 
-			ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-			pBuf = new TCHAR[dwStringSize];
-			ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-			pACTORINFO->wstrObjectKey = pBuf;
-			Safe_Delete(pBuf);
+	//		ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+	//		pBuf = new TCHAR[dwStringSize];
+	//		ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
+	//		pACTORINFO->wstrObjectKey = pBuf;
+	//		Safe_Delete(pBuf);
 
-			ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
-			pBuf = new TCHAR[dwStringSize];
-			ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
-			pACTORINFO->wstrFilePath = pBuf;
-			Safe_Delete(pBuf);
+	//		ReadFile(hFile, &dwStringSize, sizeof(DWORD), &dwbyte, nullptr);
+	//		pBuf = new TCHAR[dwStringSize];
+	//		ReadFile(hFile, pBuf, dwStringSize, &dwbyte, nullptr);
+	//		pACTORINFO->wstrFilePath = pBuf;
+	//		Safe_Delete(pBuf);
 
-			m_mapActorInfo.emplace(pACTORINFO->wstrActorName, pACTORINFO);
-			m_mapFileInfo.emplace(pACTORINFO->wstrObjectKey, pACTORINFO->wstrFilePath);
-			m_Result_ListBox.AddString(pACTORINFO->wstrActorName);
-			if (LB_ERR == m_ListBox_Image.FindStringExact(-1, pACTORINFO->wstrObjectKey))
-				m_ListBox_Image.AddString(pACTORINFO->wstrObjectKey);
-			//===============이미지 Insert==============
+	//		m_mapActorInfo.emplace(pACTORINFO->wstrActorName, pACTORINFO);
+	//		m_mapFileInfo.emplace(pACTORINFO->wstrObjectKey, pACTORINFO->wstrFilePath);
+	//		m_Result_ListBox.AddString(pACTORINFO->wstrActorName);
+	//		if (LB_ERR == m_ListBox_Image.FindStringExact(-1, pACTORINFO->wstrObjectKey))
+	//			m_ListBox_Image.AddString(pACTORINFO->wstrObjectKey);
+	//		//===============이미지 Insert==============
 
-			if (pACTORINFO->wstrObjectKey.GetString() != L"")
-			{
-				if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, {RECT()}, pACTORINFO->wstrFilePath.GetString(), pACTORINFO->wstrObjectKey.GetString())))
-				{
-					ERR_MSG(L"싱글 텍스쳐 실패");
-					return;
-				}
-			}
-		}
-		if (m_beIDObject)
-		{
-			CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd());
-			CForm*	pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
-			const map<CString, OBJECTINFO*>& map = pForm->m_tObjectTool.m_mapObject;
+	//		if (pACTORINFO->wstrObjectKey.GetString() != L"")
+	//		{
+	//			if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, {RECT()}, pACTORINFO->wstrFilePath.GetString(), pACTORINFO->wstrObjectKey.GetString())))
+	//			{
+	//				ERR_MSG(L"싱글 텍스쳐 실패");
+	//				return;
+	//			}
+	//		}
+	//	}
+	//	if (m_beIDObject)
+	//	{
+	//		CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd());
+	//		CForm*	pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
+	//		const map<CString, OBJECTINFO*>& map = pForm->m_tObjectTool.m_mapObject;
 
-			for (auto& rPair : map)
-			{
-				CString cstrTemp = rPair.second->cstrName;
-				if (m_Prefab_ListBox.FindStringExact(-1, cstrTemp.GetString()) == -1)
-					m_Prefab_ListBox.AddString(cstrTemp);
-			}
-		}
-		m_pView->Invalidate(FALSE);
-		CloseHandle(hFile);
-	}
+	//		for (auto& rPair : map)
+	//		{
+	//			CString cstrTemp = rPair.second->cstrName;
+	//			if (m_Prefab_ListBox.FindStringExact(-1, cstrTemp.GetString()) == -1)
+	//				m_Prefab_ListBox.AddString(cstrTemp);
+	//		}
+	//	}
+	//	m_pView->Invalidate(FALSE);
+	//	CloseHandle(hFile);
+	//}
 }
 
 
@@ -837,55 +840,55 @@ void CUiTool::OnLbnSelchangeResultList()
 	UpdateData(TRUE);
 
 
-	m_iNowResultIdx = m_Result_ListBox.GetCurSel();
-	CString wstrName;
-	m_Result_ListBox.GetText(m_iNowResultIdx, wstrName);
-	auto& iter = m_mapActorInfo.find(wstrName);
+	//m_iNowResultIdx = m_Result_ListBox.GetCurSel();
+	//CString wstrName;
+	//m_Result_ListBox.GetText(m_iNowResultIdx, wstrName);
+	//auto& iter = m_mapActorInfo.find(wstrName);
 
-	m_wstrObjID = iter->second->wstrActorName.GetString();
-	int idx = 0;
-	//switch (iter->second->eRenderID)
+	//m_wstrObjID = iter->second->wstrActorName.GetString();
+	//int idx = 0;
+	////switch (iter->second->eRenderID)
+	////{
+	////case RENDERID::BACKGROUND:
+	////	idx = m_ComboID.FindString(-1, L"BACKGROUND");
+	////	m_ComboID.SetCurSel(idx);
+	////	break;
+	////case RENDERID::OBJECT:
+	////	idx = m_ComboID.FindString(-1, L"OBJECT");
+	////	m_ComboID.SetCurSel(idx);
+	////	break;
+	////case RENDERID::UI:
+	////	idx = m_ComboID.FindString(-1, L"UI");
+	////	m_ComboID.SetCurSel(idx);
+	////	break;
+	////}
+	////그려지고있으면 매트릭스값 써줌
+	////if (iter->second->m_bRender)
+	////{
+	//	m_fPosX = iter->second->tInfo.vPos.x;
+	//	m_fPosY = iter->second->tInfo.vPos.y;
+	//	m_fRotZ = iter->second->tInfo.fAngle;
+	//	m_fScaleX = iter->second->tInfo.vSize.x;
+	//	m_fScaleY = iter->second->tInfo.vSize.y;
+	////}
+	////else
+	////{
+	////	m_fPosX = 0.f;
+	////	m_fPosY = 0.f;
+	////	m_fRotZ = 0.f;
+	////	m_fScaleX = 1.f;
+	////	m_fScaleY = 1.f;
+	////}
+	//int iImageIdx = 0;
+	////이미지 리스트박스에서 키값과 같은 스트링을 찾아 커서로 가리킴 
+	//if ((iImageIdx = m_ListBox_Image.FindStringExact(-1, iter->second->wstrObjectKey)) != LB_ERR)
 	//{
-	//case RENDERID::BACKGROUND:
-	//	idx = m_ComboID.FindString(-1, L"BACKGROUND");
-	//	m_ComboID.SetCurSel(idx);
-	//	break;
-	//case RENDERID::OBJECT:
-	//	idx = m_ComboID.FindString(-1, L"OBJECT");
-	//	m_ComboID.SetCurSel(idx);
-	//	break;
-	//case RENDERID::UI:
-	//	idx = m_ComboID.FindString(-1, L"UI");
-	//	m_ComboID.SetCurSel(idx);
-	//	break;
+	//	m_ListBox_Image.SetCurSel(iImageIdx);
 	//}
-	//그려지고있으면 매트릭스값 써줌
-	//if (iter->second->m_bRender)
-	//{
-		m_fPosX = iter->second->tInfo.vPos.x;
-		m_fPosY = iter->second->tInfo.vPos.y;
-		m_fRotZ = iter->second->tInfo.fAngle;
-		m_fScaleX = iter->second->tInfo.vSize.x;
-		m_fScaleY = iter->second->tInfo.vSize.y;
-	//}
-	//else
-	//{
-	//	m_fPosX = 0.f;
-	//	m_fPosY = 0.f;
-	//	m_fRotZ = 0.f;
-	//	m_fScaleX = 1.f;
-	//	m_fScaleY = 1.f;
-	//}
-	int iImageIdx = 0;
-	//이미지 리스트박스에서 키값과 같은 스트링을 찾아 커서로 가리킴 
-	if ((iImageIdx = m_ListBox_Image.FindStringExact(-1, iter->second->wstrObjectKey)) != LB_ERR)
-	{
-		m_ListBox_Image.SetCurSel(iImageIdx);
-	}
-	//이미지뷰 출력
-	CString wstrFileName;
-	m_ListBox_Image.GetText(iImageIdx, wstrFileName);
-	SetImageView(wstrFileName.GetString(), m_Picture);
+	////이미지뷰 출력
+	//CString wstrFileName;
+	//m_ListBox_Image.GetText(iImageIdx, wstrFileName);
+	//SetImageView(wstrFileName.GetString(), m_Picture);
 
 	//if (iter->second->eRenderID == RENDERID::OBJECT)
 	//{
@@ -914,13 +917,13 @@ void CUiTool::OnLbnSelchangeResultList()
 
 
 
-	m_bMatTrans = false;
-	m_bMatScale = false;
-	m_bMatRot = false;
-	m_bPicking = false;
-	m_wstrMatMod = L"Mouse";
-	m_pView->Invalidate(FALSE);
-	UpdateData(FALSE);
+	//m_bMatTrans = false;
+	//m_bMatScale = false;
+	//m_bMatRot = false;
+	//m_bPicking = false;
+	//m_wstrMatMod = L"Mouse";
+	//m_pView->Invalidate(FALSE);
+	//UpdateData(FALSE);
 }
 
 

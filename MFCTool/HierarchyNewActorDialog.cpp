@@ -75,7 +75,7 @@ void CHierarchyNewActorDialog::OnBnClickedNewactorOk()
 	else if (iSelectedIdx == 0)
 	{
 		UpdateData(TRUE);
-		pHierarchyView->CreateNewTreeItem(CHierarchyView::FOLDER, m_cstrTreeName, nullptr);
+		pHierarchyView->CreateNewTreeItem(true, m_cstrTreeName, nullptr);
 	}
 	else
 	{
@@ -88,7 +88,7 @@ void CHierarchyNewActorDialog::OnBnClickedNewactorOk()
 			return;
 		}
 		UpdateData(TRUE);
-		pHierarchyView->CreateNewTreeItem(CHierarchyView::ACTOR, m_cstrTreeName, iter_find->second);
+		pHierarchyView->CreateNewTreeItem(false, m_cstrTreeName, iter_find->second);
 	}
 	OnOK();
 }

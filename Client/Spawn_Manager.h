@@ -5,6 +5,6 @@ private:
 	CSpawn_Manager();
 	~CSpawn_Manager();
 public:
-	static HRESULT Spawn(const wstring _wstrObjName, const ACTORINFO* _pPlacement, const OBJECTINFO* _pObjectInfo);
+	static HRESULT Spawn(const wstring _wstrObjName, const ACTORINFO* _pActorInfo, const OBJECTINFO* _pObjectInfo);
 };
 

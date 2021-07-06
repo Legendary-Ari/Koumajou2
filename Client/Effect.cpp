@@ -41,8 +41,8 @@ HRESULT CEffect::Ready_GameObject()
 
 int CEffect::Update_GameObject()
 {
-	if (m_bDead)
-		return OBJ_DEAD;
+	if (m_bDestroyed)
+		return OBJ_DESTROYED;
 
 	m_fTimeStack += CTime_Manager::Get_Instance()->Get_DeltaTime();
 	if (m_pAnimationInfo->fPlay_Speed <= m_fTimeStack)
@@ -50,11 +50,11 @@ int CEffect::Update_GameObject()
 		m_fTimeStack = 0.f;
 		++m_iCurFrame;
 
-		if (m_pAnimationInfo->iMax_Index < m_iCurFrame)
+		if (m_pAnimationInfo->vecRect.size() < m_iCurFrame)
 		{
 			m_iCurFrame = 0;
 			if (!m_pAnimationInfo->bLoop)
-				return OBJ_DEAD;
+				return OBJ_DESTROYED;
 		}
 			
 	}
@@ -81,7 +81,7 @@ void CEffect::Render_GameObject()
 	float fCenterX = float(pTexInfo->tImageInfo.Width >> 1);
 	float fCenterY = float(pTexInfo->tImageInfo.Height >> 1);
 	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
-	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, nullptr, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
+	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, &m_pAnimationInfo->vecRect[m_iCurFrame], &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
 
 }
 

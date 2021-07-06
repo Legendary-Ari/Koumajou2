@@ -16,6 +16,8 @@ IMPLEMENT_DYNCREATE(CHierarchyView, CTreeView)
 CHierarchyView::CHierarchyView()
 	:m_bDraging(false)
 	, m_bDestroying(false)
+	, m_iStageFirstIdx(1)
+	, m_iStageSecondIdx(1)
 	//,ID_HIERARCHY_EDIT_NAME(5001)
 	//,ID_HIERARCHY_DELETE(5002)
 {
@@ -68,7 +70,7 @@ void CHierarchyView::Dump(CDumpContext& dc) const
 
 // CHierarchyView 메시지 처리기입니다.
 
-void CHierarchyView::CreateNewTreeItem(TVI_TYPE _type, CString & _cstrName, OBJECTINFO * _pPrefab/* = nullptr */)
+void CHierarchyView::CreateNewTreeItem(bool _bIsFolder, CString & _cstrName, OBJECTINFO * _pPrefab/* = nullptr */)
 {
 	
 	if (_cstrName.IsEmpty())
@@ -82,9 +84,9 @@ void CHierarchyView::CreateNewTreeItem(TVI_TYPE _type, CString & _cstrName, OBJE
 			CString ObjName = _cstrName.GetString();
 			cstrIndex.Format(_T("_%d"), i);
 			ObjName.Append(cstrIndex);
-			auto& iter_mapPalce = m_mapTreeItem.find(ObjName);
+			auto& iter_mapPalce = m_mapActorInfo.find(ObjName);
 
-			if (iter_mapPalce == m_mapTreeItem.end())
+			if (iter_mapPalce == m_mapActorInfo.end())
 			{
 				_cstrName = ObjName;
 				break;
@@ -93,7 +95,7 @@ void CHierarchyView::CreateNewTreeItem(TVI_TYPE _type, CString & _cstrName, OBJE
 				i++;
 		}
 	}
-	else if (m_mapTreeItem.find(_cstrName) != m_mapTreeItem.end())
+	else if (m_mapActorInfo.find(_cstrName) != m_mapActorInfo.end())
 	{
 		int i = 0;
 		while (true)
@@ -103,9 +105,9 @@ void CHierarchyView::CreateNewTreeItem(TVI_TYPE _type, CString & _cstrName, OBJE
 			CString ObjName = _cstrName.GetString();
 			cstrIndex.Format(_T("_%d"), i);
 			ObjName.Append(cstrIndex);
-			auto& iter_mapPalce = m_mapTreeItem.find(ObjName);
+			auto& iter_mapPalce = m_mapActorInfo.find(ObjName);
 
-			if (iter_mapPalce == m_mapTreeItem.end())
+			if (iter_mapPalce == m_mapActorInfo.end())
 			{
 				_cstrName = ObjName;
 				break;
@@ -114,15 +116,19 @@ void CHierarchyView::CreateNewTreeItem(TVI_TYPE _type, CString & _cstrName, OBJE
 				i++;
 		}
 	}
-	if (_type == CHierarchyView::ACTOR)
+	if (_bIsFolder)
+	{
+		InsertNewEmptyActorToMap(_cstrName, nullptr);
+	}
+	else
 	{
 		InsertNewEmptyActorToMap(_cstrName, _pPrefab);
 	}
 		
-	InsertTreeItem(_type, _cstrName);
+	InsertTreeItem(_bIsFolder, _cstrName);
 }
 
-void CHierarchyView::InsertTreeItem(TVI_TYPE _type, CString& _cstrName)
+void CHierarchyView::InsertTreeItem(bool _bIsFolder, CString& _cstrName)
 {
 	CTreeCtrl& tree = GetTreeCtrl();
 	HTREEITEM selectedItem = tree.GetSelectedItem();
@@ -133,33 +139,223 @@ void CHierarchyView::InsertTreeItem(TVI_TYPE _type, CString& _cstrName)
 	tvInsert.hInsertAfter = TVI_SORT;
 	tvInsert.item.pszText = _cstrName.GetBuffer();
 	
-	switch (_type)
+	if(_bIsFolder)
 	{
-	case CHierarchyView::FOLDER:
+
 		tvInsert.item.iImage = 0;
 		tvInsert.item.iSelectedImage = 0;
-		break;
-	case CHierarchyView::ACTOR:
+	}
+	else
+	{
 		tvInsert.item.iImage = 1;
 		tvInsert.item.iSelectedImage = 1;
-		break;
-	default:
-		break;
 	}
 
-	m_mapTreeItem.emplace(_cstrName,_type);
 	tree.InsertItem(&tvInsert);
 }
 
 void CHierarchyView::InsertNewEmptyActorToMap(CString & _cstrName, OBJECTINFO * _pPrefab)
 {
 	ACTORINFO* pActorInfo = new ACTORINFO{};
-	pActorInfo->tInfo.vPos = { 400.f + m_pView->GetScrollPos(SB_HORZ), 300.f + m_pView->GetScrollPos(SB_VERT), 0.f };
-	pActorInfo->tInfo.vSize = { 1.f, 1.f, 0.f };
+	if (_pPrefab)
+	{
+		pActorInfo->tInfo.vPos = { 400.f + m_pView->GetScrollPos(SB_HORZ), 300.f + m_pView->GetScrollPos(SB_VERT), 0.f };
+		pActorInfo->tInfo.vSize = { 1.f, 1.f, 0.f };
+		pActorInfo->wstrPrefabName = _pPrefab->cstrName;
+		pActorInfo->bIsFolder = false;
+	}
+	else
+	{
+		pActorInfo->bIsFolder = true;
+	}
 	pActorInfo->wstrActorName = _cstrName;
-	pActorInfo->wstrPrefabName = _pPrefab->cstrName;
 	m_mapActorInfo.emplace(_cstrName, pActorInfo);
 	m_pView->Invalidate(FALSE);
+}
+
+void CHierarchyView::SaveTreeItems()
+{
+	CString strFilePath;
+	strFilePath.Format( _T("../Data/TreeItem %02d-%02d.dat"), m_iStageFirstIdx, m_iStageSecondIdx);
+	HANDLE hFile = CreateFile(strFilePath.GetString(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+	if (INVALID_HANDLE_VALUE == hFile)
+	{
+		// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+		CFileDialog Dlg(FALSE,// FALSE가 다른이름으로 저장. 
+			L"dat",
+			strFilePath,
+			OFN_OVERWRITEPROMPT);
+
+		TCHAR szFilePath[MAX_PATH]{};
+
+		GetCurrentDirectory(MAX_PATH, szFilePath);
+		PathRemoveFileSpec(szFilePath);
+
+		lstrcat(szFilePath, L"\\Data");
+		//PathCombine(szFilePath, szFilePath, L"Data"); 
+		Dlg.m_ofn.lpstrInitialDir = szFilePath;
+		if (IDOK != Dlg.DoModal())
+			return;
+		strFilePath = Dlg.GetPathName();
+		hFile = CreateFile(strFilePath.GetString(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+	}
+
+
+	// 저장 시작
+
+	DWORD dwbyte = 0;
+	DWORD strLen;
+	
+	WriteFile(hFile, &m_iStageFirstIdx, sizeof(UINT), &dwbyte, nullptr);
+	WriteFile(hFile, &m_iStageSecondIdx, sizeof(UINT), &dwbyte, nullptr);
+	CTreeCtrl& tree = GetTreeCtrl();
+	HTREEITEM curItem = m_RootTreeItem;
+
+	tree.Expand(curItem, TVE_EXPAND);
+	HTREEITEM childItem = tree.GetNextItem(curItem, TVGN_CHILD);
+	while (childItem != NULL)
+	{
+		childItem = tree.GetNextItem(childItem, TVGN_NEXT);
+		tree.Expand(childItem, TVE_EXPAND);
+	}
+	stack<HTREEITEM> stackParentItem;
+	for (UINT i=0; i<m_mapActorInfo.size(); ++i)
+	{
+		if (tree.ItemHasChildren(curItem))
+		{
+			stackParentItem.emplace(curItem);
+			curItem = tree.GetNextItem(curItem, TVGN_CHILD);
+		}
+		else
+		{
+			curItem = tree.GetNextItem(curItem, TVGN_NEXT);
+			if (curItem == NULL)
+			{
+				curItem = tree.GetNextItem(stackParentItem.top(), TVGN_NEXT);
+				stackParentItem.pop();
+			}
+		}
+		CString cstr = tree.GetItemText(curItem);
+		auto& iter_find = m_mapActorInfo.find(cstr);
+		ACTORINFO* pActorInfo = iter_find->second;
+		strLen = pActorInfo->wstrActorName.GetLength() + 1;
+		WriteFile(hFile, &strLen, sizeof(DWORD), &dwbyte, nullptr);
+		WriteFile(hFile, pActorInfo->wstrActorName.GetString(), sizeof(TCHAR) * strLen, &dwbyte, nullptr);
+
+		strLen = pActorInfo->wstrPrefabName.GetLength() + 1;
+		WriteFile(hFile, &strLen, sizeof(DWORD), &dwbyte, nullptr);
+		WriteFile(hFile, pActorInfo->wstrPrefabName.GetString(), sizeof(TCHAR) * strLen, &dwbyte, nullptr);
+
+
+		WriteFile(hFile, &pActorInfo->bIsFolder, sizeof(bool), &dwbyte, nullptr);
+		WriteFile(hFile, &pActorInfo->tInfo, sizeof(INFO), &dwbyte, nullptr);
+
+	}
+	CloseHandle(hFile);
+}
+
+void CHierarchyView::LoadTreeItems(UINT _iStageFirst, UINT _iStageSecond)
+{
+	CString strFilePath;
+	strFilePath.Format(_T("../Data/TreeItem %02d-%02d.dat"), _iStageFirst, _iStageSecond);
+	HANDLE hFile = CreateFile(strFilePath.GetString(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+	if (INVALID_HANDLE_VALUE == hFile)
+	{
+		// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+		CFileDialog Dlg(FALSE,// FALSE가 다른이름으로 저장. 
+			L"dat",
+			strFilePath,
+			OFN_OVERWRITEPROMPT);
+
+		TCHAR szFilePath[MAX_PATH]{};
+
+		GetCurrentDirectory(MAX_PATH, szFilePath);
+		PathRemoveFileSpec(szFilePath);
+
+		lstrcat(szFilePath, L"\\Data");
+		//PathCombine(szFilePath, szFilePath, L"Data"); 
+		Dlg.m_ofn.lpstrInitialDir = szFilePath;
+		if (IDOK != Dlg.DoModal())
+			return;
+		strFilePath = Dlg.GetPathName();
+		hFile = CreateFile(strFilePath.GetString(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+	}
+
+	for (auto& rPair : m_mapActorInfo)
+		Safe_Delete(rPair.second);
+	m_mapActorInfo.clear();
+	CTreeCtrl& tree = GetTreeCtrl();
+	// 로드 시작
+
+	DWORD dwbyte = 0;
+	DWORD strLen;
+
+	TCHAR *pBuff;
+	UINT uiTemp = m_iStageFirstIdx;
+	HTREEITEM tFolderItem = m_RootTreeItem;
+	ReadFile(hFile, &m_iStageFirstIdx, sizeof(UINT), &dwbyte, nullptr);
+	if (dwbyte == 0)
+	{
+		m_iStageFirstIdx = uiTemp;
+		ERR_MSG(L"읽을거리 없음");
+		return;
+	}
+	ReadFile(hFile, &m_iStageSecondIdx, sizeof(UINT), &dwbyte, nullptr);
+	ACTORINFO* pActorInfo = nullptr;
+	while (true)
+	{
+
+		ReadFile(hFile, &strLen, sizeof(DWORD), &dwbyte, nullptr);
+
+		if (dwbyte == 0)
+			break;
+
+		pActorInfo = new ACTORINFO{};
+		pBuff = new TCHAR[strLen]{};
+		ReadFile(hFile, pBuff, sizeof(TCHAR) * strLen, &dwbyte, nullptr);
+		pActorInfo->wstrActorName = pBuff;
+		Safe_Delete(pBuff);
+
+		ReadFile(hFile, &strLen, sizeof(DWORD), &dwbyte, nullptr);
+		pBuff = new TCHAR[strLen]{};		
+		ReadFile(hFile, pBuff, sizeof(TCHAR) * strLen, &dwbyte, nullptr);
+		pActorInfo->wstrPrefabName = pBuff;
+		Safe_Delete(pBuff);
+
+		ReadFile(hFile, &pActorInfo->bIsFolder, sizeof(bool), &dwbyte, nullptr);
+		ReadFile(hFile, &pActorInfo->tInfo, sizeof(INFO), &dwbyte, nullptr);
+
+		m_mapActorInfo.emplace(pActorInfo->wstrActorName, pActorInfo);
+
+		TVINSERTSTRUCT tvInsert;
+
+		tvInsert.hParent = (pActorInfo->bIsFolder && tFolderItem != NULL) ? m_RootTreeItem : tFolderItem;
+		tvInsert.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE;
+		tvInsert.hInsertAfter = TVI_SORT;
+		tvInsert.item.pszText = pActorInfo->wstrActorName.GetBuffer();
+
+		if (pActorInfo->bIsFolder)
+		{
+			tvInsert.item.iImage = 0;
+			tvInsert.item.iSelectedImage = 0;
+			tFolderItem;
+		}
+		else
+		{
+			tvInsert.item.iImage = 1;
+			tvInsert.item.iSelectedImage = 1;
+		}
+
+		HTREEITEM tInsertedItem = tree.InsertItem(&tvInsert);
+		if (pActorInfo->bIsFolder)
+		{
+			tFolderItem = tInsertedItem;
+		}
+
+	}
+	CloseHandle(hFile);
 }
 
 void CHierarchyView::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
@@ -173,10 +369,10 @@ void CHierarchyView::OnTvnSelchanged(NMHDR *pNMHDR, LRESULT *pResult)
 	CString cstrSelectedTree = tree.GetItemText(pNMTreeView->itemNew.hItem);
 	if (cstrSelectedTree == L"Root")
 		return;
-	auto& iter_find = m_mapTreeItem.find(cstrSelectedTree);
-	if (iter_find != m_mapTreeItem.end())
+	auto& iter_find = m_mapActorInfo.find(cstrSelectedTree);
+	if (iter_find != m_mapActorInfo.end())
 	{
-		if(iter_find->second == ACTOR)
+		if(iter_find->second->bIsFolder == false)
 			m_pOptionView->OnHirerachyTreeCtrlSelectChanged(tree.GetItemText(pNMTreeView->itemNew.hItem));
 		else
 			m_pOptionView->OnHirerachyTreeCtrlSelectChanged(nullptr);
@@ -278,8 +474,7 @@ void CHierarchyView::OnInitialUpdate()
 	tree.SetImageList(&m_ImageList, TVSIL_NORMAL);
 
 	m_RootTreeItem = tree.InsertItem(L"Root", 1, 1, TVI_ROOT, TVI_SORT);
-	CreateNewTreeItem(FOLDER, CString(_T("자식1")));
-	CreateNewTreeItem(FOLDER, CString(_T("자식2")));
+	LoadTreeItems(1, 1);
 }
 
 
@@ -289,9 +484,6 @@ BOOL CHierarchyView::PreCreateWindow(CREATESTRUCT& cs)
 	//cs.style |= TVS_TRACKSELECT;
 	//cs.style |= TVS_DISABLEDRAGDROP;
 	
-
-
-
 	return CTreeView::PreCreateWindow(cs);
 }
 
@@ -412,41 +604,19 @@ void CHierarchyView::OnTvnEndlabeledit(NMHDR *pNMHDR, LRESULT *pResult)
 	pEdit->GetWindowText(cstrEdit);
 	if (cstrEdit.GetLength() <= 0 || cstrEdit == m_cstrEditFrom)
 		return;
-	auto& iter_Tree_Find = m_mapTreeItem.find(cstrEdit);
-	if (iter_Tree_Find != m_mapTreeItem.end())
+	auto& iter_Tree_Find = m_mapActorInfo.find(cstrEdit);
+	if (iter_Tree_Find != m_mapActorInfo.end())
 	{
 		ERR_MSG(L"이미 있는 이름입니다.");
 		*pResult = 0;
 		return;
 	}
 	tree.SetItemText(pTVDispInfo->item.hItem, cstrEdit);
-	iter_Tree_Find = m_mapTreeItem.find(m_cstrEditFrom);
-	if (iter_Tree_Find == m_mapTreeItem.end())
-	{
-		ERR_MSG(L"이름은 변경되지만, 맵에 존재하지 않았던 이름이였습니다. Tree");
-	}
-	else
-	{
-		CHierarchyView::TVI_TYPE _type = iter_Tree_Find->second;
-		map<CString, ACTORINFO*>::iterator iter_Actor_find;
-		if (iter_Tree_Find->second == ACTOR)
-		{
-			iter_Actor_find = m_mapActorInfo.find(m_cstrEditFrom);
-			ACTORINFO* pTempActorinfo;
-			if (iter_Actor_find != m_mapActorInfo.end())
-			{
-				pTempActorinfo = iter_Actor_find->second;
-				m_mapActorInfo.erase(m_cstrEditFrom);
-			}
-			else
-			{
-				ERR_MSG(L"이름은 변경되지만, 맵에 존재하지 않았던 이름이였습니다. Actor");
-			}
-			m_mapActorInfo.emplace(cstrEdit, pTempActorinfo);
-		}
-		m_mapTreeItem.erase(iter_Tree_Find);
-		m_mapTreeItem.emplace(cstrEdit, _type);
-	}
+	iter_Tree_Find = m_mapActorInfo.find(m_cstrEditFrom);
+	ACTORINFO* pTempActorInfo = iter_Tree_Find->second;
+	m_mapActorInfo.erase(iter_Tree_Find);
+	m_mapActorInfo.emplace(cstrEdit, pTempActorInfo);
+
 
 	*pResult = 0;
 }
@@ -547,15 +717,6 @@ void CHierarchyView::OnTvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult)
 		Safe_Delete(iter_find->second);
 		m_mapActorInfo.erase(iter_find);
 	}
-	auto& iter_TVI_find = m_mapTreeItem.find(tree.GetItemText(hitem));
-	if (iter_TVI_find == m_mapTreeItem.end())
-	{
-		//ERR_MSG(L"m_mapTreeItem 에 존재하지 않는 항목을 삭제했습니다.");
-	}
-	else
-	{
-		m_mapTreeItem.erase(iter_TVI_find);
-	}
 
 	//GetTreeCtrl().DeleteTempMap();
 	*pResult = 0;
@@ -564,6 +725,6 @@ void CHierarchyView::OnTvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult)
 void CHierarchyView::OnDestroy()
 {
 	m_bDestroying = true;
+	SaveTreeItems();
 	CTreeView::OnDestroy();
 }
-
