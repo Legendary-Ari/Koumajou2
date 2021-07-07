@@ -164,9 +164,12 @@
     <ClInclude Include="Key_Manager.h" />
     <ClInclude Include="MainApp.h" />
     <ClInclude Include="Multi_Texture.h" />
+    <ClInclude Include="MyMath.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Prefab_Manager.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="Ruler_Body.h" />
+    <ClInclude Include="Ruler_Sword.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Scene_Manager.h" />
     <ClInclude Include="Scroll_Manager.h" />
@@ -194,8 +197,11 @@
     <ClCompile Include="Key_Manager.cpp" />
     <ClCompile Include="MainApp.cpp" />
     <ClCompile Include="Multi_Texture.cpp" />
+    <ClCompile Include="MyMath.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Prefab_Manager.cpp" />
+    <ClCompile Include="Ruler_Body.cpp" />
+    <ClCompile Include="Ruler_Sword.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Scene_Manager.cpp" />
     <ClCompile Include="Scroll_Manager.cpp" />

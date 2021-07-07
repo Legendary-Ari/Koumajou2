@@ -14,18 +14,22 @@ public:
 	virtual void	Release_GameObject()PURE; 
 
 	virtual void	Set_Prefab(const OBJECTINFO* _pPrefab);
-	void			Set_Placement(const ACTORINFO* _pPlacement);
-	inline const RENDERID::ID&	Get_RenderId() const { return m_eRenderId; }
+	void			Set_ActorInfo(const ACTORINFO* _pPlacement);
+	inline const RENDERID::ID&	Get_RenderId() const { return (RENDERID::ID)m_pObjectInfo->eRenderId; }
+	inline const INFO&	Get_Info() const { return m_tInfo; }
+protected:
+	virtual void UpdateState();
+	virtual void UpdateAnimation();
+
 protected:
 	bool	m_bDestroyed;
 	
 	INFO m_tInfo; 
-	float m_fAngle = 0.f;
 	const OBJECTINFO*	m_pObjectInfo;
 	const ACTORINFO*	m_pActorInfo;
 	vector<const ANIMATION*> m_vecAnimation;
 
-	RENDERID::ID		m_eRenderId;
+	UINT	m_uiAnimationFrame;
 	//INFO* m_pInfo; 
 };
 

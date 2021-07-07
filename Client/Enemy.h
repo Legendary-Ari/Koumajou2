@@ -1,14 +1,12 @@
 #pragma once
 #include "GameObject.h"
-class CEnemy :
+class CEnemy abstract:
 	public CGameObject
 {
 public:
 	explicit	CEnemy();
 	virtual		~CEnemy();
 public:
-	// CGameObject을(를) 통해 상속됨
-	static	CGameObject* Create(const OBJECTINFO*	_tObjectInfo, const ACTORINFO* _pActorInfo);
 
 	virtual HRESULT Ready_GameObject() override;
 	virtual int Update_GameObject() override;

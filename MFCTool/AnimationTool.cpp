@@ -29,6 +29,8 @@ CAnimationTool::CAnimationTool(CWnd* pParent /*=NULL*/)
 	, m_iWidth(0)
 	, m_iHeight(0)
 	, m_iHMount(0)
+	, m_iStartX(0)
+	, m_iStartY(0)
 {
 
 }
@@ -68,6 +70,8 @@ void CAnimationTool::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_ANIM_EDIT_WIDTH, m_iWidth);
 	DDX_Text(pDX, IDC_ANIM_EDIT_HIEGHT, m_iHeight);
 	DDX_Text(pDX, IDC_ANIM_EDIT_HMOUNT, m_iHMount);
+	DDX_Text(pDX, IDC_ANIM_EDIT_STARTX, m_iStartX);
+	DDX_Text(pDX, IDC_ANIM_EDIT_STARTY, m_iStartY);
 }
 
 
@@ -92,7 +96,7 @@ BEGIN_MESSAGE_MAP(CAnimationTool, CDialog)
 	ON_EN_KILLFOCUS(IDC_ANIMATION_RIGHT, &CAnimationTool::OnEnKillfocusAnimationRight)
 	ON_EN_KILLFOCUS(IDC_ANIMATION_LEFT, &CAnimationTool::OnEnKillfocusAnimationLeft)
 	ON_EN_KILLFOCUS(IDC_ANIMATION_BOTTOM, &CAnimationTool::OnEnKillfocusAnimationBottom)
-	ON_BN_CLICKED(IDC_BUTTON10_ANIM2, &CAnimationTool::OnBnClickedButtonEditInfo)
+	ON_BN_CLICKED(IDC_BUTTON_EDIT_INFO, &CAnimationTool::OnBnClickedButtonEditInfo)
 END_MESSAGE_MAP()
 
 
@@ -102,7 +106,7 @@ void CAnimationTool::OnBnClickedAddInfo()//여기 진행중..
 	UpdateData(TRUE);
 	//==========animation 정보 입력=======================
 
-	CString AnimationName = m_wstrObject_Key + m_wstrState_Key; //두개objkey와 statekey를 더한것이 키값 
+	 
 
 	int iImage = m_ListBox_Image.GetCurSel();
 	if (iImage == LB_ERR)
@@ -110,11 +114,17 @@ void CAnimationTool::OnBnClickedAddInfo()//여기 진행중..
 		ERR_MSG(L"이미지 선택해주세요");
 		return;
 	}
+	CString wstrObject_Key;
+	m_ListBox_Image.GetText(iImage, wstrObject_Key);
+	CString AnimationName = m_wstrObject_Key + m_wstrState_Key; //두개objkey와 statekey를 더한것이 키값
 	ANIMATION* pAnima = nullptr;
 	auto& iter_Animation_find = m_mapAnima.find(AnimationName);
 	int iResult = -1;
 	if (iter_Animation_find == m_mapAnima.end())
+	{
 		pAnima = new ANIMATION{};
+		m_pSelectedAnimation = pAnima;
+	}
 	else
 	{
 		iResult = AfxMessageBox(_T("수정하시겠습니까?"), MB_YESNO);
@@ -159,10 +169,10 @@ void CAnimationTool::OnBnClickedAddInfo()//여기 진행중..
 
 		RECT rect =
 		{
-			m_iWidth * (i % (m_iHMount )),
-			m_iHeight * (i / (m_iHMount)),
-			m_iWidth * ((i % (m_iHMount)) + 1)-1,
-			m_iHeight * ((i / (m_iHMount)) + 1)-1
+			m_iStartX + m_iWidth * (i % (m_iHMount )),
+			m_iStartY + m_iHeight * (i / (m_iHMount)),
+			m_iStartX + m_iWidth * ((i % (m_iHMount)) + 1)-1,
+			m_iStartY + m_iHeight * ((i / (m_iHMount)) + 1)-1
 		};
 		m_pSelectedAnimation->vecRect.emplace_back(rect);
 		CString cstrRectName;

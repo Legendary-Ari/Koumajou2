@@ -34,7 +34,7 @@ void CEffect::Set_Prefab(const ANIMATION * _pPrefab)
 
 HRESULT CEffect::Ready_GameObject()
 {
-	m_eRenderId = RENDERID::EFFECT;
+
 
 	return S_OK;
 }
@@ -75,7 +75,7 @@ void CEffect::Render_GameObject()
 		return;
 	D3DXMATRIX matScale, matRotZ, matTrans, matWorld;
 	D3DXMatrixScaling(&matScale, 1.f, 1.f, 0.f);
-	D3DXMatrixRotationZ(&matRotZ, D3DXToRadian(-m_fAngle));
+	D3DXMatrixRotationZ(&matRotZ, D3DXToRadian(-m_tInfo.fAngle));
 	D3DXMatrixTranslation(&matTrans, m_tInfo.vPos.x, m_tInfo.vPos.y, 0.f);
 	matWorld = matScale * matRotZ * matTrans;
 	float fCenterX = float(pTexInfo->tImageInfo.Width >> 1);

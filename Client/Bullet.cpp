@@ -31,7 +31,7 @@ HRESULT CBullet::Ready_GameObject()
 {
 	m_tInfo.vDir.z = 0.f;
 
-	m_eRenderId = RENDERID::OBJECT;
+
 
 	return S_OK;
 }
@@ -48,8 +48,8 @@ int CBullet::Update_GameObject()
 	}
 		
 
-	m_tInfo.vDir.x = cosf(D3DXToRadian(m_fAngle));
-	m_tInfo.vDir.y = -sinf(D3DXToRadian(m_fAngle));
+	m_tInfo.vDir.x = cosf(D3DXToRadian(-m_tInfo.fAngle));
+	m_tInfo.vDir.y = sinf(D3DXToRadian(-m_tInfo.fAngle));
 
 	m_tInfo.vPos += m_tInfo.vDir * m_pObjectInfo->fMoveSpeed;
 
@@ -69,7 +69,7 @@ void CBullet::Render_GameObject()
 		return;
 	D3DXMATRIX matScale, matRotZ, matTrans, matWorld;
 	D3DXMatrixScaling(&matScale, 1.f, 1.f, 0.f);
-	D3DXMatrixRotationZ(&matRotZ, D3DXToRadian(-m_fAngle));
+	D3DXMatrixRotationZ(&matRotZ, D3DXToRadian(-m_tInfo.fAngle));
 	D3DXMatrixTranslation(&matTrans, m_tInfo.vPos.x, m_tInfo.vPos.y, 0.f);
 	matWorld = matScale * matRotZ * matTrans;
 	float fCenterX = float(pTexInfo->tImageInfo.Width >> 1);

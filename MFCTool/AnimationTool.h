@@ -88,4 +88,6 @@ public:
 	UINT m_iHeight;
 	UINT m_iHMount;
 	afx_msg void OnBnClickedButtonEditInfo();
+	UINT m_iStartX;
+	UINT m_iStartY;
 };

@@ -79,6 +79,12 @@
     <Filter Include="01.GameObject\06.Enemy">
       <UniqueIdentifier>{026faa3b-49a4-4fed-b6a3-0d854422f934}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.GameObject\06.Enemy\01.Ruler_Sword">
+      <UniqueIdentifier>{85288d48-bcf3-4f16-9e1b-ac7c11dc70f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\Math">
+      <UniqueIdentifier>{09972d8c-c024-4007-b88a-33790a1caeae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -165,6 +171,13 @@
     <ClInclude Include="Enemy.h">
       <Filter>01.GameObject\06.Enemy</Filter>
     </ClInclude>
+    <ClInclude Include="Ruler_Body.h">
+      <Filter>01.GameObject\06.Enemy\01.Ruler_Sword</Filter>
+    </ClInclude>
+    <ClInclude Include="Ruler_Sword.h" />
+    <ClInclude Include="MyMath.h">
+      <Filter>Manager\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -244,6 +257,13 @@
     </ClCompile>
     <ClCompile Include="Enemy.cpp">
       <Filter>01.GameObject\06.Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Ruler_Body.cpp">
+      <Filter>01.GameObject\06.Enemy\01.Ruler_Sword</Filter>
+    </ClCompile>
+    <ClCompile Include="Ruler_Sword.cpp" />
+    <ClCompile Include="MyMath.cpp">
+      <Filter>Manager\Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

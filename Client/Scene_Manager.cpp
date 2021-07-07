@@ -42,6 +42,7 @@ HRESULT CScene_Manager::Change_Scene_Manager(const ID eID)
 void CScene_Manager::Update_Scene_Manager()
 {
 	m_pScene->Update_Scene(); 
+	CScroll_Manager::UpdateScroll();
 }
 
 void CScene_Manager::Render_Scene_Manager()

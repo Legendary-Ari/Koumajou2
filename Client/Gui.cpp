@@ -15,7 +15,7 @@ CGui::~CGui()
 CGameObject * CGui::Create(const ACTORINFO * _pPlacement)
 {
 	CGameObject* pInstance = new CGui;
-	pInstance->Set_Placement(_pPlacement);
+	pInstance->Set_ActorInfo(_pPlacement);
 	if (FAILED(pInstance->Ready_GameObject()))
 	{
 		delete pInstance;
@@ -27,7 +27,6 @@ CGameObject * CGui::Create(const ACTORINFO * _pPlacement)
 
 HRESULT CGui::Ready_GameObject()
 {
-	m_eRenderId = (RENDERID::ID)m_pObjectInfo->eRenderId;
 	m_tInfo = m_pActorInfo->tInfo;
 
 	return S_OK;

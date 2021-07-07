@@ -10,25 +10,10 @@ CEnemy::CEnemy()
 CEnemy::~CEnemy()
 {
 }
-
-CGameObject * CEnemy::Create(const OBJECTINFO * _tObjectInfo, const ACTORINFO * _pActorInfo)
-{
-	CGameObject* pInstance = new CEnemy;
-	pInstance->Set_Prefab(_tObjectInfo);
-	pInstance->Set_Placement(_pActorInfo);
-	if (FAILED(pInstance->Ready_GameObject()))
-	{
-		delete pInstance;
-		pInstance = nullptr;
-		return pInstance;
-	}
-	return pInstance;
-}
-
+// m_tInfo ³Ö±â
 HRESULT CEnemy::Ready_GameObject()
 {
 	m_tInfo = m_pActorInfo->tInfo;
-
 	return S_OK;
 }
 
@@ -53,7 +38,7 @@ void CEnemy::Render_GameObject()
 
 	D3DXMATRIX matScale, matRotZ, matTrans, matWorld;
 	D3DXMatrixScaling(&matScale, 1.f, 1.f, 0.f);
-	D3DXMatrixRotationZ(&matRotZ, D3DXToRadian(-m_fAngle));
+	D3DXMatrixRotationZ(&matRotZ, D3DXToRadian(-m_tInfo.fAngle));
 	D3DXMatrixTranslation(&matTrans, m_tInfo.vPos.x + vScroll.x, m_tInfo.vPos.y + vScroll.y, 0.f);
 	matWorld = matScale * matRotZ * matTrans;
 	const RECT& rect = m_pObjectInfo->tRect;

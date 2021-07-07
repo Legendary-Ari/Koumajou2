@@ -4,9 +4,10 @@
 
 CGameObject::CGameObject()
 	:m_pObjectInfo(nullptr)
-	//:m_tInfo({})
+	, m_uiAnimationFrame(0)
+	, m_tInfo({})
 {
-	ZeroMemory(&m_tInfo, sizeof(INFO)); 
+	
 }
 
 
@@ -24,7 +25,16 @@ void CGameObject::Set_Prefab(const OBJECTINFO * _pPrefab)
 	m_pObjectInfo = _pPrefab;
 }
 
-void CGameObject::Set_Placement(const ACTORINFO * _pPlacement)
+void CGameObject::Set_ActorInfo(const ACTORINFO * _pPlacement)
 {
 	m_pActorInfo = _pPlacement;
+}
+
+void CGameObject::UpdateState()
+{
+}
+
+void CGameObject::UpdateAnimation()
+{
+	
 }

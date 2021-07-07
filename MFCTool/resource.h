@@ -75,6 +75,7 @@
 #define IDC_ANIM_EDIT_HMOUNT            1019
 #define IDC_START_IMAGE                 1020
 #define IDC_END_IMAGE                   1021
+#define IDC_ANIM_EDIT_STARTX            1021
 #define IDC_INDEX_TO_SELECTED_IMAGE     1022
 #define IDC_LIST3                       1023
 #define IDC_LIST_TO_SELECTED_IMAGE      1023
@@ -82,6 +83,8 @@
 #define IDC_LIST3_OBJ                   1023
 #define IDC_ANIM_PIC                    1024
 #define IDC_BUTTON15                    1024
+#define IDC_ANIM_EDIT_HMOUNT3           1024
+#define IDC_ANIM_EDIT_STARTY            1024
 #define IDC_TEXT_COUNT_SG               1025
 #define IDC_TEXT_ANGLE_SG               1026
 #define IDC_BUTTON13                    1027
@@ -100,7 +103,6 @@
 #define IDC_BUTTON11                    1032
 #define IDC_EDIT1_BULLET                1033
 #define IDC_EDIT_OBJNAME                1033
-#define IDC_BUTTON10_ANIM2              1033
 #define IDC_BUTTON_EDIT_INFO            1033
 #define IDC_EDIT2_BULLET                1034
 #define IDC_EDIT_OBJHP                  1034

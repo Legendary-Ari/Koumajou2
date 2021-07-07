@@ -749,13 +749,15 @@ void CObjectTool::OnBnClickedRadioStatic()
 	{
 		SetSingleVisibility(true);
 		SetMultiVisibility(false);
-		m_pObjectInfoSelected->bIsSingle = true;
+		if (m_pObjectInfoSelected)
+			m_pObjectInfoSelected->bIsSingle = true;
 	}
 	else if (m_RadioImageType[1].GetCheck())
 	{
 		SetSingleVisibility(false);
 		SetMultiVisibility(true);
-		m_pObjectInfoSelected->bIsSingle = false;
+		if (m_pObjectInfoSelected)
+			m_pObjectInfoSelected->bIsSingle = false;
 	}
 }
 
@@ -766,13 +768,15 @@ void CObjectTool::OnBnClickedRadioAnimation()
 	{
 		SetSingleVisibility(true);
 		SetMultiVisibility(false);
-		m_pObjectInfoSelected->bIsSingle = true;
+		if (m_pObjectInfoSelected)
+			m_pObjectInfoSelected->bIsSingle = true;
 	}
 	else if (m_RadioImageType[1].GetCheck())
 	{
 		SetSingleVisibility(false);
 		SetMultiVisibility(true);
-		m_pObjectInfoSelected->bIsSingle = false;
+		if(m_pObjectInfoSelected)
+			m_pObjectInfoSelected->bIsSingle = false;
 	}
 }
 

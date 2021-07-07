@@ -15,7 +15,7 @@ CBackGround::~CBackGround()
 CGameObject * CBackGround::Create(const ACTORINFO * _pPlacement)
 {
 	CGameObject* pInstance = new CBackGround;
-	pInstance->Set_Placement(_pPlacement);
+	pInstance->Set_ActorInfo(_pPlacement);
 	if (FAILED(pInstance->Ready_GameObject()))
 	{
 		delete pInstance;
@@ -27,7 +27,6 @@ CGameObject * CBackGround::Create(const ACTORINFO * _pPlacement)
 
 HRESULT CBackGround::Ready_GameObject()
 {
-	m_eRenderId = (RENDERID::ID)m_pObjectInfo->eRenderId;
 
 	return S_OK;
 }

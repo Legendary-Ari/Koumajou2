@@ -110,7 +110,7 @@ void CMFCToolView::OnDraw(CDC* /*pDC*/)
 			rect = pObjectInfo->tRect;
 		else
 		{
-			auto& iter_Anim_find = m_pmapAnimation->find( pObjectInfo->cstrIdleAnimImage_ObjectKey );
+			auto& iter_Anim_find = m_pmapAnimation->find( pObjectInfo->cstrIdleAnimImage_ObjectKey + pObjectInfo->cstrIdleAnimImage_StateKey);
 			if (iter_Anim_find == m_pmapAnimation->end())
 			{
 				ERR_MSG(L"Multi로 설정되어있으나 애니메이션을 찾지 못했습니다. MFCToolView::OnDraw");

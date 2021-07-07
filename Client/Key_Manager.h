@@ -13,6 +13,10 @@
 #define KEY_RIGHT	0x00000020
 //0100 0000
 #define KEY_SPACE	0x00000040
+#define KEY_Z		0x00000100
+#define KEY_X		0x00000200
+#define KEY_C		0x00000400
+#define KEY_V		0x00000800
 class CKey_Manager
 {
 	DECLARE_SINGLETON(CKey_Manager)
