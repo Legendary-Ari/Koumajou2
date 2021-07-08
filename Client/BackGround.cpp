@@ -12,10 +12,11 @@ CBackGround::~CBackGround()
 	Release_GameObject();
 }
 
-CGameObject * CBackGround::Create(const ACTORINFO * _pPlacement)
+CGameObject * CBackGround::Create(const ACTORINFO * _pActorInfo, const OBJECTINFO * _pObjectInfo)
 {
 	CGameObject* pInstance = new CBackGround;
-	pInstance->Set_ActorInfo(_pPlacement);
+	pInstance->Set_ActorInfo(_pActorInfo);
+	pInstance->Set_Prefab(_pObjectInfo);
 	if (FAILED(pInstance->Ready_GameObject()))
 	{
 		delete pInstance;
@@ -27,7 +28,8 @@ CGameObject * CBackGround::Create(const ACTORINFO * _pPlacement)
 
 HRESULT CBackGround::Ready_GameObject()
 {
-
+	m_tInfo = m_pActorInfo->tInfo;
+	m_tInfo.vSize = { 1.3f,1.3f,1.0f };
 	return S_OK;
 }
 
@@ -45,18 +47,15 @@ void CBackGround::Late_Update_GameObject()
 
 void CBackGround::Render_GameObject()
 {
-	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()->Get_TexInfo(m_pActorInfo->wstrPrefabName);
+	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()->Get_TexInfo(m_pObjectInfo->wstrObjectImage_ObjectKey);
 	if (nullptr == pTexInfo)
 		return;
 	D3DXMATRIX matScale, matTrans, matRotZ, matWorld;
 	D3DXVECTOR3 vScroll = CScroll_Manager::Get_Scroll();
 	//ÃÊ±âÈ­
-	D3DXMatrixIdentity(&matScale);
-	D3DXMatrixIdentity(&matTrans);
-	D3DXMatrixIdentity(&matRotZ);
-	D3DXMatrixScaling(&matScale, m_tInfo.vSize.x + vScroll.x, m_tInfo.vSize.y + vScroll.y, 0.f);
-	D3DXMatrixRotationZ(&matRotZ, -D3DXToRadian(m_tInfo.fAngle));
-	D3DXMatrixTranslation(&matTrans, m_tInfo.vPos.x, m_tInfo.vPos.y, 0.f);
+	D3DXMatrixScaling(&matScale, m_tInfo.vSize.x, m_tInfo.vSize.y, 0.f);
+	D3DXMatrixRotationZ(&matRotZ, D3DXToRadian(-m_tInfo.fAngle));
+	D3DXMatrixTranslation(&matTrans, (float)(WINCX>>1), (float)(WINCY>>1), 0.f);
 	matWorld = matScale *matRotZ* matTrans;
 	float fCenterX = float(pTexInfo->tImageInfo.Width >> 1);
 	float fCenterY = float(pTexInfo->tImageInfo.Height >> 1);
@@ -67,4 +66,9 @@ void CBackGround::Render_GameObject()
 
 void CBackGround::Release_GameObject()
 {
+}
+
+const RENDERID::ID & CBackGround::Get_RenderId() const
+{
+	return RENDERID::BACKGROUND; 
 }

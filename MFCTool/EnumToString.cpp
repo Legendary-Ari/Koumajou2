@@ -4,6 +4,7 @@
 const CString CEnumToString::szRenderId[RENDERID::END] =
 {
 	_T("BACKGROUND"),
+	_T("BACKCOLLISION"),
 	_T("OBJECT"),
 	_T("PAWN"),
 	_T("EFFECT"),

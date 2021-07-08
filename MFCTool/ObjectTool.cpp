@@ -525,8 +525,8 @@ void CObjectTool::OnBnClickedButtonLoad()
 		m_mapKeyToPath.emplace(pObject->cstrObjectImage_ObjectKey, pObject->cstrObjectImage_Path);
 		m_ListBox_ObjImage.AddString(pObject->cstrObjectImage_ObjectKey);
 			
-
-		CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, {RECT()}, pObject->cstrObjectImage_Path.GetString(), pObject->cstrObjectImage_ObjectKey.GetString());
+		if(pObject->bIsSingle)
+			CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, {RECT()}, pObject->cstrObjectImage_Path.GetString(), pObject->cstrObjectImage_ObjectKey.GetString());
 	}
 	CloseHandle(hFile);
 }

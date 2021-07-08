@@ -5,13 +5,19 @@
 
 CPlayer::CPlayer()
 	:m_ePrevState(STATE::STATE_END)
-	,m_eCurState(STATE::STATE_END)
+	, m_eCurState(STATE::STATE_END)
 	, m_fAnimationCumulatedTime(0.f)
-	,m_bFalling(false)
-	,m_bJumping(false)
+	, m_bFalling(false)
+	, m_bJumping(false)
 	, m_bAttacking(false)
 	, m_bCrouch(false)
 	, m_bPrevIsFliped(false)
+	, m_bDodge(false)
+	, m_bFlying(false)
+	, m_bOnGround(true)
+	, m_bInvincible(false)
+	, m_fHitTimeLength(0.3f)
+	, m_fHitCumulateTime(0.f)
 {
 }
 
@@ -102,8 +108,110 @@ HRESULT CPlayer::Ready_GameObject()
 		return E_FAIL;
 	}
 	m_vecAnimation[ATTACK] = pAnim;
+	pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(m_pObjectInfo->cstrIdleAnimImage_ObjectKey + L"Jump_Attack");
+	if (!pAnim)
+	{
+		ERR_MSG(L"플레이어의 이미지를 찾지 못했습니다.12");
+		return E_FAIL;
+	}
+	m_vecAnimation[JUMP_ATTACK] = pAnim;
+	pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(m_pObjectInfo->cstrIdleAnimImage_ObjectKey + L"Bounce");
+	if (!pAnim)
+	{
+		ERR_MSG(L"플레이어의 이미지를 찾지 못했습니다.13");
+		return E_FAIL;
+	}
+	m_vecAnimation[BOUNCE] = pAnim;
+	pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(m_pObjectInfo->cstrIdleAnimImage_ObjectKey + L"Hit");
+	if (!pAnim)
+	{
+		ERR_MSG(L"플레이어의 이미지를 찾지 못했습니다.14");
+		return E_FAIL;
+	}
+	m_vecAnimation[HIT] = pAnim;
+	pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(m_pObjectInfo->cstrIdleAnimImage_ObjectKey + L"F_Landing");
+	if (!pAnim)
+	{
+		ERR_MSG(L"플레이어의 이미지를 찾지 못했습니다.15");
+		return E_FAIL;
+	}
+	m_vecAnimation[F_LANDING] = pAnim;
+	pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(m_pObjectInfo->cstrIdleAnimImage_ObjectKey + L"L_Flying");
+	if (!pAnim)
+	{
+		ERR_MSG(L"플레이어의 이미지를 찾지 못했습니다.16");
+		return E_FAIL;
+	}
+	m_vecAnimation[L_FLYING] = pAnim;
+	pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(m_pObjectInfo->cstrIdleAnimImage_ObjectKey + L"R_Flying");
+	if (!pAnim)
+	{
+		ERR_MSG(L"플레이어의 이미지를 찾지 못했습니다.17");
+		return E_FAIL;
+	}
+	m_vecAnimation[R_FLYING] = pAnim;
+	pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(m_pObjectInfo->cstrIdleAnimImage_ObjectKey + L"Dodge");
+	if (!pAnim)
+	{
+		ERR_MSG(L"플레이어의 이미지를 찾지 못했습니다.18");
+		return E_FAIL;
+	}
+	m_vecAnimation[DODGE] = pAnim;
+	pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(m_pObjectInfo->cstrIdleAnimImage_ObjectKey + L"Dodge_Attack");
+	if (!pAnim)
+	{
+		ERR_MSG(L"플레이어의 이미지를 찾지 못했습니다.19");
+		return E_FAIL;
+	}
+	m_vecAnimation[DODGE_ATTACK] = pAnim;
+	pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(m_pObjectInfo->cstrIdleAnimImage_ObjectKey + L"D_Attack");
+	if (!pAnim)
+	{
+		ERR_MSG(L"플레이어의 이미지를 찾지 못했습니다.20");
+		return E_FAIL;
+	}
+	m_vecAnimation[D_ATTACK] = pAnim;
+	pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(m_pObjectInfo->cstrIdleAnimImage_ObjectKey + L"Jump_D_Attack");
+	if (!pAnim)
+	{
+		ERR_MSG(L"플레이어의 이미지를 찾지 못했습니다.21");
+		return E_FAIL;
+	}
+	m_vecAnimation[JUMP_D_ATTACK] = pAnim;
+	pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(m_pObjectInfo->cstrIdleAnimImage_ObjectKey + L"S_Knife");
+	if (!pAnim)
+	{
+		ERR_MSG(L"플레이어의 이미지를 찾지 못했습니다.22");
+		return E_FAIL;
+	}
+	m_vecAnimation[S_KNIFE] = pAnim;
+	pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(m_pObjectInfo->cstrIdleAnimImage_ObjectKey + L"E_Knife");
+	if (!pAnim)
+	{
+		ERR_MSG(L"플레이어의 이미지를 찾지 못했습니다.23");
+		return E_FAIL;
+	}
+	m_vecAnimation[E_KNIFE] = pAnim;
+	pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(m_pObjectInfo->cstrIdleAnimImage_ObjectKey + L"DS_Knife");
+	if (!pAnim)
+	{
+		ERR_MSG(L"플레이어의 이미지를 찾지 못했습니다.24");
+		return E_FAIL;
+	}
+	m_vecAnimation[DS_KNIFE] = pAnim;
+	pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(m_pObjectInfo->cstrIdleAnimImage_ObjectKey + L"DE_Knife");
+	if (!pAnim)
+	{
+		ERR_MSG(L"플레이어의 이미지를 찾지 못했습니다.25");
+		return E_FAIL;
+	}
+	m_vecAnimation[DE_KNIFE] = pAnim;
 	m_eCurState = IDLE;
 	m_vecAnimation.emplace_back(pAnim);
+
+	m_vecBodyCollision.resize(1);
+	m_vecBodyCollision[0].eId = COLLISION::C_RECT;
+	m_vecBodyCollision.resize(1);
 	
 	m_bJumping = false;
 	m_bFalling = false;
@@ -122,6 +230,7 @@ int CPlayer::Update_GameObject()
 
 	m_tInfo.vPos += m_tInfo.vDir;
 
+	UpdateBodyCollision();
 	Offset();
 
 	return OBJ_NOEVENT;
@@ -129,14 +238,12 @@ int CPlayer::Update_GameObject()
 
 void CPlayer::Late_Update_GameObject()
 {
-	if (m_tInfo.vPos.y > WINCY - 100)
+	if (m_tInfo.vPos.y > 8000)
 	{
-		m_tInfo.vPos.y = WINCY - 100;
-		m_bFalling = false;
-		m_bJumping = false;
-		m_eCurState = IDLE;
+		m_tInfo.vPos = { 200.f, 300.f, 0.f };
 		m_tInfo.vDir.y = 0;
 	}
+		
 }
 
 void CPlayer::Render_GameObject()
@@ -158,19 +265,18 @@ void CPlayer::Render_GameObject()
 	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
 	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, &tRenderRect, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
 
-	//TCHAR szBuff[32];
-	//swprintf_s(szBuff, L"Y : %f", m_tInfo.vDir.y);
-	//D3DXMATRIX mat;
-	//D3DXMatrixTranslation(&mat, 100.f, 100.f, 0.f);
-
-	//CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&mat);
-	//CGraphic_Device::Get_Instance()->Get_Font()->DrawTextW(CGraphic_Device::Get_Instance()->Get_Sprite(), szBuff, lstrlen(szBuff), nullptr, 0, D3DCOLOR_ARGB(255, 255, 0, 0));
-
-
+	RenderCollision();
 }
 
 void CPlayer::Release_GameObject()
 {
+}
+
+void CPlayer::OnBlocked(CGameObject * pHitObject, DIRECTION::ID _eId)
+{
+	m_eCurState = HIT;
+	m_bInvincible = true;
+	m_uiAnimationFrame = 0;
 }
 
 CGameObject * CPlayer::Create(const ACTORINFO* _pActorInfo, const OBJECTINFO* _pPrefab)
@@ -187,10 +293,38 @@ CGameObject * CPlayer::Create(const ACTORINFO* _pActorInfo, const OBJECTINFO* _p
 	return pInstance;
 }
 
+void CPlayer::OnBlockedTile(CGameObject * pHitObject, DIRECTION::ID _eId)
+{
+	if (_eId == DIRECTION::S /*|| _eId == DIRECTION::SW || _eId == DIRECTION::SE*/)
+	{
+		m_bFalling = false;
+		m_bJumping = false;
+		m_bOnGround = true;
+		m_bAttacking = false;
+		m_eCurState = IDLE;
+		m_uiAnimationFrame = 0;
+		m_tInfo.vDir.y = 0;
+	}
+}
+
 void CPlayer::UpdateState()
 {
-	CPlayer::STATE eState = IDLE;
 	float fDeltaTime = CTime_Manager::Get_Instance()->Get_DeltaTime();
+	if (m_bInvincible)
+	{
+		m_fHitCumulateTime += fDeltaTime;
+
+		if (m_fHitCumulateTime > m_fHitTimeLength)
+		{
+			m_fHitCumulateTime = 0;
+			m_bInvincible = false;
+		}
+		else
+			return;
+	}
+		
+	CPlayer::STATE eState = IDLE;
+
 	float fMoveSpeed = fDeltaTime * m_pObjectInfo->fMoveSpeed;
 	if (!m_bAttacking)
 	{
@@ -234,14 +368,13 @@ void CPlayer::UpdateState()
 								eState = TURNING;
 							else if (m_eCurState == S_WALKING || m_eCurState == IDLE)
 								eState = S_WALKING;
-							else if (m_bStoping)
+							else if (m_bStoping || m_eCurState == STOPING)
 								eState = STOPING;
 							else if (m_eCurState == WALKING) // 마지막에서 두번째
 								eState = WALKING;
 							else
 								eState = IDLE;
 						}
-							
 					}
 
 				}
@@ -253,7 +386,10 @@ void CPlayer::UpdateState()
 	{
 		if (m_bJumping)
 		{
-			eState = JUMP_ATTACK;
+			if(m_bCrouch)
+				eState = JUMP_D_ATTACK;
+			else
+				eState = JUMP_ATTACK;
 		}
 		else
 		{
@@ -297,6 +433,7 @@ void CPlayer::UpdateAnimation()
 		{
 			if(!m_vecAnimation[m_eCurState]->bLoop)
 			{
+				UINT uiTempFrame = m_uiAnimationFrame;
 				m_uiAnimationFrame = 0;
 				switch (m_eCurState)
 				{
@@ -327,8 +464,15 @@ void CPlayer::UpdateAnimation()
 					m_eCurState = IDLE;
 					break;
 				case CPlayer::JUMP_ATTACK:
+					m_bAttacking = false;
+					m_eCurState = FALLING;
 					break;
 				case CPlayer::HIT:
+					m_eCurState = FALLING;
+					m_bFalling = true;
+					m_bOnGround = false;
+					m_bInvincible = false;
+					m_tInfo.vDir.y = 0;
 					break;
 				case CPlayer::F_LANDING:
 					break;
@@ -339,14 +483,23 @@ void CPlayer::UpdateAnimation()
 				case CPlayer::DODGE:
 					break;
 				case CPlayer::DODGE_ATTACK:
+					m_bAttacking = false;
 					break;
 				case CPlayer::D_ATTACK:
+					m_bAttacking = false;
+					m_eCurState = CROUCH;
 					break;
 				case CPlayer::JUMP_D_ATTACK:
+					m_bAttacking = false;
+					m_eCurState = FALLING;
 					break;
-				case CPlayer::KNIFE:
+				case CPlayer::S_KNIFE:
 					break;
-				case CPlayer::D_KNIFE:
+				case CPlayer::E_KNIFE:
+					break;
+				case CPlayer::DS_KNIFE:
+					break;
+				case CPlayer::DE_KNIFE:
 					break;
 				case CPlayer::STATE_END:
 					break;
@@ -366,50 +519,100 @@ void CPlayer::UpdateAnimation()
 	}
 }
 
+void CPlayer::UpdateBodyCollision()
+{
+	if (m_bInvincible)
+	{
+		m_vecBodyCollision[0].tRect = {};
+		return;
+	}
+	float fSize = m_tInfo.vSize.x;
+	float fReduceSizeX = 0.3f;
+	float fReduceSizeUp = 0.6f;
+	float fReduceSizeDown = 1.f;
+	if (m_bCrouch)
+		fReduceSizeUp = -0.2;
+	if (m_bJumping)
+		fReduceSizeDown = 0.7f;
+
+	RECT rect = m_vecAnimation[0]->vecRect[0];
+	
+	_vec2 v2Radius = { (float)((rect.right - rect.left) * 0.5f), (float)((rect.bottom - rect.top) * 0.5f) };
+	v2Radius *= fSize;
+	m_vecBodyCollision[0].tRect = 
+	{
+		(LONG)(m_tInfo.vPos.x - v2Radius.x * fReduceSizeX),
+		(LONG)(m_tInfo.vPos.y - v2Radius.y * fReduceSizeUp),
+		(LONG)(m_tInfo.vPos.x + v2Radius.x * fReduceSizeX),
+		(LONG)(m_tInfo.vPos.y + v2Radius.y * fReduceSizeDown)
+	};
+	
+}
+
 void CPlayer::UpdateMoveWithPressKey()
 {
 	float fDeltaTime = CTime_Manager::Get_Instance()->Get_DeltaTime();
 	float fMoveSpeed = fDeltaTime * m_pObjectInfo->fMoveSpeed;
+	if (m_bInvincible)
+	{
+		fMoveSpeed *= 0.5f;
+		m_tInfo.vDir.x = m_bIsFliped ? fMoveSpeed : -fMoveSpeed;
+		m_tInfo.vDir.y = -fMoveSpeed;
+		return;
+	}
+		
+
 	float fTargetDirX{ 0.f };
-	if (CKey_Manager::Get_Instance()->Key_Pressing(KEY_LEFT))
+
+	if (!m_bAttacking)
 	{
-		m_bIsFliped = true;
-		fTargetDirX = -fMoveSpeed;
-	}
-	else if (CKey_Manager::Get_Instance()->Key_Pressing(KEY_RIGHT))
-	{
-		m_bIsFliped = false;
-		fTargetDirX = +fMoveSpeed;
-	}
-	else
-	{
-		fTargetDirX = 0;
+		if (CKey_Manager::Get_Instance()->Key_Pressing(KEY_LEFT))
+		{
+			m_bIsFliped = true;
+			fTargetDirX = -fMoveSpeed;
+		}
+		else if (CKey_Manager::Get_Instance()->Key_Pressing(KEY_RIGHT))
+		{
+			m_bIsFliped = false;
+			fTargetDirX = +fMoveSpeed;
+		}
+		else
+		{
+			fTargetDirX = 0;
+		}
+
+		if (CKey_Manager::Get_Instance()->Key_Pressing(KEY_DOWN))
+		{
+			m_bCrouch = true;
+		}
+		else
+		{
+			m_bCrouch = false;
+		}
+
+		if (CKey_Manager::Get_Instance()->Key_Down(KEY_C))
+		{
+			m_bAttacking = true;
+			if (m_bOnGround)
+			{
+				m_tInfo.vDir.x = 0;
+				fTargetDirX = 0;
+			}
+		}
 	}
 
 	if (!m_bFalling && !m_bJumping && CKey_Manager::Get_Instance()->Key_Pressing(KEY_X) && m_tInfo.vDir.y > -12.f)
 	{
 		m_bJumping = true;
 		m_bFalling = false;
+		m_bOnGround = false;
 	}
 	else if (!m_bFalling && m_bJumping && (m_tInfo.vDir.y < -12.f || !CKey_Manager::Get_Instance()->Key_Pressing(KEY_X)))
 	{
 		m_tInfo.vDir.y = -7.f;
 		m_bJumping = false;
 		m_bFalling = true;
-	}
-
-	if (CKey_Manager::Get_Instance()->Key_Pressing(KEY_DOWN))
-	{
-		m_bCrouch = true;
-	}
-	else
-	{
-		m_bCrouch = false;
-	}
-
-	if (CKey_Manager::Get_Instance()->Key_Pressing(KEY_C))
-	{
-		m_bAttacking = true;
+		m_bOnGround = false;
 	}
 
 	if (m_bJumping)
@@ -419,8 +622,11 @@ void CPlayer::UpdateMoveWithPressKey()
 	}
 	
 	m_tInfo.vDir.x = CMyMath::FInterpTo(m_tInfo.vDir.x, fTargetDirX, fDeltaTime, 8.f);
+	
+	if (abs(abs(m_tInfo.vDir.x) - fTargetDirX) < 1.f)
+		m_tInfo.vDir.x = fTargetDirX;
 
-	if (fTargetDirX == 0 && m_tInfo.vDir != 0)
+	if (fTargetDirX == 0 && abs(m_tInfo.vDir.x) > fMoveSpeed * 0.5f)
 		m_bStoping = true;
 	else
 		m_bStoping = false;

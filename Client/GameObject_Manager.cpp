@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GameObject_Manager.h"
 #include "GameObject.h"
+#include "CollisionMgr.h"
 
 IMPLEMENT_SINGLETON(CGameObject_Manager)
 CGameObject_Manager::CGameObject_Manager()
@@ -36,6 +37,14 @@ void CGameObject_Manager::Update_GameObject_Manager()
 			else ++iter; 
 		}
 	}
+
+	CCollisionMgr::Collision_BackGroundEx(m_listGameObject[OBJECTINFO::PLAYER]);
+	CCollisionMgr::Collision_BackGroundEx(m_listGameObject[OBJECTINFO::PLAYER_BULLET]);
+	CCollisionMgr::Collision_BackGroundEx(m_listGameObject[OBJECTINFO::ENEMY]);
+	CCollisionMgr::Collision_BackGroundEx(m_listGameObject[OBJECTINFO::ENEMY_BULLET]);
+	CCollisionMgr::Collision_BackGroundEx(m_listGameObject[OBJECTINFO::BOSS]);
+
+	CCollisionMgr::Collision_Ex(m_listGameObject[OBJECTINFO::ENEMY], m_listGameObject[OBJECTINFO::PLAYER]);
 
 	for (int i = 0; i < OBJECTINFO::OBJID_END; ++i)
 	{

@@ -141,6 +141,7 @@
     <ClInclude Include="EnumToString.h">
       <Filter>05.EnumToString</Filter>
     </ClInclude>
+    <ClInclude Include="..\Headers\Enum.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp">

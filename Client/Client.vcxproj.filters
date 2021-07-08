@@ -16,9 +16,6 @@
     <Filter Include="02.Graphic_Device">
       <UniqueIdentifier>{e2ec07a9-e5c8-497c-8a76-30fec772e17a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.GameObject\01.Terrain">
-      <UniqueIdentifier>{2e521037-e677-40b3-9c6d-ff8a990c70ab}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03.Scene">
       <UniqueIdentifier>{cc28ea39-33b8-4be9-b9d4-3f923c8790ad}</UniqueIdentifier>
     </Filter>
@@ -79,11 +76,20 @@
     <Filter Include="01.GameObject\06.Enemy">
       <UniqueIdentifier>{026faa3b-49a4-4fed-b6a3-0d854422f934}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.GameObject\06.Enemy\01.Ruler_Sword">
-      <UniqueIdentifier>{85288d48-bcf3-4f16-9e1b-ac7c11dc70f1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Manager\Math">
       <UniqueIdentifier>{09972d8c-c024-4007-b88a-33790a1caeae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\CollisionMgr">
+      <UniqueIdentifier>{5d1dfcd8-18a0-483a-b524-453175a1f87a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\01.BackCollision">
+      <UniqueIdentifier>{2e521037-e677-40b3-9c6d-ff8a990c70ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\06.Enemy\Toad">
+      <UniqueIdentifier>{46fb2175-1381-40f3-95f2-f62a743d2794}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\06.Enemy\Ruler_Sword">
+      <UniqueIdentifier>{85288d48-bcf3-4f16-9e1b-ac7c11dc70f1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -123,9 +129,6 @@
     <ClInclude Include="Texture_Manager.h">
       <Filter>05.Texture\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="Terrain.h">
-      <Filter>01.GameObject\01.Terrain</Filter>
-    </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>03.Scene</Filter>
     </ClInclude>
@@ -162,9 +165,6 @@
     <ClInclude Include="Spawn_Manager.h">
       <Filter>Manager\Spawn_Manager</Filter>
     </ClInclude>
-    <ClInclude Include="BackGround.h">
-      <Filter>01.GameObject\04.BackGround</Filter>
-    </ClInclude>
     <ClInclude Include="Gui.h">
       <Filter>01.GameObject\05.Gui</Filter>
     </ClInclude>
@@ -172,12 +172,24 @@
       <Filter>01.GameObject\06.Enemy</Filter>
     </ClInclude>
     <ClInclude Include="Ruler_Body.h">
-      <Filter>01.GameObject\06.Enemy\01.Ruler_Sword</Filter>
+      <Filter>01.GameObject\06.Enemy\Ruler_Sword</Filter>
     </ClInclude>
-    <ClInclude Include="Ruler_Sword.h" />
     <ClInclude Include="MyMath.h">
       <Filter>Manager\Math</Filter>
     </ClInclude>
+    <ClInclude Include="CollisionMgr.h">
+      <Filter>Manager\CollisionMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="BackGround.h">
+      <Filter>01.GameObject\04.BackGround</Filter>
+    </ClInclude>
+    <ClInclude Include="Ruler_Sword.h">
+      <Filter>01.GameObject\01.BackCollision</Filter>
+    </ClInclude>
+    <ClInclude Include="BackCollision.h">
+      <Filter>01.GameObject\01.BackCollision</Filter>
+    </ClInclude>
+    <ClInclude Include="Toad.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -209,9 +221,6 @@
     </ClCompile>
     <ClCompile Include="Texture_Manager.cpp">
       <Filter>05.Texture\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="Terrain.cpp">
-      <Filter>01.GameObject\01.Terrain</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>03.Scene</Filter>
@@ -249,9 +258,6 @@
     <ClCompile Include="Spawn_Manager.cpp">
       <Filter>Manager\Spawn_Manager</Filter>
     </ClCompile>
-    <ClCompile Include="BackGround.cpp">
-      <Filter>01.GameObject\04.BackGround</Filter>
-    </ClCompile>
     <ClCompile Include="Gui.cpp">
       <Filter>01.GameObject\05.Gui</Filter>
     </ClCompile>
@@ -259,12 +265,24 @@
       <Filter>01.GameObject\06.Enemy</Filter>
     </ClCompile>
     <ClCompile Include="Ruler_Body.cpp">
-      <Filter>01.GameObject\06.Enemy\01.Ruler_Sword</Filter>
+      <Filter>01.GameObject\06.Enemy\Ruler_Sword</Filter>
     </ClCompile>
-    <ClCompile Include="Ruler_Sword.cpp" />
     <ClCompile Include="MyMath.cpp">
       <Filter>Manager\Math</Filter>
     </ClCompile>
+    <ClCompile Include="CollisionMgr.cpp">
+      <Filter>Manager\CollisionMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="BackGround.cpp">
+      <Filter>01.GameObject\04.BackGround</Filter>
+    </ClCompile>
+    <ClCompile Include="Ruler_Sword.cpp">
+      <Filter>01.GameObject\06.Enemy\Ruler_Sword</Filter>
+    </ClCompile>
+    <ClCompile Include="BackCollision.cpp">
+      <Filter>01.GameObject\01.BackCollision</Filter>
+    </ClCompile>
+    <ClCompile Include="Toad.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">

@@ -8,6 +8,8 @@
 #include "GameObject_Manager.h"
 #include "Enemy.h"
 #include "Ruler_Body.h"
+#include "BackCollision.h"
+#include "Toad.h"
 
 CSpawn_Manager::CSpawn_Manager()
 {
@@ -21,15 +23,32 @@ CSpawn_Manager::~CSpawn_Manager()
 HRESULT CSpawn_Manager::Spawn(const wstring _wstrObjName, const ACTORINFO * _pActorInfo, const OBJECTINFO * _pObjectInfo)
 {
 	wstring wstrPrefab = _pObjectInfo->wstrPrefabName;
-	if (wstrPrefab == L"Ruler_Body")
+	if (wstrPrefab == L"Player")
+	{
+		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)_pObjectInfo->eObjId, CPlayer::Create(_pActorInfo, _pObjectInfo));
+	}
+	else if (wstrPrefab == L"BG_Stage1-1")
+	{
+		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)_pObjectInfo->eObjId, CBackGround::Create(_pActorInfo, _pObjectInfo));
+	}
+	else if (wstrPrefab == L"s01g03")
+	{
+		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)_pObjectInfo->eObjId, CBackCollision::Create(_pActorInfo, _pObjectInfo));
+	}
+	else if (wstrPrefab == L"Ruler_Body")
 	{
 		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)_pObjectInfo->eObjId, CRuler_Body::Create(_pActorInfo, _pObjectInfo));
 	}
-	else if (wstrPrefab == L"Player")
+	else if (wstrPrefab == L"Toad")
 	{
-		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)_pObjectInfo->eObjId, CPlayer::Create(_pActorInfo, _pObjectInfo));
+		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)_pObjectInfo->eObjId, CToad::Create(_pActorInfo, _pObjectInfo));
 	}
 
 
 	return S_OK;
+}
+
+ACTORINFO CSpawn_Manager::CreateEmptyInfo(const INFO & _tInfo, wstring _wstrPrefabName)
+{
+	return ACTORINFO{ _tInfo, false, _wstrPrefabName, L"" };
 }

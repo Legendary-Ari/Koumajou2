@@ -81,11 +81,15 @@ void CMFCToolView::OnDraw(CDC* /*pDC*/)
 	//pForm->m_tUiTool.SetView(this);
 	//pForm->m_tUiTool.Render_UI();
 
-	for (auto& rPair : m_pHierarchyView->m_mapActorInfo)
+	for (int i = 0; i < RENDERID::END; ++i)
+	{
+		m_listRender[i].clear();
+	}
+
+	for (auto& rPair : m_pHierarchyView->m_mapActorInfo) // Render순서로 바꾸기
 	{
 		if (rPair.second->bIsFolder)
 			continue;
-
 		auto& iter = m_pmapPrefab->find(rPair.second->wstrPrefabName);
 		if (iter == m_pmapPrefab->end())
 		{
@@ -94,48 +98,88 @@ void CMFCToolView::OnDraw(CDC* /*pDC*/)
 		}
 		ACTORINFO* pActorInfo = rPair.second;
 		OBJECTINFO* pObjectInfo = iter->second;
-		const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()
-			->Get_TexInfo(pObjectInfo->cstrObjectImage_ObjectKey.GetString());
-		if (!pTexInfo)
-		{
-			ERR_MSG(L"CMFCToolView::OnDraw Texture에 해당 키가 없습니다");
-			return;
-		}
-		float fCenterX;
-		float fCenterY;
+		m_listRender[pObjectInfo->eRenderId].emplace_back(pActorInfo);
+	}
+	
 
-		RECT rect{};
-
-		if (pObjectInfo->bIsSingle)
-			rect = pObjectInfo->tRect;
-		else
+	
+	for (int i = 0; i < RENDERID::END; ++i)
+	{
+		for (auto& pActorInfo : m_listRender[i])
 		{
-			auto& iter_Anim_find = m_pmapAnimation->find( pObjectInfo->cstrIdleAnimImage_ObjectKey + pObjectInfo->cstrIdleAnimImage_StateKey);
-			if (iter_Anim_find == m_pmapAnimation->end())
+			auto& iter = m_pmapPrefab->find(pActorInfo->wstrPrefabName);
+			if (iter == m_pmapPrefab->end())
 			{
-				ERR_MSG(L"Multi로 설정되어있으나 애니메이션을 찾지 못했습니다. MFCToolView::OnDraw");
+				ERR_MSG(L"CMFCToolView::OnDraw 맵에 해당 키가 없습니다");
 				return;
 			}
-			rect = iter_Anim_find->second->vecRect[0];
-		}
+
+			OBJECTINFO* pObjectInfo = iter->second;
+
+			const TEXINFO* pTexInfo = nullptr;
+			if (pObjectInfo->bIsSingle)
+			{
+				pTexInfo = CTexture_Manager::Get_Instance()
+					->Get_TexInfo(pObjectInfo->cstrObjectImage_ObjectKey.GetString());
+			}
+			else
+			{
+				pTexInfo = CTexture_Manager::Get_Instance()
+					->Get_TexInfo(pObjectInfo->cstrIdleAnimImage_ObjectKey.GetString());
+			}
 			
+			if (!pTexInfo)
+			{
+				ERR_MSG(L"CMFCToolView::OnDraw Texture에 해당 키가 없습니다");
+				return;
+			}
+			float fCenterX;
+			float fCenterY;
 
-		fCenterX = float(((rect.right - rect.left)*0.5f));
-		fCenterY = float(((rect.bottom - rect.top) * 0.5f));
+			RECT rect{};
 
-		D3DXMATRIX matScale, matTrans, matRotZ, matWorld;
+			if (pObjectInfo->bIsSingle)
+				rect = pObjectInfo->tRect;
+			else
+			{
+				auto& iter_Anim_find = m_pmapAnimation->find(pObjectInfo->cstrIdleAnimImage_ObjectKey + pObjectInfo->cstrIdleAnimImage_StateKey);
+				if (iter_Anim_find == m_pmapAnimation->end())
+				{
+					ERR_MSG(L"Multi로 설정되어있으나 애니메이션을 찾지 못했습니다. MFCToolView::OnDraw");
+					return;
+				}
+				rect = iter_Anim_find->second->vecRect[0];
+			}
 
-		//초기화
-		D3DXMatrixIdentity(&matScale);
-		D3DXMatrixIdentity(&matTrans);
-		D3DXMatrixIdentity(&matRotZ);
-		D3DXMatrixScaling(&matScale, pActorInfo->tInfo.vSize.x, pActorInfo->tInfo.vSize.y, 0.f);
-		D3DXMatrixRotationZ(&matRotZ, D3DXToRadian(-pActorInfo->tInfo.fAngle));
-		D3DXMatrixTranslation(&matTrans, pActorInfo->tInfo.vPos.x - GetScrollPos(SB_HORZ), pActorInfo->tInfo.vPos.y - GetScrollPos(SB_VERT), 0.f);
-		matWorld = matScale *matRotZ* matTrans;
+			if (pObjectInfo->bIsSingle && rect.bottom == 0)
+			{
+				rect = {};
+				fCenterX = float((pTexInfo->tImageInfo.Width*0.5f));
+				fCenterY = float((pTexInfo->tImageInfo.Height*0.5f));
+			}
+			else
+			{
+				fCenterX = float(((rect.right - rect.left)*0.5f));
+				fCenterY = float(((rect.bottom - rect.top) * 0.5f));
+			}
 
-		CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
-		CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, &rect, &D3DXVECTOR3{ fCenterX,fCenterY,0.f }, nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
+			D3DXMATRIX matScale, matTrans, matRotZ, matWorld;
+
+			//초기화
+			D3DXMatrixIdentity(&matScale);
+			D3DXMatrixIdentity(&matTrans);
+			D3DXMatrixIdentity(&matRotZ);
+			D3DXMatrixScaling(&matScale, pActorInfo->tInfo.vSize.x, pActorInfo->tInfo.vSize.y, 0.f);
+			D3DXMatrixRotationZ(&matRotZ, D3DXToRadian(-pActorInfo->tInfo.fAngle));
+			if (pObjectInfo->eRenderId == RENDERID::BACKGROUND || pObjectInfo->eRenderId == RENDERID::UI)
+				D3DXMatrixTranslation(&matTrans, pActorInfo->tInfo.vPos.x, pActorInfo->tInfo.vPos.y, 0.f);
+			else
+				D3DXMatrixTranslation(&matTrans, pActorInfo->tInfo.vPos.x - GetScrollPos(SB_HORZ), pActorInfo->tInfo.vPos.y - GetScrollPos(SB_VERT), 0.f);
+			matWorld = matScale *matRotZ* matTrans;
+
+			CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
+			CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, (rect.bottom == 0) ? nullptr : &rect, &D3DXVECTOR3{ fCenterX,fCenterY,0.f }, nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
+		}
 	}
 
 	CGraphic_Device::Get_Instance()->Render_End(GetSafeHwnd());

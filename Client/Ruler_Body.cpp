@@ -41,4 +41,43 @@ HRESULT CRuler_Body::Ready_GameObject()
 		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)pPrefab->eObjId, CRuler_Sword::Create(&tActorInfo, pPrefab, this));
 
 	}
+
+	m_vecBodyCollision.resize(1);
+	m_vecBodyCollision[0].eId = COLLISION::C_SPHERE;
+	return S_OK;
+}
+
+int CRuler_Body::Update_GameObject()
+{
+	if (m_bDestroyed)
+		return OBJ_DESTROYED;
+
+
+	UpdateBodyCollision();
+	return OBJ_NOEVENT;
+}
+
+void CRuler_Body::Render_GameObject()
+{
+	CEnemy::Render_GameObject();
+	RenderCollision();
+}
+
+void CRuler_Body::UpdateBodyCollision()
+{
+	float fSize = m_tInfo.vSize.x;
+	float fReduceSize = 0.8f;
+
+	RECT rect = m_pObjectInfo->tRect;
+
+	_vec2 v2Radius = { (float)((rect.right - rect.left) * 0.5f), (float)((rect.bottom - rect.top) * 0.5f) };
+	v2Radius *= fSize;
+	m_vecBodyCollision[0].tRect =
+	{
+		(LONG)(m_tInfo.vPos.x - v2Radius.x * fReduceSize),
+		(LONG)(m_tInfo.vPos.y - v2Radius.y * fReduceSize),
+		(LONG)(m_tInfo.vPos.x + v2Radius.x * fReduceSize),
+		(LONG)(m_tInfo.vPos.y + v2Radius.y * fReduceSize)
+	};
+	
 }

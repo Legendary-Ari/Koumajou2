@@ -50,7 +50,7 @@ int CEffect::Update_GameObject()
 		m_fTimeStack = 0.f;
 		++m_iCurFrame;
 
-		if (m_pAnimationInfo->vecRect.size() < m_iCurFrame)
+		if (m_pAnimationInfo->vecRect.size() < (unsigned)m_iCurFrame)
 		{
 			m_iCurFrame = 0;
 			if (!m_pAnimationInfo->bLoop)

@@ -10,7 +10,7 @@ float CMyMath::FInterpTo( float _fCurrent, float _fTarget, float _fDeltaTime, fl
 
 	const float fDist = _fTarget - _fCurrent;
 
-	if ( sqrt( fDist ) < 0.0001f )
+	if ( sqrt( fDist ) < 0.01f )
 	{
 		return _fTarget;
 	}

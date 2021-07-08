@@ -5,8 +5,8 @@ const int WINCY = 800;
 const int CLIENTCX = 800;
 const int CLIENTCY = 600;
 #else
-const int WINCX = 800;
-const int WINCY = 600;
+const int WINCX = 1040;
+const int WINCY = 624;
 #endif // _AFX
 
 

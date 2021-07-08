@@ -109,3 +109,9 @@ typedef struct tagActorInfo
 #endif
 }ACTORINFO;
 
+typedef struct tagCollision
+{
+	enum ID {C_RECT, C_SPHERE};
+	RECT	tRect;
+	ID		eId;
+}COLLISION;

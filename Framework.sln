@@ -15,6 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00.Headers", "00.Headers", 
 		Headers\Function.h = Headers\Function.h
 		Headers\Headers.h = Headers\Headers.h
 		Headers\Struct.h = Headers\Struct.h
+		Headers\Typedef.h = Headers\Typedef.h
 	EndProjectSection
 EndProject
 Global

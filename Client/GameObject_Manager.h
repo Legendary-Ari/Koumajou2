@@ -11,6 +11,7 @@ public:
 	void Update_GameObject_Manager(); 
 	void Render_GameObject_Manager(); 
 	void Release_GameObject_Manager(); 
+	const list<CGameObject*>& Get_BackGroundObject() { return m_listGameObject[OBJECTINFO::BACKGROUND]; }
 private:
 	list<CGameObject*> m_listGameObject[OBJECTINFO::OBJID_END]; 
 	list<CGameObject*> m_listGameObjectRender[RENDERID::END];

@@ -1,18 +1,21 @@
 #pragma once
 #include "Enemy.h"
-class CRuler_Body final:
+class CToad final:
 	public CEnemy
 {
 private:
-	explicit CRuler_Body();
+	enum STATE {IDLE, ATTACK, JUMP, DIE, STATE_END };
+private:
+	CToad();
 public:
-	virtual ~CRuler_Body();
+	virtual ~CToad();
 public:
 	static CGameObject* Create(const ACTORINFO* _pActorInfo, const OBJECTINFO* _pObjectInfo);
 
 	virtual HRESULT Ready_GameObject() override;
 	virtual int		Update_GameObject() override;
 	virtual void	Render_GameObject() override;
+
 private:
 	virtual void	UpdateBodyCollision() override;
 };

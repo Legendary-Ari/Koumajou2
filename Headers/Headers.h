@@ -11,6 +11,7 @@
 
 #include <string>
 using namespace std;
+#include "Typedef.h"
 #include "Define.h"
 #include "Extern.h"
 #include "Enum.h"
@@ -23,6 +24,7 @@ using namespace std;
 #include "GameObject_Manager.h"
 #include "Key_Manager.h"
 #include "Scroll_Manager.h"
+#include "Prefab_Manager.h"
 #else
 #include "EnumToString.h"
 #endif

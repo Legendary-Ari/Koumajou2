@@ -116,7 +116,7 @@ void CAnimationTool::OnBnClickedAddInfo()//여기 진행중..
 	}
 	CString wstrObject_Key;
 	m_ListBox_Image.GetText(iImage, wstrObject_Key);
-	CString AnimationName = m_wstrObject_Key + m_wstrState_Key; //두개objkey와 statekey를 더한것이 키값
+	CString AnimationName = wstrObject_Key + m_wstrState_Key; //두개objkey와 statekey를 더한것이 키값
 	ANIMATION* pAnima = nullptr;
 	auto& iter_Animation_find = m_mapAnima.find(AnimationName);
 	int iResult = -1;
@@ -133,18 +133,16 @@ void CAnimationTool::OnBnClickedAddInfo()//여기 진행중..
 		else
 			return;
 	}
+	
 
-	CString cstrPath_Key;
-	m_ListBox_Image.GetText(iImage, cstrPath_Key);
-
-	pAnima->wstrObjectKey = cstrPath_Key;
+	pAnima->wstrObjectKey = wstrObject_Key;
 	pAnima->wstrStateKey = m_wstrState_Key;
 	pAnima->fPlay_Speed = m_fPlay_Speed;
 	
 
-	auto& iter_Anim_find = m_mapObjectKeyToPath.find(cstrPath_Key);
+	auto& iter_Anim_find = m_mapObjectKeyToPath.find(wstrObject_Key);
 	CString cstrPath = iter_Anim_find->second;
-	CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX, vector<RECT>(), cstrPath.GetString(), m_wstrObject_Key.GetString(), m_wstrState_Key.GetString());
+	CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX, vector<RECT>(), cstrPath.GetString(), wstrObject_Key.GetString(), m_wstrState_Key.GetString());
 	pAnima->wstrFilePath = iter_Anim_find->second;
 
 	if (m_Loop.GetCheck())
@@ -155,7 +153,7 @@ void CAnimationTool::OnBnClickedAddInfo()//여기 진행중..
 	if (iResult != IDYES)
 	{
 		m_mapAnima.emplace(AnimationName, pAnima);
-		m_Animation_ListBox.AddString(m_wstrObject_Key + L"->" + m_wstrState_Key);
+		m_Animation_ListBox.AddString(wstrObject_Key + L"->" + m_wstrState_Key);
 	}
 
 	//------------------Reset Rect--------------------

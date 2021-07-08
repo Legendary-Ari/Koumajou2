@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Stage.h"
-#include "Terrain.h"
 #include "Prefab_Manager.h"
 #include "Player.h"
 
