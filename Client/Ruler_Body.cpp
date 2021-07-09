@@ -68,16 +68,16 @@ void CRuler_Body::UpdateBodyCollision()
 	float fSize = m_tInfo.vSize.x;
 	float fReduceSize = 0.8f;
 
-	RECT rect = m_pObjectInfo->tRect;
+	RECT rect = m_pObjectInfo->tFRect;
 
 	_vec2 v2Radius = { (float)((rect.right - rect.left) * 0.5f), (float)((rect.bottom - rect.top) * 0.5f) };
 	v2Radius *= fSize;
-	m_vecBodyCollision[0].tRect =
+	m_vecBodyCollision[0].tFRect =
 	{
-		(LONG)(m_tInfo.vPos.x - v2Radius.x * fReduceSize),
-		(LONG)(m_tInfo.vPos.y - v2Radius.y * fReduceSize),
-		(LONG)(m_tInfo.vPos.x + v2Radius.x * fReduceSize),
-		(LONG)(m_tInfo.vPos.y + v2Radius.y * fReduceSize)
+		(float)(m_tInfo.vPos.x - v2Radius.x * fReduceSize * m_tInfo.vSize.x),
+		(float)(m_tInfo.vPos.y - v2Radius.y * fReduceSize * m_tInfo.vSize.y),
+		(float)(m_tInfo.vPos.x + v2Radius.x * fReduceSize * m_tInfo.vSize.x),
+		(float)(m_tInfo.vPos.y + v2Radius.y * fReduceSize * m_tInfo.vSize.y)
 	};
 	
 }

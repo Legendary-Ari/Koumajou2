@@ -8,6 +8,9 @@ CGameObject::CGameObject()
 	, m_tInfo({})
 	, m_bIsFliped(false)
 	, m_bRenderCollision(true)
+	, m_bVisible(true)
+	, m_bBlockable(true)
+	, m_bOverlapable(true)
 {
 	
 }
@@ -31,6 +34,10 @@ void CGameObject::OnBlocked(CGameObject* pHitObject,DIRECTION::ID _eId)
 }
 
 void CGameObject::OnBlockedTile(CGameObject * pHitObject, DIRECTION::ID _eId)
+{
+}
+
+void CGameObject::Set_OnGround(bool _b)
 {
 }
 
@@ -84,16 +91,16 @@ void CGameObject::RenderCollision()
 		{
 			dwSize = 5;
 			v2LinePos = new _vec2[dwSize];
-			v2LinePos[0] = { (float)(tCollision.tRect.left), (float)(tCollision.tRect.top) };
-			v2LinePos[1] = { (float)(tCollision.tRect.right),(float)( tCollision.tRect.top) };
-			v2LinePos[2] = { (float)(tCollision.tRect.right),(float)( tCollision.tRect.bottom) };
-			v2LinePos[3] = { (float)(tCollision.tRect.left), (float)(tCollision.tRect.bottom) };
+			v2LinePos[0] = { (float)(tCollision.tFRect.left), (float)(tCollision.tFRect.top) };
+			v2LinePos[1] = { (float)(tCollision.tFRect.right),(float)( tCollision.tFRect.top) };
+			v2LinePos[2] = { (float)(tCollision.tFRect.right),(float)( tCollision.tFRect.bottom) };
+			v2LinePos[3] = { (float)(tCollision.tFRect.left), (float)(tCollision.tFRect.bottom) };
 			v2LinePos[4] = v2LinePos[0];
 		}
 		else
 		{
-			_vec2 v2Center = { (tCollision.tRect.right + tCollision.tRect.left) * 0.5f, (tCollision.tRect.top + tCollision.tRect.bottom) * 0.5f };
-			float fRadius = (tCollision.tRect.right - tCollision.tRect.left) * 0.5f;
+			_vec2 v2Center = { (tCollision.tFRect.right + tCollision.tFRect.left) * 0.5f, (tCollision.tFRect.top + tCollision.tFRect.bottom) * 0.5f };
+			float fRadius = (tCollision.tFRect.right - tCollision.tFRect.left) * 0.5f;
 			dwSize = 9;
 			v2LinePos = new _vec2[dwSize];
 			for (int i = 0; i < int(dwSize-1); ++i)
@@ -121,16 +128,16 @@ void CGameObject::RenderCollision()
 		{
 			dwSize = 5;
 			v2LinePos = new _vec2[dwSize];
-			v2LinePos[0] = {(float)( tCollision.tRect.left), (float)(tCollision.tRect.top) };
-			v2LinePos[1] = {(float)( tCollision.tRect.right),(float)( tCollision.tRect.top) };
-			v2LinePos[2] = {(float)( tCollision.tRect.right),(float)( tCollision.tRect.bottom) };
-			v2LinePos[3] = {(float)( tCollision.tRect.left), (float)(tCollision.tRect.bottom) };
+			v2LinePos[0] = {(float)( tCollision.tFRect.left), (float)(tCollision.tFRect.top) };
+			v2LinePos[1] = {(float)( tCollision.tFRect.right),(float)( tCollision.tFRect.top) };
+			v2LinePos[2] = {(float)( tCollision.tFRect.right),(float)( tCollision.tFRect.bottom) };
+			v2LinePos[3] = {(float)( tCollision.tFRect.left), (float)(tCollision.tFRect.bottom) };
 			v2LinePos[4] = v2LinePos[0];
 		}
 		else
 		{
-			_vec2 v2Center = { (tCollision.tRect.right + tCollision.tRect.left) * 0.5f, (tCollision.tRect.top + tCollision.tRect.bottom) * 0.5f };
-			float fRadius = (tCollision.tRect.right - tCollision.tRect.left) * 0.5f;
+			_vec2 v2Center = { (tCollision.tFRect.right + tCollision.tFRect.left) * 0.5f, (tCollision.tFRect.top + tCollision.tFRect.bottom) * 0.5f };
+			float fRadius = (tCollision.tFRect.right - tCollision.tFRect.left) * 0.5f;
 			dwSize = 9;
 			v2LinePos = new _vec2[dwSize];
 			for (int i = 0; i < int(dwSize-1); ++i)

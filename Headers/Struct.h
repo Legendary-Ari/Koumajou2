@@ -38,7 +38,13 @@ typedef struct tagInfo
 
 }INFO;
 
-
+typedef struct tagFRect
+{
+	float	left;
+	float	top;
+	float	right;
+	float	bottom;
+}FRECT;
 
 typedef struct tagOBJECTINFO
 
@@ -66,7 +72,7 @@ typedef struct tagOBJECTINFO
 	BYTE	eRenderId;
 	bool	bIsSingle;
 // IfSingle
-	RECT	tRect;
+	RECT	tFRect;
 //Bullet
 	bool	bDestructable;
 	BYTE	eBulletType;
@@ -112,6 +118,6 @@ typedef struct tagActorInfo
 typedef struct tagCollision
 {
 	enum ID {C_RECT, C_SPHERE};
-	RECT	tRect;
+	FRECT	tFRect;
 	ID		eId;
 }COLLISION;

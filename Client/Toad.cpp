@@ -86,11 +86,11 @@ void CToad::UpdateBodyCollision()
 
 	_vec2 v2Radius = { (float)((rect.right - rect.left) * 0.5f), (float)((rect.bottom - rect.top) * 0.5f) };
 	v2Radius *= fSize;
-	m_vecBodyCollision[0].tRect =
+	m_vecBodyCollision[0].tFRect =
 	{
-		(LONG)(m_tInfo.vPos.x - v2Radius.x * fReduceSizeLeft),
-		(LONG)(m_tInfo.vPos.y - v2Radius.y * fReduceSizeUp),
-		(LONG)(m_tInfo.vPos.x + v2Radius.x * fReduceSizeRight),
-		(LONG)(m_tInfo.vPos.y + v2Radius.y * fReduceSizeDown)
+		(float)(m_tInfo.vPos.x - v2Radius.x * m_tInfo.vSize.x * fReduceSizeLeft),
+		(float)(m_tInfo.vPos.y - v2Radius.y * m_tInfo.vSize.y * fReduceSizeUp),
+		(float)(m_tInfo.vPos.x + v2Radius.x * m_tInfo.vSize.x * fReduceSizeRight),
+		(float)(m_tInfo.vPos.y + v2Radius.y * m_tInfo.vSize.y * fReduceSizeDown)
 	};
 }

@@ -198,6 +198,7 @@
     <ClInclude Include="EnumToString.h" />
     <ClInclude Include="HierarchyNewActorDialog.h" />
     <ClInclude Include="HierarchyView.h" />
+    <ClInclude Include="Mapping.h" />
     <ClInclude Include="ObjectTool.h" />
     <ClInclude Include="FileInfo.h" />
     <ClInclude Include="Form.h" />
@@ -207,7 +208,6 @@
     <ClInclude Include="MFCTool.h" />
     <ClInclude Include="MFCToolDoc.h" />
     <ClInclude Include="MFCToolView.h" />
-    <ClInclude Include="Miniview.h" />
     <ClInclude Include="Multi_Texture.h" />
     <ClInclude Include="OptionView.h" />
     <ClInclude Include="Resource.h" />
@@ -224,6 +224,7 @@
     <ClCompile Include="EnumToString.cpp" />
     <ClCompile Include="HierarchyNewActorDialog.cpp" />
     <ClCompile Include="HierarchyView.cpp" />
+    <ClCompile Include="Mapping.cpp" />
     <ClCompile Include="ObjectTool.cpp" />
     <ClCompile Include="FileInfo.cpp" />
     <ClCompile Include="Form.cpp" />
@@ -233,7 +234,6 @@
     <ClCompile Include="MFCTool.cpp" />
     <ClCompile Include="MFCToolDoc.cpp" />
     <ClCompile Include="MFCToolView.cpp" />
-    <ClCompile Include="Miniview.cpp" />
     <ClCompile Include="Multi_Texture.cpp" />
     <ClCompile Include="OptionView.cpp" />
     <ClCompile Include="Single_Texture.cpp" />

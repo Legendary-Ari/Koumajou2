@@ -108,9 +108,6 @@
     <ClInclude Include="Terrain.h">
       <Filter>04.Terrain</Filter>
     </ClInclude>
-    <ClInclude Include="Miniview.h">
-      <Filter>01.View\MiniView</Filter>
-    </ClInclude>
     <ClInclude Include="Form.h">
       <Filter>01.View\Form</Filter>
     </ClInclude>
@@ -142,6 +139,9 @@
       <Filter>05.EnumToString</Filter>
     </ClInclude>
     <ClInclude Include="..\Headers\Enum.h" />
+    <ClInclude Include="Mapping.h">
+      <Filter>01.View\MiniView</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp">
@@ -177,9 +177,6 @@
     <ClCompile Include="Terrain.cpp">
       <Filter>04.Terrain</Filter>
     </ClCompile>
-    <ClCompile Include="Miniview.cpp">
-      <Filter>01.View\MiniView</Filter>
-    </ClCompile>
     <ClCompile Include="Form.cpp">
       <Filter>01.View\Form</Filter>
     </ClCompile>
@@ -209,6 +206,9 @@
     </ClCompile>
     <ClCompile Include="EnumToString.cpp">
       <Filter>05.EnumToString</Filter>
+    </ClCompile>
+    <ClCompile Include="Mapping.cpp">
+      <Filter>01.View\MiniView</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

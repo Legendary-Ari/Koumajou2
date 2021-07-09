@@ -1,9 +1,9 @@
 #pragma once
 #ifdef _AFX
-const int WINCX = 1200;
+const int WINCX = 1600;
 const int WINCY = 800;
-const int CLIENTCX = 800;
-const int CLIENTCY = 600;
+const int CLIENTCX = 1040;
+const int CLIENTCY = 624;
 #else
 const int WINCX = 1040;
 const int WINCY = 624;

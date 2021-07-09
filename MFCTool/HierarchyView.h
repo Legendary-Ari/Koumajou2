@@ -28,14 +28,12 @@ public:
 	void CreateNewTreeItem(bool _bIsFolder, CString& _cstrName, OBJECTINFO* _pPrefab = nullptr);
 	void InsertTreeItem(bool _bIsFolder, CString& _cstrName);
 	void InsertNewEmptyActorToMap(CString& _cstrName, OBJECTINFO* _pPrefab);
-	void SaveTreeItems();
-	void LoadTreeItems(UINT _iStageFirst, UINT _iStageSecond);
+	void SaveTreeItems(UINT _uiStageFirstIdx, UINT _uiStageSecondIdx);
+	void LoadTreeItems(UINT _uiStageFirstIdx, UINT _uiStageSecondIdx);
 private:
 	bool		m_bDestroying;
 	COptionView*	m_pOptionView;
 	CString		m_cstrEditFrom;
-	UINT		m_iStageFirstIdx;
-	UINT		m_iStageSecondIdx;
 public:
 	CMFCToolView* m_pView;
 	CHierarchyNewActorDialog m_tNewActorDialog;

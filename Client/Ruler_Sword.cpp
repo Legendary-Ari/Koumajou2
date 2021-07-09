@@ -72,7 +72,7 @@ void CRuler_Sword::UpdateBodyCollision()
 	float fSize = m_tInfo.vSize.x;
 	float fReduceSize = 0.1f;
 
-	RECT rect = m_pObjectInfo->tRect;
+	RECT rect = m_pObjectInfo->tFRect;
 
 	_vec3 vToThis = m_tInfo.vPos - m_pRulerBody->Get_Info().vPos;
 	float fDistance = D3DXVec3Length(&vToThis);
@@ -81,12 +81,12 @@ void CRuler_Sword::UpdateBodyCollision()
 	for (size_t i = 0; i < m_vecBodyCollision.size(); ++i)
 	{
 		_vec3 vColPos = m_tInfo.vPos + vToThis * ((float)(i)-2.f) * fDistance / m_vecBodyCollision.size();
-		m_vecBodyCollision[i].tRect =
+		m_vecBodyCollision[i].tFRect =
 		{
-			(LONG)(vColPos.x - v2Radius.x * fReduceSize),
-			(LONG)(vColPos.y - v2Radius.y * fReduceSize),
-			(LONG)(vColPos.x + v2Radius.x * fReduceSize),
-			(LONG)(vColPos.y + v2Radius.y * fReduceSize)
+			(float)(vColPos.x - v2Radius.x * fReduceSize * m_tInfo.vSize.x),
+			(float)(vColPos.y - v2Radius.y * fReduceSize * m_tInfo.vSize.y),
+			(float)(vColPos.x + v2Radius.x * fReduceSize * m_tInfo.vSize.x),
+			(float)(vColPos.y + v2Radius.y * fReduceSize * m_tInfo.vSize.y)
 		};
 	}
 	

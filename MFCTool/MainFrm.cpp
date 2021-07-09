@@ -7,7 +7,7 @@
 
 #include "MainFrm.h"
 #include "MFCToolView.h"
-#include "Miniview.h"
+#include "Mapping.h"
 #include "Form.h"
 #include "HierarchyView.h"
 #include "OptionView.h"
@@ -125,7 +125,7 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 	*/
 	
 	m_tMainSplitter.CreateView(0, 1, RUNTIME_CLASS(CMFCToolView), CSize(CLIENTCX, CLIENTCY), pContext); 
-	m_tSecondSplitter.CreateView(0, 0, RUNTIME_CLASS(CMiniview), CSize(300, 300), pContext);
+	m_tSecondSplitter.CreateView(0, 0, RUNTIME_CLASS(CMapping), CSize(300, 300), pContext);
 	m_tSecondSplitter.CreateView(1, 0, RUNTIME_CLASS(CForm), CSize(300, 300), pContext);
 	m_tMainSplitter.SetColumnInfo(0, 300, 10);
 	m_tRightSplitter.CreateView(0, 0, RUNTIME_CLASS(CHierarchyView), CSize(400, 300), pContext);

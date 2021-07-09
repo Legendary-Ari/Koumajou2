@@ -189,7 +189,9 @@
     <ClInclude Include="BackCollision.h">
       <Filter>01.GameObject\01.BackCollision</Filter>
     </ClInclude>
-    <ClInclude Include="Toad.h" />
+    <ClInclude Include="Toad.h">
+      <Filter>01.GameObject\06.Enemy\Toad</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -282,7 +284,9 @@
     <ClCompile Include="BackCollision.cpp">
       <Filter>01.GameObject\01.BackCollision</Filter>
     </ClCompile>
-    <ClCompile Include="Toad.cpp" />
+    <ClCompile Include="Toad.cpp">
+      <Filter>01.GameObject\06.Enemy\Toad</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">

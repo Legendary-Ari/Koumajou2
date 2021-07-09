@@ -6,7 +6,7 @@ public:
 	explicit CTime_Manager();
 	virtual ~CTime_Manager();
 public:
-	float Get_DeltaTime() { return m_fDeltaTime;  }
+	float Get_DeltaTime();
 public:
 	void Ready_Time_Manager(); 
 	void Update_Time_Manager(); 

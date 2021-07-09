@@ -14,7 +14,6 @@
 #include "Single_Texture.h"
 #include "Terrain.h"
 #include "MainFrm.h"
-#include "Miniview.h"
 #include "MapTool.h"
 #include "Form.h"
 #include "UiTool.h"
@@ -139,7 +138,7 @@ void CMFCToolView::OnDraw(CDC* /*pDC*/)
 			RECT rect{};
 
 			if (pObjectInfo->bIsSingle)
-				rect = pObjectInfo->tRect;
+				rect = pObjectInfo->tFRect;
 			else
 			{
 				auto& iter_Anim_find = m_pmapAnimation->find(pObjectInfo->cstrIdleAnimImage_ObjectKey + pObjectInfo->cstrIdleAnimImage_StateKey);
@@ -233,7 +232,7 @@ void CMFCToolView::OnInitialUpdate()
 	CScrollView::OnInitialUpdate();
 	
 	//CSize tsize; 
-	SetScrollSizes(MM_TEXT, CSize(TILECX * TILEX,(TILECY >> 1) * TILEY));
+	SetScrollSizes(MM_TEXT, CSize(CLIENTCX*2, CLIENTCY));
 	//GetScrollPos()
 	g_hWND = m_hWnd; 
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd()); 
@@ -288,14 +287,12 @@ void CMFCToolView::OnLButtonDown(UINT nFlags, CPoint point)
 // 	ERR_MSG(szBuf); 
 	D3DXVECTOR3 vMouse{ float(point.x) + GetScrollPos(SB_HORZ), float(point.y) + GetScrollPos(SB_VERT), 0.f }; 
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(AfxGetApp()->GetMainWnd());
-	CMiniview* pView = dynamic_cast<CMiniview*>(pMain->m_tSecondSplitter.GetPane(0, 0));
 	CForm* pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
 	//m_pTerrain->TilePicking_Terrain(vMouse, 2, 0);
 
 	//pForm->m_tUiTool.PickingPos(vMouse);
 	////여기서 충돌 체크 
 	//pForm->m_tUiTool.Collision_Down(vMouse);
-	pView->Invalidate(FALSE); 
 
 	Invalidate(FALSE); 
 	CScrollView::OnLButtonDown(nFlags, point);
@@ -308,7 +305,6 @@ void CMFCToolView::OnMouseMove(UINT nFlags, CPoint point)
 
 	D3DXVECTOR3 vMouse{ float(point.x) + GetScrollPos(SB_HORZ), float(point.y) + GetScrollPos(SB_VERT), 0.f };
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(AfxGetApp()->GetMainWnd());
-	CMiniview* pView = dynamic_cast<CMiniview*>(pMain->m_tSecondSplitter.GetPane(0, 0));
 	CForm* pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
 
 //	pForm->m_tUiTool.Collision_Move(vMouse);
@@ -322,7 +318,6 @@ void CMFCToolView::OnLButtonUp(UINT nFlags, CPoint point)
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	D3DXVECTOR3 vMouse{ float(point.x) + GetScrollPos(SB_HORZ), float(point.y) + GetScrollPos(SB_VERT), 0.f };
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(AfxGetApp()->GetMainWnd());
-	CMiniview* pView = dynamic_cast<CMiniview*>(pMain->m_tSecondSplitter.GetPane(0, 0));
 	CForm* pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
 
 	//pForm->m_tUiTool.Collision_Up();

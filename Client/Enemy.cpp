@@ -41,7 +41,7 @@ void CEnemy::Render_GameObject()
 	D3DXMatrixRotationZ(&matRotZ, D3DXToRadian(-m_tInfo.fAngle));
 	D3DXMatrixTranslation(&matTrans, m_tInfo.vPos.x + vScroll.x, m_tInfo.vPos.y + vScroll.y, 0.f);
 	matWorld = matScale * matRotZ * matTrans;
-	const RECT& rect = m_pObjectInfo->tRect;
+	const RECT& rect = m_pObjectInfo->tFRect;
 	float 	fCenterX = float(((rect.right - rect.left)*0.5f));
 	float 	fCenterY = float(((rect.bottom - rect.top) * 0.5f));
 	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);

@@ -21,20 +21,29 @@ public:
 	virtual void	Render_GameObject() override;
 	virtual void	Release_GameObject() override;
 	virtual void	OnBlocked(CGameObject* pHitObject, DIRECTION::ID _eId) override;
+	virtual void	Set_OnGround(bool _b) override;
 public:
 	static CGameObject* Create(const ACTORINFO* _pActorInfo, const OBJECTINFO* _pPrefab);
+
 public:
 	virtual void	OnBlockedTile(CGameObject* pHitObject, DIRECTION::ID _eId);
+	const vector<COLLISION>& Get_TileCollision() const { return m_vecBodyTileCollision; }
 private:
 	virtual void	UpdateState() override;
 	virtual void	UpdateAnimation() override;
 	virtual void	UpdateBodyCollision() override;
+	
 	void	UpdateMoveWithPressKey();
 	void	Offset();
 	
 private:
+	
+	vector<COLLISION> m_vecBodyTileCollision;
+
+	bool	m_bHit;
 	bool	m_bInvincible;
 	const float	m_fHitTimeLength;
+	const float	m_fInvincibleTimeLength;
 	float	m_fHitCumulateTime;
 	bool	m_bJumping;
 	bool	m_bFalling;
@@ -46,6 +55,7 @@ private:
 	bool	m_bOnGround;
 	bool	m_bDodge;
 	bool	m_bFlying;
+	
 	STATE m_ePrevState;
 	STATE m_eCurState;
 };

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CollisionMgr.h"
 #include "GameObject.h"
+#include "Player.h"
 
 
 CCollisionMgr::CCollisionMgr()
@@ -21,8 +22,9 @@ void CCollisionMgr::Collision( list<CGameObject*>& _Dst, list<CGameObject*>& _Sr
 		{
 			if ( IsObj_Overlapped( pDst->Get_BodyCollision(), pSrc->Get_BodyCollision()) )
 			{
-
+				if(pDst->Get_IsOverlapable())
 					pDst->OnOverlaped(pSrc);
+				if (pSrc->Get_IsOverlapable())
 					pSrc->OnOverlaped(pDst);
 			}
 		}
@@ -36,6 +38,8 @@ void CCollisionMgr::Collision_Ex( list<CGameObject*>& _Dst, list<CGameObject*>& 
 	{
 		for ( auto& pSrc : _Src )
 		{
+			if (!(pSrc->Get_IsBlockable() && pDst->Get_IsBlockable()))
+				continue;
 			if ( IsObj_OverlappedEx(pDst->Get_BodyCollision(), pSrc->Get_BodyCollision(),&fX,&fY) )
 			{
 				if ( fX < fY )
@@ -78,7 +82,7 @@ void CCollisionMgr::Collision_Ex( list<CGameObject*>& _Dst, list<CGameObject*>& 
 	}
 }
 
-void CCollisionMgr::Collision_BackGroundEx( list<CGameObject*>& _Src )
+void CCollisionMgr::Collision_BackGroundEx( list<CGameObject*>& _Src , bool _bForceEx)
 {
 	auto& listBackGround = CGameObject_Manager::Get_Instance()->Get_BackGroundObject();
 	float fX = 0.f, fY = 0.f;
@@ -86,7 +90,9 @@ void CCollisionMgr::Collision_BackGroundEx( list<CGameObject*>& _Src )
 	{
 		for (auto& pSrc : _Src)
 		{
-			if (IsObj_OverlappedEx(pDst->Get_BodyCollision(), pSrc->Get_BodyCollision(), &fX, &fY))
+			CPlayer* pPlayer = dynamic_cast<CPlayer*>(pSrc);
+
+			if (IsObj_OverlappedEx(pDst->Get_BodyCollision(), pPlayer ? pPlayer->Get_TileCollision() : pSrc->Get_BodyCollision(), &fX, &fY))
 			{
 				if (fX < fY)
 				{
@@ -123,7 +129,7 @@ void CCollisionMgr::Collision_BackGroundEx( list<CGameObject*>& _Src )
 					}
 				}
 
-			}
+			}			
 		}
 	}
 }
@@ -137,28 +143,28 @@ bool CCollisionMgr::IsObj_Overlapped(const vector<COLLISION>& _Dst, const vector
 		{
 			if (tDst.eId == COLLISION::C_RECT, tSrc.eId == COLLISION::C_RECT)
 			{
-				if (Check_Rect(tDst.tRect, tSrc.tRect))
+				if (Check_Rect(tDst.tFRect, tSrc.tFRect))
 				{
 					return true;
 				}
 			}
 			else if (tDst.eId == COLLISION::C_RECT, tSrc.eId == COLLISION::C_SPHERE)
 			{
-				if (Check_RectAndSphere(tDst.tRect, tSrc.tRect))
+				if (Check_RectAndSphere(tDst.tFRect, tSrc.tFRect))
 				{
 					return true;
 				}
 			}
 			else if (tDst.eId == COLLISION::C_SPHERE, tSrc.eId == COLLISION::C_RECT)
 			{
-				if (Check_RectAndSphere(tSrc.tRect, tDst.tRect))
+				if (Check_RectAndSphere(tSrc.tFRect, tDst.tFRect))
 				{
 					return true;
 				}
 			}
 			else if (tDst.eId == COLLISION::C_SPHERE, tSrc.eId == COLLISION::C_SPHERE)
 			{
-				if (Check_Sphere(tDst.tRect, tSrc.tRect))
+				if (Check_Sphere(tDst.tFRect, tSrc.tFRect))
 				{
 					return true;
 				}
@@ -177,21 +183,21 @@ bool CCollisionMgr::IsObj_OverlappedEx( const vector<COLLISION>& _Dst, const vec
 		{
 			if (tDst.eId == COLLISION::C_RECT, tSrc.eId == COLLISION::C_RECT)
 			{
-				if (Check_Rect(tDst.tRect, tSrc.tRect, _fX, _fY))
+				if (Check_Rect(tDst.tFRect, tSrc.tFRect, _fX, _fY))
 				{
 					return true;
 				}
 			}
 			else if (tDst.eId == COLLISION::C_RECT, tSrc.eId == COLLISION::C_SPHERE)
 			{
-				if (Check_RectAndSphere(tDst.tRect, tSrc.tRect, _fX, _fY))
+				if (Check_RectAndSphere(tDst.tFRect, tSrc.tFRect, _fX, _fY))
 				{
 					return true;
 				}
 			}
 			else if (tDst.eId == COLLISION::C_SPHERE, tSrc.eId == COLLISION::C_RECT)
 			{
-				if (Check_RectAndSphere(tSrc.tRect, tDst.tRect, _fX, _fY))
+				if (Check_RectAndSphere(tSrc.tFRect, tDst.tFRect, _fX, _fY))
 				{
 					*_fX = -(*_fX);
 					*_fY = -(*_fY);
@@ -200,7 +206,7 @@ bool CCollisionMgr::IsObj_OverlappedEx( const vector<COLLISION>& _Dst, const vec
 			}
 			else if (tDst.eId == COLLISION::C_SPHERE, tSrc.eId == COLLISION::C_SPHERE)
 			{
-				if (Check_Sphere(tDst.tRect, tSrc.tRect, _fX, _fY))
+				if (Check_Sphere(tDst.tFRect, tSrc.tFRect, _fX, _fY))
 				{
 					return true;
 				}
@@ -210,7 +216,29 @@ bool CCollisionMgr::IsObj_OverlappedEx( const vector<COLLISION>& _Dst, const vec
 	return false;
 }
 
-bool CCollisionMgr::Check_Sphere(const RECT& _Dst, const RECT& _Src, float* _x, float* _y)
+//Use This After Ex
+bool CCollisionMgr::IsWalking(const CPlayer* _pSrc)
+{
+	auto& listBackGround = CGameObject_Manager::Get_Instance()->Get_BackGroundObject();
+	float fX = 0.f, fY = 0.f;
+
+	for (auto& pDst : listBackGround)
+	{
+		if (!pDst->Get_IsOverlapable())
+			continue;
+		vector<COLLISION> vecPlusBottom(_pSrc->Get_BodyCollision());
+		for (auto& tCol : vecPlusBottom)
+			tCol.tFRect.bottom += 5;
+		if (IsObj_Overlapped(pDst->Get_BodyCollision(), _pSrc->Get_BodyCollision()))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool CCollisionMgr::Check_Sphere(const FRECT& _Dst, const FRECT& _Src, float* _x, float* _y)
 {
 	D3DXVECTOR3 vDstCenter{ (_Dst.left + _Dst.right) * 0.5f,(_Dst.top + _Dst.bottom) * 0.5f,0.f };
 	D3DXVECTOR3 vSrcCenter{ (_Src.left + _Src.right) * 0.5f,(_Src.top + _Src.bottom) * 0.5f,0.f };
@@ -233,19 +261,53 @@ bool CCollisionMgr::Check_Sphere(const RECT& _Dst, const RECT& _Src, float* _x, 
 	return false;
 }
 
-bool CCollisionMgr::Check_Rect(const RECT& _Dst,const RECT& _Src, float* _x, float* _y )
+bool CCollisionMgr::Check_Rect(const FRECT& _Dst,const FRECT& _Src, float* _x, float* _y )
 {
-	RECT rc = {};
-	if ( IntersectRect(&rc, &_Dst,&_Src ) )
+	FRECT rc = {};
+
+	//float fDstW = _Dst.right - _Dst.left;
+	//float fDstH = _Dst.bottom - _Dst.top;
+	//float fSrcW = _Src.right - _Src.left;
+	//float fSrcH = _Src.bottom - _Src.top;
+
+	if (_Dst.left < _Src.left)
 	{
-		*_x = float(rc.right - rc.left);
-		*_y = float(rc.bottom - rc.top);
-		return true;
+		rc.left = _Src.left;
 	}
+	else
+	{
+		rc.left = _Dst.left;
+	}
+	rc.right = min(_Src.right, _Dst.right);
+
+	if (_Dst.top < _Src.top)
+	{
+		rc.top = _Src.top;
+	}
+	else
+	{
+		rc.top = _Dst.top;
+	}
+	rc.bottom = min(_Src.bottom, _Dst.bottom);
+
+	float rcW = float(rc.right - rc.left);
+	float rcH = (rc.bottom - rc.top);
+	
+	if (rcW > 0 && rcH > 0)
+	{
+		if (_x != nullptr)
+		{
+			*_x = rcW;
+			*_y = rcH;
+			return true;
+		}
+
+	}
+
 	return false;
 }
 
-bool CCollisionMgr::Check_RectAndSphere(const RECT& _Rect, const RECT& _Sphere, float* _x, float* _y)
+bool CCollisionMgr::Check_RectAndSphere(const FRECT& _Rect, const FRECT& _Sphere, float* _x, float* _y)
 {
 	D3DXVECTOR3 vDot[4];
 	D3DXVECTOR3 vSphereCenter{(_Sphere.left + _Sphere.right) * 0.5f, (_Sphere.top + _Sphere.bottom) * 0.5f , 0.f};
@@ -278,3 +340,4 @@ bool CCollisionMgr::Check_Collision(const COLLISION & _Dst, const COLLISION & _S
 {
 	return false;
 }
+

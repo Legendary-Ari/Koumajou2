@@ -15,6 +15,7 @@
 #define IDD_OPTIONVIEW                  316
 #define IDD_HIERARCHYNEWACTORDIALOG     317
 #define IDB_FOLDER                      318
+#define IDD_MAPPING                     323
 #define IDC_BUTTON1                     1000
 #define IDC_EDIT1                       1001
 #define IDC_BUTTON6                     1001
@@ -25,9 +26,11 @@
 #define IDC_EDIT4                       1004
 #define IDC_BUTTON9                     1004
 #define IDC_ANIM_EDIT_SIZE              1004
+#define IDC_EDIT_M_SECOND               1004
 #define IDC_EDIT5                       1005
 #define IDC_BUTTON17_PLACE              1005
 #define IDC_EDIT_ANIMATION_INDEX        1005
+#define IDC_BUTTON_M_LOAD               1005
 #define IDC_BUTTON2                     1006
 #define IDC_BUTTON18_PLACE              1006
 #define IDC_LIST1                       1007
@@ -83,7 +86,6 @@
 #define IDC_LIST3_OBJ                   1023
 #define IDC_ANIM_PIC                    1024
 #define IDC_BUTTON15                    1024
-#define IDC_ANIM_EDIT_HMOUNT3           1024
 #define IDC_ANIM_EDIT_STARTY            1024
 #define IDC_TEXT_COUNT_SG               1025
 #define IDC_TEXT_ANGLE_SG               1026
@@ -174,6 +176,13 @@
 #define IDC_TEXT_LEFT                   1082
 #define IDC_TEXT_BOTTOM                 1083
 #define IDC_TEXT_IDLEANIM               1084
+#define IDC_EDIT_M_WIDTH                1085
+#define IDC_EDIT_M_HEIGHT               1086
+#define IDC_EDIT_M_FIRST                1087
+#define IDC_BUTTON_M_APPLY              1088
+#define IDC_BUTTON_M_SAVE               1089
+#define IDC_LIST_M_PREFAB               1090
+#define IDC_PIC_M_PREFAB                1091
 #define ID_HIERARCHY_EDIT_NAME          58001
 #define ID_HIERARCHY_DELETE             58002
 #define ID_HIERARCHY_NEW                58003
@@ -182,9 +191,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        323
+#define _APS_NEXT_RESOURCE_VALUE        325
 #define _APS_NEXT_COMMAND_VALUE         32774
-#define _APS_NEXT_CONTROL_VALUE         1085
+#define _APS_NEXT_CONTROL_VALUE         1092
 #define _APS_NEXT_SYMED_VALUE           318
 #endif
 #endif

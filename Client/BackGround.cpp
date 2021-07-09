@@ -30,6 +30,7 @@ HRESULT CBackGround::Ready_GameObject()
 {
 	m_tInfo = m_pActorInfo->tInfo;
 	m_tInfo.vSize = { 1.3f,1.3f,1.0f };
+	m_bOverlapable = false;
 	return S_OK;
 }
 

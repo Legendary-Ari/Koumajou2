@@ -8,6 +8,7 @@
 #include "Form.h"
 #include "OptionView.h"
 #include "MFCToolView.h"
+#include "Mapping.h"
 
 // CHierarchyView
 
@@ -16,8 +17,6 @@ IMPLEMENT_DYNCREATE(CHierarchyView, CTreeView)
 CHierarchyView::CHierarchyView()
 	:m_bDraging(false)
 	, m_bDestroying(false)
-	, m_iStageFirstIdx(1)
-	, m_iStageSecondIdx(1)
 	//,ID_HIERARCHY_EDIT_NAME(5001)
 	//,ID_HIERARCHY_DELETE(5002)
 {
@@ -173,10 +172,10 @@ void CHierarchyView::InsertNewEmptyActorToMap(CString & _cstrName, OBJECTINFO * 
 	m_pView->Invalidate(FALSE);
 }
 
-void CHierarchyView::SaveTreeItems()
+void CHierarchyView::SaveTreeItems(UINT _uiStageFirstIdx, UINT _uiStageSecondIdx)
 {
 	CString strFilePath;
-	strFilePath.Format( _T("../Data/TreeItem %02d-%02d.dat"), m_iStageFirstIdx, m_iStageSecondIdx);
+	strFilePath.Format( _T("../Data/TreeItem %02d-%02d.dat"), _uiStageFirstIdx, _uiStageSecondIdx);
 	HANDLE hFile = CreateFile(strFilePath.GetString(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 
 	if (INVALID_HANDLE_VALUE == hFile)
@@ -201,14 +200,18 @@ void CHierarchyView::SaveTreeItems()
 		hFile = CreateFile(strFilePath.GetString(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 	}
 
+	CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd());
+	CMapping* pMapping = dynamic_cast<CMapping*>(pMain->m_tSecondSplitter.GetPane(0, 0));
 
 	// 저장 시작
 
 	DWORD dwbyte = 0;
 	DWORD strLen;
 	
-	WriteFile(hFile, &m_iStageFirstIdx, sizeof(UINT), &dwbyte, nullptr);
-	WriteFile(hFile, &m_iStageSecondIdx, sizeof(UINT), &dwbyte, nullptr);
+	WriteFile(hFile, &_uiStageFirstIdx, sizeof(UINT), &dwbyte, nullptr);
+	WriteFile(hFile, &_uiStageSecondIdx, sizeof(UINT), &dwbyte, nullptr);
+	WriteFile(hFile, &pMapping->m_uiWidth, sizeof(UINT), &dwbyte, nullptr);
+	WriteFile(hFile, &pMapping->m_uiHeight, sizeof(UINT), &dwbyte, nullptr);
 	CTreeCtrl& tree = GetTreeCtrl();
 	HTREEITEM curItem = m_RootTreeItem;
 
@@ -255,10 +258,17 @@ void CHierarchyView::SaveTreeItems()
 	CloseHandle(hFile);
 }
 
-void CHierarchyView::LoadTreeItems(UINT _iStageFirst, UINT _iStageSecond)
+void CHierarchyView::LoadTreeItems(UINT _uiStageFirstIdx, UINT _uiStageSecondIdx)
 {
+	CTreeCtrl& tree = GetTreeCtrl();
+	tree.DeleteAllItems();
+	for (auto& rPair : m_mapActorInfo)
+		Safe_Delete(rPair.second);
+	m_mapActorInfo.clear();
+
+	m_RootTreeItem = tree.InsertItem(L"Root", 1, 1, TVI_ROOT, TVI_SORT);
 	CString strFilePath;
-	strFilePath.Format(_T("../Data/TreeItem %02d-%02d.dat"), _iStageFirst, _iStageSecond);
+	strFilePath.Format(_T("../Data/TreeItem %02d-%02d.dat"), _uiStageFirstIdx, _uiStageSecondIdx);
 	HANDLE hFile = CreateFile(strFilePath.GetString(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 
 	if (INVALID_HANDLE_VALUE == hFile)
@@ -286,23 +296,29 @@ void CHierarchyView::LoadTreeItems(UINT _iStageFirst, UINT _iStageSecond)
 	for (auto& rPair : m_mapActorInfo)
 		Safe_Delete(rPair.second);
 	m_mapActorInfo.clear();
-	CTreeCtrl& tree = GetTreeCtrl();
+
+
+	CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd());
+	CMapping* pMapping = dynamic_cast<CMapping*>(pMain->m_tSecondSplitter.GetPane(0, 0));
+
 	// 로드 시작
 
 	DWORD dwbyte = 0;
 	DWORD strLen;
 
 	TCHAR *pBuff;
-	UINT uiTemp = m_iStageFirstIdx;
+	UINT uiTemp;
 	HTREEITEM tFolderItem = m_RootTreeItem;
-	ReadFile(hFile, &m_iStageFirstIdx, sizeof(UINT), &dwbyte, nullptr);
+	ReadFile(hFile, &uiTemp, sizeof(UINT), &dwbyte, nullptr);
 	if (dwbyte == 0)
 	{
-		m_iStageFirstIdx = uiTemp;
+		
 		ERR_MSG(L"읽을거리 없음");
 		return;
 	}
-	ReadFile(hFile, &m_iStageSecondIdx, sizeof(UINT), &dwbyte, nullptr);
+	ReadFile(hFile, &uiTemp, sizeof(UINT), &dwbyte, nullptr);
+	ReadFile(hFile, &pMapping->m_uiWidth, sizeof(UINT), &dwbyte, nullptr);
+	ReadFile(hFile, &pMapping->m_uiHeight, sizeof(UINT), &dwbyte, nullptr);
 	ACTORINFO* pActorInfo = nullptr;
 	while (true)
 	{
@@ -355,6 +371,8 @@ void CHierarchyView::LoadTreeItems(UINT _iStageFirst, UINT _iStageSecond)
 		}
 
 	}
+	CMFCToolView* pView = dynamic_cast<CMFCToolView*>(pMain->m_tMainSplitter.GetPane(0, 1));
+	pView->SetScrollSizes(MM_TEXT, CSize(pMapping->m_uiWidth, pMapping->m_uiHeight));
 	CloseHandle(hFile);
 }
 
@@ -473,7 +491,7 @@ void CHierarchyView::OnInitialUpdate()
 	
 	tree.SetImageList(&m_ImageList, TVSIL_NORMAL);
 
-	m_RootTreeItem = tree.InsertItem(L"Root", 1, 1, TVI_ROOT, TVI_SORT);
+
 	LoadTreeItems(1, 1);
 }
 
@@ -725,6 +743,5 @@ void CHierarchyView::OnTvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult)
 void CHierarchyView::OnDestroy()
 {
 	m_bDestroying = true;
-	SaveTreeItems();
 	CTreeView::OnDestroy();
 }

@@ -16,6 +16,7 @@ public:
 	virtual void	OnOverlaped(CGameObject* _pHitObject);
 	virtual void	OnBlocked(CGameObject* pHitObject, DIRECTION::ID _eId);
 	virtual void	OnBlockedTile(CGameObject* pHitObject, DIRECTION::ID _eId);
+	virtual void	Set_OnGround(bool _b);
 	virtual void	Set_Prefab(const OBJECTINFO* _pPrefab);
 	void			Set_ActorInfo(const ACTORINFO* _pPlacement);
 	void			Add_PosX(float _fPosX);
@@ -24,6 +25,9 @@ public:
 	inline const INFO&	Get_Info() const { return m_tInfo; }
 	inline virtual const vector<COLLISION>& Get_BodyCollision() const { return m_vecBodyCollision; }
 	inline virtual const vector<COLLISION>& Get_AttackCollision() const { return m_vecAttackCollision; }
+	inline const bool& Get_IsBlockable() const { return m_bBlockable; }
+	inline const bool& Get_IsOverlapable() const { return m_bOverlapable; }
+	
 protected:
 	virtual void UpdateState();
 	virtual void UpdateAnimation();
@@ -35,6 +39,9 @@ protected:
 	bool	m_bDestroyed;
 	bool	m_bIsFliped;
 	bool	m_bRenderCollision;
+	bool	m_bVisible;
+	bool	m_bBlockable;
+	bool	m_bOverlapable;
 	INFO m_tInfo; 
 	const OBJECTINFO*	m_pObjectInfo;
 	const ACTORINFO*	m_pActorInfo;

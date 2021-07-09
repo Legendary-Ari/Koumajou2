@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "Prefab_Manager.h"
 #include "Bullet.h"
+#include "CollisionMgr.h"
 
 CPlayer::CPlayer()
 	:m_ePrevState(STATE::STATE_END)
@@ -18,6 +19,8 @@ CPlayer::CPlayer()
 	, m_bInvincible(false)
 	, m_fHitTimeLength(0.3f)
 	, m_fHitCumulateTime(0.f)
+	, m_bHit(false)
+	, m_fInvincibleTimeLength(1.5f)
 {
 }
 
@@ -212,7 +215,9 @@ HRESULT CPlayer::Ready_GameObject()
 	m_vecBodyCollision.resize(1);
 	m_vecBodyCollision[0].eId = COLLISION::C_RECT;
 	m_vecBodyCollision.resize(1);
-	
+	m_vecBodyTileCollision.resize(1);
+
+
 	m_bJumping = false;
 	m_bFalling = false;
 	return S_OK;
@@ -224,10 +229,8 @@ int CPlayer::Update_GameObject()
 		return OBJ_DESTROYED;
 
 	UpdateMoveWithPressKey();
-
-	UpdateState();
-	UpdateAnimation();	
-
+	m_bOnGround = false;
+	
 	m_tInfo.vPos += m_tInfo.vDir;
 
 	UpdateBodyCollision();
@@ -238,6 +241,9 @@ int CPlayer::Update_GameObject()
 
 void CPlayer::Late_Update_GameObject()
 {
+	UpdateState();
+	UpdateAnimation();
+
 	if (m_tInfo.vPos.y > 8000)
 	{
 		m_tInfo.vPos = { 200.f, 300.f, 0.f };
@@ -248,6 +254,8 @@ void CPlayer::Late_Update_GameObject()
 
 void CPlayer::Render_GameObject()
 {
+	if (!m_bVisible)
+		return;
 	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()->Get_TexInfo(m_vecAnimation[0]->wstrObjectKey);
 	if (nullptr == pTexInfo)
 		return;
@@ -275,8 +283,14 @@ void CPlayer::Release_GameObject()
 void CPlayer::OnBlocked(CGameObject * pHitObject, DIRECTION::ID _eId)
 {
 	m_eCurState = HIT;
-	m_bInvincible = true;
+	m_bBlockable = false;
+	m_bHit = true;
 	m_uiAnimationFrame = 0;
+}
+
+void CPlayer::Set_OnGround(bool _b)
+{
+	//m_bOnGround = _b;
 }
 
 CGameObject * CPlayer::Create(const ACTORINFO* _pActorInfo, const OBJECTINFO* _pPrefab)
@@ -295,7 +309,7 @@ CGameObject * CPlayer::Create(const ACTORINFO* _pActorInfo, const OBJECTINFO* _p
 
 void CPlayer::OnBlockedTile(CGameObject * pHitObject, DIRECTION::ID _eId)
 {
-	if (_eId == DIRECTION::S /*|| _eId == DIRECTION::SW || _eId == DIRECTION::SE*/)
+	if (!m_bOnGround && _eId == DIRECTION::S /*|| _eId == DIRECTION::SW || _eId == DIRECTION::SE*/)
 	{
 		m_bFalling = false;
 		m_bJumping = false;
@@ -310,17 +324,27 @@ void CPlayer::OnBlockedTile(CGameObject * pHitObject, DIRECTION::ID _eId)
 void CPlayer::UpdateState()
 {
 	float fDeltaTime = CTime_Manager::Get_Instance()->Get_DeltaTime();
-	if (m_bInvincible)
+	if (!m_bBlockable)
 	{
 		m_fHitCumulateTime += fDeltaTime;
 
-		if (m_fHitCumulateTime > m_fHitTimeLength)
+		if (!m_bHit && m_fHitCumulateTime > m_fInvincibleTimeLength)
 		{
 			m_fHitCumulateTime = 0;
-			m_bInvincible = false;
+			m_bBlockable = true;
+			m_tInfo.vDir.y = 0;
+			m_bOnGround = false;
+			m_bVisible = true;
+		} 
+		else if (m_fHitCumulateTime > m_fHitTimeLength)
+		{
+			m_bHit = false;
 		}
 		else
 			return;
+
+		if (!m_bBlockable && !m_bHit)
+			m_bVisible = !m_bVisible;
 	}
 		
 	CPlayer::STATE eState = IDLE;
@@ -376,15 +400,13 @@ void CPlayer::UpdateState()
 								eState = IDLE;
 						}
 					}
-
 				}
-
 			}
 		}
 	}
 	else
 	{
-		if (m_bJumping)
+		if (m_bJumping || m_bFalling)
 		{
 			if(m_bCrouch)
 				eState = JUMP_D_ATTACK;
@@ -403,9 +425,7 @@ void CPlayer::UpdateState()
 				{
 					eState = ATTACK;
 				}
-
 			}
-
 		}
 	}
 
@@ -419,8 +439,6 @@ void CPlayer::UpdateState()
 		m_ePrevState = m_eCurState;
 	}
 
-
-	
 }
 
 void CPlayer::UpdateAnimation()
@@ -471,16 +489,18 @@ void CPlayer::UpdateAnimation()
 					m_eCurState = FALLING;
 					m_bFalling = true;
 					m_bOnGround = false;
-					m_bInvincible = false;
-					m_tInfo.vDir.y = 0;
+					
+					m_bHit = false;
 					break;
 				case CPlayer::F_LANDING:
+					m_uiAnimationFrame = m_vecAnimation[m_eCurState]->vecRect.size() - 1;
 					break;
 				case CPlayer::L_FLYING:
 					break;
 				case CPlayer::R_FLYING:
 					break;
 				case CPlayer::DODGE:
+					m_eCurState = IDLE;
 					break;
 				case CPlayer::DODGE_ATTACK:
 					m_bAttacking = false;
@@ -488,18 +508,23 @@ void CPlayer::UpdateAnimation()
 				case CPlayer::D_ATTACK:
 					m_bAttacking = false;
 					m_eCurState = CROUCH;
+					m_uiAnimationFrame = m_vecAnimation[CROUCH]->vecRect.size()-1;
 					break;
 				case CPlayer::JUMP_D_ATTACK:
 					m_bAttacking = false;
 					m_eCurState = FALLING;
 					break;
 				case CPlayer::S_KNIFE:
+					m_uiAnimationFrame = m_vecAnimation[m_eCurState]->vecRect.size() - 1;
 					break;
 				case CPlayer::E_KNIFE:
+					m_eCurState = IDLE;
 					break;
 				case CPlayer::DS_KNIFE:
+					m_uiAnimationFrame = m_vecAnimation[m_eCurState]->vecRect.size() - 1;
 					break;
 				case CPlayer::DE_KNIFE:
+					m_eCurState = IDLE;
 					break;
 				case CPlayer::STATE_END:
 					break;
@@ -521,46 +546,49 @@ void CPlayer::UpdateAnimation()
 
 void CPlayer::UpdateBodyCollision()
 {
-	if (m_bInvincible)
-	{
-		m_vecBodyCollision[0].tRect = {};
-		return;
-	}
 	float fSize = m_tInfo.vSize.x;
 	float fReduceSizeX = 0.3f;
 	float fReduceSizeUp = 0.6f;
 	float fReduceSizeDown = 1.f;
-	if (m_bCrouch)
-		fReduceSizeUp = -0.2;
+	if (m_bCrouch && m_bOnGround)
+		fReduceSizeUp = -0.2f;
 	if (m_bJumping)
-		fReduceSizeDown = 0.7f;
-
+	{
+		fReduceSizeDown = 0.7f + abs((m_vecAnimation[JUMPING]->vecRect.size()-1) * 0.5f - m_uiAnimationFrame) * 0.6f / (m_vecAnimation[JUMPING]->vecRect.size()+1);
+	}
+		
 	RECT rect = m_vecAnimation[0]->vecRect[0];
 	
 	_vec2 v2Radius = { (float)((rect.right - rect.left) * 0.5f), (float)((rect.bottom - rect.top) * 0.5f) };
 	v2Radius *= fSize;
-	m_vecBodyCollision[0].tRect = 
+	m_vecBodyCollision[0].tFRect = 
 	{
-		(LONG)(m_tInfo.vPos.x - v2Radius.x * fReduceSizeX),
-		(LONG)(m_tInfo.vPos.y - v2Radius.y * fReduceSizeUp),
-		(LONG)(m_tInfo.vPos.x + v2Radius.x * fReduceSizeX),
-		(LONG)(m_tInfo.vPos.y + v2Radius.y * fReduceSizeDown)
+		(float)(m_tInfo.vPos.x - v2Radius.x * fReduceSizeX * m_tInfo.vSize.x),
+		(float)(m_tInfo.vPos.y - v2Radius.y * fReduceSizeUp * m_tInfo.vSize.y),
+		(float)(m_tInfo.vPos.x + v2Radius.x * fReduceSizeX * m_tInfo.vSize.x),
+		(float)(m_tInfo.vPos.y + v2Radius.y * fReduceSizeDown * m_tInfo.vSize.y)
 	};
-	
+
+	m_vecBodyTileCollision[0].tFRect =
+	{
+		(float)(m_tInfo.vPos.x) - (float)(v2Radius.x * fReduceSizeX * m_tInfo.vSize.x),
+		(float)(m_tInfo.vPos.y) - (float)(v2Radius.y * fReduceSizeUp * m_tInfo.vSize.y),
+		(float)(m_tInfo.vPos.x) + (float)(v2Radius.x * fReduceSizeX * m_tInfo.vSize.x),
+		(float)(m_tInfo.vPos.y) + (float)(v2Radius.y * m_tInfo.vSize.y)
+	};
 }
 
 void CPlayer::UpdateMoveWithPressKey()
 {
 	float fDeltaTime = CTime_Manager::Get_Instance()->Get_DeltaTime();
 	float fMoveSpeed = fDeltaTime * m_pObjectInfo->fMoveSpeed;
-	if (m_bInvincible)
+	if (m_bHit)
 	{
-		fMoveSpeed *= 0.5f;
 		m_tInfo.vDir.x = m_bIsFliped ? fMoveSpeed : -fMoveSpeed;
+		fMoveSpeed *= 0.5f;
 		m_tInfo.vDir.y = -fMoveSpeed;
 		return;
-	}
-		
+	}		
 
 	float fTargetDirX{ 0.f };
 
@@ -584,6 +612,10 @@ void CPlayer::UpdateMoveWithPressKey()
 		if (CKey_Manager::Get_Instance()->Key_Pressing(KEY_DOWN))
 		{
 			m_bCrouch = true;
+			if (m_bOnGround)
+			{
+				fTargetDirX = 0;
+			}
 		}
 		else
 		{
@@ -617,8 +649,7 @@ void CPlayer::UpdateMoveWithPressKey()
 
 	if (m_bJumping)
 	{
-		m_tInfo.vDir.y -= (12.f - m_tInfo.vDir.y) * 0.05f;
-
+		m_tInfo.vDir.y -= (40.f - m_tInfo.vDir.y) * fDeltaTime;
 	}
 	
 	m_tInfo.vDir.x = CMyMath::FInterpTo(m_tInfo.vDir.x, fTargetDirX, fDeltaTime, 8.f);
@@ -631,10 +662,12 @@ void CPlayer::UpdateMoveWithPressKey()
 	else
 		m_bStoping = false;
 
-	if (m_bFalling)
-	{
-		m_tInfo.vDir.y += 0.98f;
-	}
+	//if (m_bFalling)
+	//{
+
+	m_tInfo.vDir.y += 29.4f * fDeltaTime;
+
+	//}
 
 
 }

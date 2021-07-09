@@ -75,11 +75,11 @@ void CBackCollision::UpdateBodyCollision()
 		return;
 	_vec2 v2Radius = { (float)(pTexInfo->tImageInfo.Width>>1), (float)(pTexInfo->tImageInfo.Height>>1) };
 	
-	m_vecBodyCollision[0].tRect =
+	m_vecBodyCollision[0].tFRect =
 	{
-		(LONG)(m_tInfo.vPos.x - v2Radius.x),
-		(LONG)(m_tInfo.vPos.y - v2Radius.y),
-		(LONG)(m_tInfo.vPos.x + v2Radius.x),
-		(LONG)(m_tInfo.vPos.y + v2Radius.y)
+		(float)(m_tInfo.vPos.x - v2Radius.x  * m_tInfo.vSize.x),
+		(float)(m_tInfo.vPos.y - v2Radius.y  * m_tInfo.vSize.y),
+		(float)(m_tInfo.vPos.x + v2Radius.x  * m_tInfo.vSize.x),
+		(float)(m_tInfo.vPos.y + v2Radius.y  * m_tInfo.vSize.y)
 	};
 }
