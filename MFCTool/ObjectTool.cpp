@@ -149,7 +149,7 @@ void CObjectTool::OnBnClickedAdd()
 	}
 
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd());
-	CForm*	pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
+	CForm*	pForm = dynamic_cast<CForm*>(pMain->m_tLeftSplitter.GetPane(1, 0));
 	const map< CString, ANIMATION*>& map = pForm->m_tAnimationTool.m_mapAnima;
 
 	CString cstrName;
@@ -222,7 +222,7 @@ void CObjectTool::OnBnClickedAdd()
 
 	pObjectData->bDestructable = (bool)m_CheckBoxDestructable.GetCheck();
 	pObjectData->eBulletType = (OBJECTINFO::BULLET_TYPE)iBulletTypeIndex;
-	pObjectData->tFRect = m_tRect;
+	pObjectData->tRect = m_tRect;
 
 	auto& iter = m_mapObject.find(m_cstrName);
 	if (iter != m_mapObject.end())
@@ -287,7 +287,7 @@ void CObjectTool::OnLbnSelchangeObjectList()
 	m_fObjMoveSpeed = m_pObjectInfoSelected->fMoveSpeed;
 	m_ComboOBJID.SetCurSel(m_pObjectInfoSelected->eObjId);
 	m_ComboRenderId.SetCurSel(m_pObjectInfoSelected->eRenderId);
-	m_tRect = m_pObjectInfoSelected->tFRect;
+	m_tRect = m_pObjectInfoSelected->tRect;
 
 	int findIndex = m_ListBox_AnimList.FindStringExact(-1, m_pObjectInfoSelected->cstrIdleAnimImage_ObjectKey + L"->" + m_pObjectInfoSelected->cstrIdleAnimImage_StateKey);
 	if (findIndex != -1)
@@ -317,7 +317,7 @@ void CObjectTool::OnLbnSelchangeObjectList()
 	Update_Group_Bullet();
 
 
-	CTexture_Manager::Get_Instance()->DrawPic(m_pObjectInfoSelected->cstrObjectImage_ObjectKey, m_pObjectInfoSelected->tFRect, 0, m_PictureObject);
+	CTexture_Manager::Get_Instance()->DrawPic(m_pObjectInfoSelected->cstrObjectImage_ObjectKey, m_pObjectInfoSelected->tRect, 0, m_PictureObject);
 
 	UpdateData(FALSE);
 }
@@ -412,7 +412,7 @@ void CObjectTool::OnBnClickedSave()
 		WriteFile(hFile, &pObject->fMoveSpeed, sizeof(float), &dwbyte, nullptr);
 		WriteFile(hFile, &pObject->eObjId, sizeof(BYTE), &dwbyte, nullptr);
 		WriteFile(hFile, &pObject->eRenderId, sizeof(BYTE), &dwbyte, nullptr);
-		WriteFile(hFile, &pObject->tFRect, sizeof(RECT), &dwbyte, nullptr);
+		WriteFile(hFile, &pObject->tRect, sizeof(RECT), &dwbyte, nullptr);
 		WriteFile(hFile, &pObject->bDestructable, sizeof(bool), &dwbyte, nullptr);
 		WriteFile(hFile, &pObject->eBulletType, sizeof(BYTE), &dwbyte, nullptr);
 	}
@@ -516,7 +516,7 @@ void CObjectTool::OnBnClickedButtonLoad()
 		ReadFile(hFile, &pObject->fMoveSpeed, sizeof(float), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->eObjId, sizeof(BYTE), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->eRenderId, sizeof(BYTE), &dwbyte, nullptr);
-		ReadFile(hFile, &pObject->tFRect, sizeof(RECT), &dwbyte, nullptr);
+		ReadFile(hFile, &pObject->tRect, sizeof(RECT), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->bDestructable, sizeof(bool), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->eBulletType, sizeof(BYTE), &dwbyte, nullptr);
 
@@ -535,7 +535,7 @@ void CObjectTool::OnBnClickedButtonLoad()
 void CObjectTool::OnBnClickedButtonLoadAnimation()
 {
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd());
-	CForm*	pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
+	CForm*	pForm = dynamic_cast<CForm*>(pMain->m_tLeftSplitter.GetPane(1, 0));
 	const map< CString,ANIMATION*>& map = pForm->m_tAnimationTool.m_mapAnima;
 	
 	for (auto& rPair : map)
@@ -565,7 +565,7 @@ void CObjectTool::OnLbnSelchangeAnimation()
 	wstrFindName.Delete(i - 1, 2);
 
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd());
-	CForm*	pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
+	CForm*	pForm = dynamic_cast<CForm*>(pMain->m_tLeftSplitter.GetPane(1, 0));
 	const map< CString, ANIMATION*>& map = pForm->m_tAnimationTool.m_mapAnima;
 
 	auto& iter_find = map.find(wstrFindName);
@@ -682,7 +682,7 @@ void CObjectTool::OnTimer(UINT_PTR nIDEvent)
 	wstrFindName.Delete(i - 1, 2);
 
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd());
-	CForm*	pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
+	CForm*	pForm = dynamic_cast<CForm*>(pMain->m_tLeftSplitter.GetPane(1, 0));
 	const map< CString, ANIMATION*>& map = pForm->m_tAnimationTool.m_mapAnima;
 
 	auto& iter_find = map.find(wstrFindName);
@@ -795,9 +795,9 @@ void CObjectTool::OnEnKillfocusEditObjectTop()
 	if (!m_pObjectInfoSelected)
 		return;
 	UpdateData(TRUE);
-	m_pObjectInfoSelected->tFRect.top = m_tRect.top;
+	m_pObjectInfoSelected->tRect.top = m_tRect.top;
 	UpdateData(FALSE);
-	CTexture_Manager::Get_Instance()->DrawPic(cstrObjectKey, m_pObjectInfoSelected->tFRect, 0, m_Pic_Rect);
+	CTexture_Manager::Get_Instance()->DrawPic(cstrObjectKey, m_pObjectInfoSelected->tRect, 0, m_Pic_Rect);
 }
 
 
@@ -815,9 +815,9 @@ void CObjectTool::OnEnKillfocusEditObjectLeft()
 	if (!m_pObjectInfoSelected)
 		return;
 	UpdateData(TRUE);
-	m_pObjectInfoSelected->tFRect.left = m_tRect.left;
+	m_pObjectInfoSelected->tRect.left = m_tRect.left;
 	UpdateData(FALSE);
-	CTexture_Manager::Get_Instance()->DrawPic(cstrObjectKey, m_pObjectInfoSelected->tFRect, 0, m_Pic_Rect);
+	CTexture_Manager::Get_Instance()->DrawPic(cstrObjectKey, m_pObjectInfoSelected->tRect, 0, m_Pic_Rect);
 }
 
 
@@ -835,9 +835,9 @@ void CObjectTool::OnEnKillfocusEditObjectRight()
 	if (!m_pObjectInfoSelected)
 		return;
 	UpdateData(TRUE);
-	m_pObjectInfoSelected->tFRect.right = m_tRect.right;
+	m_pObjectInfoSelected->tRect.right = m_tRect.right;
 	UpdateData(FALSE);
-	CTexture_Manager::Get_Instance()->DrawPic(cstrObjectKey, m_pObjectInfoSelected->tFRect, 0, m_Pic_Rect);
+	CTexture_Manager::Get_Instance()->DrawPic(cstrObjectKey, m_pObjectInfoSelected->tRect, 0, m_Pic_Rect);
 }
 
 
@@ -855,7 +855,7 @@ void CObjectTool::OnEnKillfocusEditObjectBottom()
 	if (!m_pObjectInfoSelected)
 		return;
 	UpdateData(TRUE);
-	m_pObjectInfoSelected->tFRect.bottom = m_tRect.bottom;
+	m_pObjectInfoSelected->tRect.bottom = m_tRect.bottom;
 	UpdateData(FALSE);
-	CTexture_Manager::Get_Instance()->DrawPic(cstrObjectKey, m_pObjectInfoSelected->tFRect, 0, m_Pic_Rect);
+	CTexture_Manager::Get_Instance()->DrawPic(cstrObjectKey, m_pObjectInfoSelected->tRect, 0, m_Pic_Rect);
 }

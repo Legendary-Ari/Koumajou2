@@ -656,7 +656,7 @@ void CUiTool::OnBnClickedScale()
 void CUiTool::OnBnClickedPrefabLoad()
 {
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd());
-	CForm*	pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
+	CForm*	pForm = dynamic_cast<CForm*>(pMain->m_tLeftSplitter.GetPane(1, 0));
 	const map<CString, OBJECTINFO*>& map = pForm->m_tObjectTool.m_mapObject;
 
 	for (auto& rPair : map)
@@ -958,7 +958,7 @@ void CUiTool::OnLbnSelchangePrefabList()
 	m_Prefab_ListBox.GetText(iListCursor, wstrFileName);
 
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd());
-	CForm*	pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
+	CForm*	pForm = dynamic_cast<CForm*>(pMain->m_tLeftSplitter.GetPane(1, 0));
 	const map<CString, OBJECTINFO*>& map = pForm->m_tObjectTool.m_mapObject;
 
 	CString wstrPrefabKey;

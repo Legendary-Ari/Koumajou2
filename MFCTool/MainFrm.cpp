@@ -83,6 +83,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
+	cs.cx = 400 + 300 + CLIENTCX;
+	cs.cy = CLIENTCY;
 	if( !CFrameWnd::PreCreateWindow(cs) )
 		return FALSE;
 
@@ -115,19 +117,18 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext* pContext)
 {
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
 	m_tMainSplitter.CreateStatic(this, 1, 3, WS_CHILD | WS_VISIBLE);
-	m_tSecondSplitter.CreateStatic(&m_tMainSplitter,2,1, WS_CHILD | WS_VISIBLE, m_tMainSplitter.IdFromRowCol(0, 0)); 
+	m_tLeftSplitter.CreateStatic(&m_tMainSplitter,2,1, WS_CHILD | WS_VISIBLE, m_tMainSplitter.IdFromRowCol(0, 0)); 
 	m_tRightSplitter.CreateStatic(&m_tMainSplitter, 2, 1, WS_CHILD | WS_VISIBLE, m_tMainSplitter.IdFromRowCol(0, 2));
 
-	/*
-	0, 0	|	0, 1
-	ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
-	1, 0	|	1, 1
-	*/
-	
+
+	m_tLeftSplitter.CreateView(0, 0, RUNTIME_CLASS(CMapping), CSize(300, 300), pContext);
+	m_tLeftSplitter.CreateView(1, 0, RUNTIME_CLASS(CForm), CSize(300, 300), pContext);
 	m_tMainSplitter.CreateView(0, 1, RUNTIME_CLASS(CMFCToolView), CSize(CLIENTCX, CLIENTCY), pContext); 
-	m_tSecondSplitter.CreateView(0, 0, RUNTIME_CLASS(CMapping), CSize(300, 300), pContext);
-	m_tSecondSplitter.CreateView(1, 0, RUNTIME_CLASS(CForm), CSize(300, 300), pContext);
 	m_tMainSplitter.SetColumnInfo(0, 300, 10);
+	m_tMainSplitter.SetColumnInfo(1, CLIENTCX, 10);
+	//m_tMainSplitter.SetRowInfo(1, CLIENTCY, 10);
+	m_tMainSplitter.SetColumnInfo(2, 300, 10);
+
 	m_tRightSplitter.CreateView(0, 0, RUNTIME_CLASS(CHierarchyView), CSize(400, 300), pContext);
 	m_tRightSplitter.CreateView(1, 0, RUNTIME_CLASS(COptionView), CSize(200, 300), pContext);
 	//return CFrameWnd::OnCreateClient(lpcs, pContext);

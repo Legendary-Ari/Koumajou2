@@ -21,6 +21,7 @@ CMapping::CMapping()
 	, m_uiHeight(CLIENTCY)
 	, m_uiStageFirst(1)
 	, m_uiStageSecond(1)
+	, m_pSelectedPrefab(nullptr)
 {
 
 }
@@ -44,7 +45,7 @@ void CMapping::DoDataExchange(CDataExchange* pDX)
 void CMapping::LoadPrefab()
 {
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd());
-	CForm* pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
+	CForm* pForm = dynamic_cast<CForm*>(pMain->m_tLeftSplitter.GetPane(1, 0));
 	m_Listbox_Prefab.ResetContent();
 	auto& map = pForm->m_tObjectTool.m_mapObject;
 	for (auto& rPair : map)
@@ -124,7 +125,7 @@ void CMapping::OnLbnSelchangeListMPrefab()
 	m_Listbox_Prefab.GetText(iPrefabSelected, cstrObjectName);
 
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd());
-	CForm* pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
+	CForm* pForm = dynamic_cast<CForm*>(pMain->m_tLeftSplitter.GetPane(1, 0));
 	auto* pMapPrefab = &pForm->m_tObjectTool.m_mapObject;
 	auto *pMapAnimation = &pForm->m_tAnimationTool.m_mapAnima;
 	auto& iter_find = pMapPrefab->find(cstrObjectName);
@@ -133,11 +134,12 @@ void CMapping::OnLbnSelchangeListMPrefab()
 		ERR_MSG(L"CMapping::OnLbnSelchangeListMPrefab");
 		return;
 	}
+	m_pSelectedPrefab = iter_find->second;
 	CString cstrKey;
 	if (iter_find->second->bIsSingle)
 	{
 		cstrKey = iter_find->second->cstrObjectImage_ObjectKey;
-		CTexture_Manager::Get_Instance()->DrawPic(cstrKey, iter_find->second->tFRect,0,m_Pic_Prefab);
+		CTexture_Manager::Get_Instance()->DrawPic(cstrKey, iter_find->second->tRect,0,m_Pic_Prefab);
 	}		
 	else
 	{
@@ -168,6 +170,6 @@ void CMapping::OnDestroy()
 void CMapping::OnInitialUpdate()
 {
 	CFormView::OnInitialUpdate();
-
+	
 	LoadPrefab();
 }

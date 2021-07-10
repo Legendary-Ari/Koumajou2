@@ -156,7 +156,7 @@ void COptionView::OnInitialUpdate()
 	CFormView::OnInitialUpdate();
 
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd());
-	CForm*	pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
+	CForm*	pForm = dynamic_cast<CForm*>(pMain->m_tLeftSplitter.GetPane(1, 0));
 	m_pmapPrefab = &(pForm->m_tObjectTool.m_mapObject);
 
 	m_pHierarchyView = dynamic_cast<CHierarchyView*>(pMain->m_tRightSplitter.GetPane(0, 0));

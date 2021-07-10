@@ -26,8 +26,10 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	void CreateNewTreeItem(bool _bIsFolder, CString& _cstrName, OBJECTINFO* _pPrefab = nullptr);
+	void CreateNewPickedItem(const OBJECTINFO* _pPrefab, POINT _point);
 	void InsertTreeItem(bool _bIsFolder, CString& _cstrName);
-	void InsertNewEmptyActorToMap(CString& _cstrName, OBJECTINFO* _pPrefab);
+	void InsertNewEmptyActorToMap(CString& _cstrName, const OBJECTINFO* _pPrefab);
+	void InsertNewActorToMap(CString& _cstrName, const OBJECTINFO* _pPrefab, POINT _point);
 	void SaveTreeItems(UINT _uiStageFirstIdx, UINT _uiStageSecondIdx);
 	void LoadTreeItems(UINT _uiStageFirstIdx, UINT _uiStageSecondIdx);
 private:
@@ -64,6 +66,7 @@ public:
 	afx_msg void OnNMRClick(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnTvnDeleteitem(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnDestroy();
+	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 };
 
 

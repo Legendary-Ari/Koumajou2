@@ -210,6 +210,7 @@
     <ClInclude Include="MFCToolView.h" />
     <ClInclude Include="Multi_Texture.h" />
     <ClInclude Include="OptionView.h" />
+    <ClInclude Include="Pivot.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Single_Texture.h" />
     <ClInclude Include="stdafx.h" />
@@ -236,6 +237,7 @@
     <ClCompile Include="MFCToolView.cpp" />
     <ClCompile Include="Multi_Texture.cpp" />
     <ClCompile Include="OptionView.cpp" />
+    <ClCompile Include="Pivot.cpp" />
     <ClCompile Include="Single_Texture.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

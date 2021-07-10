@@ -67,6 +67,9 @@
     <Filter Include="05.EnumToString">
       <UniqueIdentifier>{bdd4c9bb-06c0-4633-99fe-918b42aedf22}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.View\Pivot">
+      <UniqueIdentifier>{318263ab-eea3-487d-b65e-b4e1569b553d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainFrm.h">
@@ -142,6 +145,9 @@
     <ClInclude Include="Mapping.h">
       <Filter>01.View\MiniView</Filter>
     </ClInclude>
+    <ClInclude Include="Pivot.h">
+      <Filter>01.View\Pivot</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp">
@@ -209,6 +215,9 @@
     </ClCompile>
     <ClCompile Include="Mapping.cpp">
       <Filter>01.View\MiniView</Filter>
+    </ClCompile>
+    <ClCompile Include="Pivot.cpp">
+      <Filter>01.View\Pivot</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

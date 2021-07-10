@@ -72,7 +72,7 @@ void CRuler_Sword::UpdateBodyCollision()
 	float fSize = m_tInfo.vSize.x;
 	float fReduceSize = 0.1f;
 
-	RECT rect = m_pObjectInfo->tFRect;
+	RECT rect = m_pObjectInfo->tRect;
 
 	_vec3 vToThis = m_tInfo.vPos - m_pRulerBody->Get_Info().vPos;
 	float fDistance = D3DXVec3Length(&vToThis);

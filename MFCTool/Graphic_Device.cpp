@@ -79,6 +79,7 @@ HRESULT CGraphic_Device::Ready_Graphic_Device()
 
 	if (FAILED(D3DXCreateLine(m_pDevice, &m_pLine)))
 		goto ERR;
+	m_pLine->SetWidth(2.f);
 
 	return S_OK;
 ERR:

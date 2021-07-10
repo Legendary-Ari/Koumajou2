@@ -37,6 +37,7 @@ public:
 	UINT m_uiStageSecond;
 	CStatic m_Pic_Prefab;
 	CListBox m_Listbox_Prefab;
+	const OBJECTINFO* m_pSelectedPrefab;
 public:
 	afx_msg void OnBnClickedButtonMApply();
 	afx_msg void OnBnClickedButtonMSave();

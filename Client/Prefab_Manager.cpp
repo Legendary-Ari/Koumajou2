@@ -105,13 +105,13 @@ HRESULT CPrefab_Manager::LoadObjectPrefab()
 		ReadFile(hFile, &pObject->fMoveSpeed, sizeof(float), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->eObjId, sizeof(BYTE), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->eRenderId, sizeof(BYTE), &dwbyte, nullptr);
-		ReadFile(hFile, &pObject->tFRect, sizeof(RECT), &dwbyte, nullptr);
+		ReadFile(hFile, &pObject->tRect, sizeof(RECT), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->bDestructable, sizeof(bool), &dwbyte, nullptr);
 		ReadFile(hFile, &pObject->eBulletType, sizeof(BYTE), &dwbyte, nullptr);
 
 		m_mapObjectPrefab.emplace(pObject->wstrPrefabName, pObject);
 
-		if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, { pObject->tFRect }, pObject->wstrObjectImage_Path, pObject->wstrObjectImage_ObjectKey)))
+		if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::SINGLE_TEX, { pObject->tRect }, pObject->wstrObjectImage_Path, pObject->wstrObjectImage_ObjectKey)))
 		{
 			ERR_MSG(L"싱글 텍스쳐 실패");
 			return E_FAIL;
@@ -207,6 +207,8 @@ HRESULT CPrefab_Manager::LoadActorPrefab(const wstring & _path)
 		ERR_MSG(L"Actor 읽을거리 없음");
 		return E_FAIL;
 	}
+	ReadFile(hFile, &mIDX, sizeof(UINT), &dwbyte, nullptr);
+	ReadFile(hFile, &mIDX, sizeof(UINT), &dwbyte, nullptr);
 	ReadFile(hFile, &mIDX, sizeof(UINT), &dwbyte, nullptr);
 	while (true)
 	{

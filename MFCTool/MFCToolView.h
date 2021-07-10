@@ -3,7 +3,7 @@
 //
 
 #pragma once
-
+#include "Pivot.h"
 class CTerrain; 
 class CMFCToolDoc;
 class CUiTool;
@@ -26,10 +26,14 @@ public:
 	map<CString, OBJECTINFO*>* m_pmapPrefab;
 	map<CString, ANIMATION*>* m_pmapAnimation;
 	list<ACTORINFO*> m_listRender[RENDERID::END];
+	map<RECT, PREFABSTRUCT, RectSort> m_mapCollisionToPrefab;
+	ACTORINFO* m_pSelectedActor;
+	CPivot Pivot;
 
 	float m_fAngle = 0.f;
 	float m_fAlpha = 0.f; 
 	float m_fBulletSpeed = 10.f; 
+	int	m_iPivotMoveing;
 // 재정의입니다.
 public:
 	virtual void OnDraw(CDC* pDC);  // 이 뷰를 그리기 위해 재정의되었습니다.

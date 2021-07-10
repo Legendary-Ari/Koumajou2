@@ -46,6 +46,7 @@ BEGIN_MESSAGE_MAP(CHierarchyView, CTreeView)
 	ON_COMMAND(ID_HIERARCHY_NEW, &CHierarchyView::OnSelectedNewMenu)
 	ON_NOTIFY_REFLECT(TVN_DELETEITEM, &CHierarchyView::OnTvnDeleteitem)
 	ON_WM_DESTROY()
+	ON_WM_KEYDOWN()
 END_MESSAGE_MAP()
 
 
@@ -127,10 +128,48 @@ void CHierarchyView::CreateNewTreeItem(bool _bIsFolder, CString & _cstrName, OBJ
 	InsertTreeItem(_bIsFolder, _cstrName);
 }
 
+void CHierarchyView::CreateNewPickedItem(const OBJECTINFO * _pPrefab, POINT _point)
+{
+	CString _cstrName = _pPrefab->cstrName;
+	int i = 0;
+	while (true)
+	{
+
+		CString cstrIndex;
+		CString ObjName = _cstrName.GetString();
+		cstrIndex.Format(_T("_%d"), i);
+		ObjName.Append(cstrIndex);
+		auto& iter_mapPalce = m_mapActorInfo.find(ObjName);
+
+		if (iter_mapPalce == m_mapActorInfo.end())
+		{
+			_cstrName = ObjName;
+			break;
+		}
+		else
+			i++;
+	}
+	InsertNewActorToMap(_cstrName, _pPrefab, _point);
+	InsertTreeItem(false, _cstrName);
+}
+
 void CHierarchyView::InsertTreeItem(bool _bIsFolder, CString& _cstrName)
 {
 	CTreeCtrl& tree = GetTreeCtrl();
 	HTREEITEM selectedItem = tree.GetSelectedItem();
+	CString cstrSelectedItem = tree.GetItemText(selectedItem);
+	auto& iter_find_item = m_mapActorInfo.find(cstrSelectedItem);
+	if (iter_find_item == m_mapActorInfo.end())
+	{
+		ERR_MSG(L"CHierarchyView::InsertTreeItem 등록되엇으나 없는 키입니다. 첫번째 폴더에 저장합니다");
+		selectedItem = tree.GetChildItem(m_RootTreeItem);
+	}
+	else
+	{
+		if (!iter_find_item->second->bIsFolder)
+			selectedItem = tree.GetParentItem(selectedItem);
+	}
+
 	TVINSERTSTRUCT tvInsert;
 
 	tvInsert.hParent = ((selectedItem != NULL) ? selectedItem : m_RootTreeItem);
@@ -153,7 +192,7 @@ void CHierarchyView::InsertTreeItem(bool _bIsFolder, CString& _cstrName)
 	tree.InsertItem(&tvInsert);
 }
 
-void CHierarchyView::InsertNewEmptyActorToMap(CString & _cstrName, OBJECTINFO * _pPrefab)
+void CHierarchyView::InsertNewEmptyActorToMap(CString & _cstrName, const OBJECTINFO * _pPrefab)
 {
 	ACTORINFO* pActorInfo = new ACTORINFO{};
 	if (_pPrefab)
@@ -167,6 +206,20 @@ void CHierarchyView::InsertNewEmptyActorToMap(CString & _cstrName, OBJECTINFO * 
 	{
 		pActorInfo->bIsFolder = true;
 	}
+	pActorInfo->wstrActorName = _cstrName;
+	m_mapActorInfo.emplace(_cstrName, pActorInfo);
+	m_pView->Invalidate(FALSE);
+}
+
+void CHierarchyView::InsertNewActorToMap(CString & _cstrName, const OBJECTINFO * _pPrefab, POINT _point)
+{
+	ACTORINFO* pActorInfo = new ACTORINFO{};
+
+	pActorInfo->tInfo.vPos = { (float)_point.x, (float)_point.y, 0.f };
+	pActorInfo->tInfo.vSize = { 1.f, 1.f, 0.f };
+	pActorInfo->wstrPrefabName = _pPrefab->cstrName;
+	pActorInfo->bIsFolder = false;
+	
 	pActorInfo->wstrActorName = _cstrName;
 	m_mapActorInfo.emplace(_cstrName, pActorInfo);
 	m_pView->Invalidate(FALSE);
@@ -201,7 +254,7 @@ void CHierarchyView::SaveTreeItems(UINT _uiStageFirstIdx, UINT _uiStageSecondIdx
 	}
 
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd());
-	CMapping* pMapping = dynamic_cast<CMapping*>(pMain->m_tSecondSplitter.GetPane(0, 0));
+	CMapping* pMapping = dynamic_cast<CMapping*>(pMain->m_tLeftSplitter.GetPane(0, 0));
 
 	// 저장 시작
 
@@ -299,7 +352,7 @@ void CHierarchyView::LoadTreeItems(UINT _uiStageFirstIdx, UINT _uiStageSecondIdx
 
 
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd());
-	CMapping* pMapping = dynamic_cast<CMapping*>(pMain->m_tSecondSplitter.GetPane(0, 0));
+	CMapping* pMapping = dynamic_cast<CMapping*>(pMain->m_tLeftSplitter.GetPane(0, 0));
 
 	// 로드 시작
 
@@ -469,6 +522,8 @@ void CHierarchyView::OnInitialUpdate()
 	tree.SetBkColor(RGB(230, 230, 230));
 	tree.SetRedraw(TRUE);
 
+	
+
 	SHFILEINFO sFileInfo = { 0 };
 	const UINT FLAGS = SHGFI_ICON | SHGFI_USEFILEATTRIBUTES;
 	LPCTSTR PATH = _T("C:\\Windows");
@@ -499,6 +554,8 @@ void CHierarchyView::OnInitialUpdate()
 BOOL CHierarchyView::PreCreateWindow(CREATESTRUCT& cs)
 {
 	cs.style |= WS_CHILD | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_EDITLABELS | TVS_FULLROWSELECT;
+	cs.cx = CLIENTCX;
+	cs.cy = CLIENTCY;
 	//cs.style |= TVS_TRACKSELECT;
 	//cs.style |= TVS_DISABLEDRAGDROP;
 	
@@ -744,4 +801,14 @@ void CHierarchyView::OnDestroy()
 {
 	m_bDestroying = true;
 	CTreeView::OnDestroy();
+}
+
+void CHierarchyView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	if (nChar == VK_DELETE)
+	{
+		OnSelectedDeleteMenu();
+	}
+
+	CTreeView::OnKeyDown(nChar, nRepCnt, nFlags);
 }

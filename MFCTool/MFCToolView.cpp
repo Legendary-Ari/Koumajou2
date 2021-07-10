@@ -18,6 +18,7 @@
 #include "Form.h"
 #include "UiTool.h"
 #include "HierarchyView.h"
+#include "Mapping.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -41,6 +42,8 @@ END_MESSAGE_MAP()
 
 CMFCToolView::CMFCToolView()
 	:m_pTerrain(nullptr)
+	, m_pSelectedActor(nullptr)
+	, m_iPivotMoveing(-1)
 {
 	// TODO: 여기에 생성 코드를 추가합니다.
 
@@ -101,7 +104,7 @@ void CMFCToolView::OnDraw(CDC* /*pDC*/)
 	}
 	
 
-	
+	m_mapCollisionToPrefab.clear();
 	for (int i = 0; i < RENDERID::END; ++i)
 	{
 		for (auto& pActorInfo : m_listRender[i])
@@ -138,7 +141,7 @@ void CMFCToolView::OnDraw(CDC* /*pDC*/)
 			RECT rect{};
 
 			if (pObjectInfo->bIsSingle)
-				rect = pObjectInfo->tFRect;
+				rect = pObjectInfo->tRect;
 			else
 			{
 				auto& iter_Anim_find = m_pmapAnimation->find(pObjectInfo->cstrIdleAnimImage_ObjectKey + pObjectInfo->cstrIdleAnimImage_StateKey);
@@ -178,9 +181,54 @@ void CMFCToolView::OnDraw(CDC* /*pDC*/)
 
 			CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
 			CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, (rect.bottom == 0) ? nullptr : &rect, &D3DXVECTOR3{ fCenterX,fCenterY,0.f }, nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
+			if (i == RENDERID::BACKGROUND)
+				continue;
+			CGraphic_Device::Get_Instance()->Get_Sprite()->End();
+			const DWORD dwSize = 5;
+			_vec2 v2LinePos[dwSize];
+			if (pObjectInfo->bIsSingle)
+			{
+				if (pObjectInfo->tRect.bottom > 0)
+				{
+					v2LinePos[0] = { pActorInfo->tInfo.vPos.x - (rect.right - rect.left)*0.25f, pActorInfo->tInfo.vPos.y - (rect.bottom - rect.top)*0.25f };
+					v2LinePos[1] = { pActorInfo->tInfo.vPos.x + (rect.right - rect.left)*0.25f, pActorInfo->tInfo.vPos.y - (rect.bottom - rect.top)*0.25f };
+					v2LinePos[2] = { pActorInfo->tInfo.vPos.x + (rect.right - rect.left)*0.25f, pActorInfo->tInfo.vPos.y + (rect.bottom + rect.top)*0.25f };
+					v2LinePos[3] = { pActorInfo->tInfo.vPos.x - (rect.right - rect.left)*0.25f, pActorInfo->tInfo.vPos.y + (rect.bottom + rect.top)*0.25f };
+
+				}
+				else
+				{
+					v2LinePos[0] = { pActorInfo->tInfo.vPos.x - pTexInfo->tImageInfo.Width*0.25f, pActorInfo->tInfo.vPos.y - pTexInfo->tImageInfo.Height*0.25f };
+					v2LinePos[1] = { pActorInfo->tInfo.vPos.x + pTexInfo->tImageInfo.Width*0.25f, pActorInfo->tInfo.vPos.y - pTexInfo->tImageInfo.Height*0.25f };
+					v2LinePos[2] = { pActorInfo->tInfo.vPos.x + pTexInfo->tImageInfo.Width*0.25f, pActorInfo->tInfo.vPos.y + pTexInfo->tImageInfo.Height*0.25f };
+					v2LinePos[3] = { pActorInfo->tInfo.vPos.x - pTexInfo->tImageInfo.Width*0.25f, pActorInfo->tInfo.vPos.y + pTexInfo->tImageInfo.Height*0.25f };
+				}				
+			}
+			else
+			{
+
+				v2LinePos[0] = { pActorInfo->tInfo.vPos.x - (rect.right - rect.left)*0.25f, pActorInfo->tInfo.vPos.y - (rect.bottom - rect.top)*0.25f };
+				v2LinePos[1] = { pActorInfo->tInfo.vPos.x + (rect.right - rect.left)*0.25f, pActorInfo->tInfo.vPos.y - (rect.bottom - rect.top)*0.25f };
+				v2LinePos[2] = { pActorInfo->tInfo.vPos.x + (rect.right - rect.left)*0.25f, pActorInfo->tInfo.vPos.y + (rect.bottom + rect.top)*0.25f };
+				v2LinePos[3] = { pActorInfo->tInfo.vPos.x - (rect.right - rect.left)*0.25f, pActorInfo->tInfo.vPos.y + (rect.bottom + rect.top)*0.25f };
+			}
+			v2LinePos[0].x -= GetScrollPos(SB_HORZ);
+			v2LinePos[1].x -= GetScrollPos(SB_HORZ);
+			v2LinePos[2].x -= GetScrollPos(SB_HORZ);
+			v2LinePos[3].x -= GetScrollPos(SB_HORZ);
+			v2LinePos[0].y -= GetScrollPos(SB_VERT);
+			v2LinePos[1].y -= GetScrollPos(SB_VERT);
+			v2LinePos[2].y -= GetScrollPos(SB_VERT);
+			v2LinePos[3].y -= GetScrollPos(SB_VERT);
+			v2LinePos[4] = v2LinePos[0];
+
+			m_mapCollisionToPrefab.emplace(RECT{ (LONG)v2LinePos[0].x, (LONG)v2LinePos[0].y,(LONG)v2LinePos[2].x, (LONG)v2LinePos[2].y }, PREFABSTRUCT{ pActorInfo,pObjectInfo,nullptr });
+			CGraphic_Device::Get_Instance()->Get_Line()->Draw(v2LinePos, dwSize, D3DCOLOR_ARGB(255, 100, 255, 255));
+			CGraphic_Device::Get_Instance()->Get_Sprite()->Begin(D3DXSPRITE_ALPHABLEND);
+
 		}
 	}
-
+	Pivot.Render();
 	CGraphic_Device::Get_Instance()->Render_End(GetSafeHwnd());
 }
 
@@ -231,12 +279,14 @@ void CMFCToolView::OnInitialUpdate()
 {
 	CScrollView::OnInitialUpdate();
 	
+	
+
 	//CSize tsize; 
 	SetScrollSizes(MM_TEXT, CSize(CLIENTCX*2, CLIENTCY));
 	//GetScrollPos()
 	g_hWND = m_hWnd; 
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd()); 
-	CForm* pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
+	CForm* pForm = dynamic_cast<CForm*>(pMain->m_tLeftSplitter.GetPane(1, 0));
 	m_pmapAnimation = &pForm->m_tAnimationTool.m_mapAnima;
 	RECT rcMain = {}; 
 	pMain->GetWindowRect(&rcMain);
@@ -257,7 +307,7 @@ void CMFCToolView::OnInitialUpdate()
 
 	m_pHierarchyView = dynamic_cast<CHierarchyView*>(pMain->m_tRightSplitter.GetPane(0, 0));
 	m_pmapPrefab = &(pForm->m_tObjectTool.m_mapObject);
-
+	
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
 	//if (FAILED(CTexture_Manager::Get_Instance()->Insert_Texture_Manager(CTexture_Manager::MULTI_TEX, L"../Texture/Stage/Player/Attack/AKIHA_AKI01_00%d.png", L"Player", L"Attack", 6)))
 	//	return; 
@@ -287,12 +337,84 @@ void CMFCToolView::OnLButtonDown(UINT nFlags, CPoint point)
 // 	ERR_MSG(szBuf); 
 	D3DXVECTOR3 vMouse{ float(point.x) + GetScrollPos(SB_HORZ), float(point.y) + GetScrollPos(SB_VERT), 0.f }; 
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(AfxGetApp()->GetMainWnd());
-	CForm* pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
+	CForm* pForm = dynamic_cast<CForm*>(pMain->m_tLeftSplitter.GetPane(1, 0));
+	CMapping* pMapping = dynamic_cast<CMapping*>(pMain->m_tLeftSplitter.GetPane(0, 0));
+	CHierarchyView* pHierarchyView = dynamic_cast<CHierarchyView*>(pMain->m_tRightSplitter.GetPane(0, 0));
 	//m_pTerrain->TilePicking_Terrain(vMouse, 2, 0);
 
 	//pForm->m_tUiTool.PickingPos(vMouse);
 	////여기서 충돌 체크 
 	//pForm->m_tUiTool.Collision_Down(vMouse);
+	CPoint pt = point;
+	//ScreenToClient(&pt);
+	pt.x += GetScrollPos(SB_HORZ);
+	pt.y += GetScrollPos(SB_VERT);
+	m_iPivotMoveing = Pivot.IsPtInRect(pt);
+
+	if (m_iPivotMoveing == -1)
+	{
+		bool bActorSelected = false;
+		for (auto& rPair : m_mapCollisionToPrefab)
+		{
+			if (!PtInRect(&rPair.first, point))
+				continue;
+			CTreeCtrl& tree = m_pHierarchyView->GetTreeCtrl();
+			HTREEITEM curItem = tree.GetRootItem();
+
+			tree.Expand(curItem, TVE_EXPAND);
+			HTREEITEM childItem = tree.GetNextItem(curItem, TVGN_CHILD);
+			while (childItem != NULL)
+			{
+				childItem = tree.GetNextItem(childItem, TVGN_NEXT);
+				tree.Expand(childItem, TVE_EXPAND);
+			}
+			stack<HTREEITEM> stackParentItem;
+			while (curItem != NULL)
+			{
+				CString cstrItem = tree.GetItemText(curItem);
+				if (cstrItem == rPair.second.pActorInfo->wstrActorName)
+					break;
+				if (tree.ItemHasChildren(curItem))
+				{
+					stackParentItem.emplace(curItem);
+					curItem = tree.GetNextItem(curItem, TVGN_CHILD);
+				}
+				else
+				{
+					curItem = tree.GetNextItem(curItem, TVGN_NEXT);
+					if (curItem == NULL)
+					{
+						curItem = tree.GetNextItem(stackParentItem.top(), TVGN_NEXT);
+						stackParentItem.pop();
+					}
+				}
+			}
+
+			if (curItem == NULL)
+			{
+				ERR_MSG(L"CMFCToolView::OnLButtonDown 스폰은 햇는데 Hierarchy에는 없습니다.(?!)");
+				return;
+			}
+
+			tree.Select(curItem, TVGN_CARET);
+			m_pSelectedActor = rPair.second.pActorInfo;
+			bActorSelected = true;
+			Pivot.Set_Pos({ (LONG)m_pSelectedActor->tInfo.vPos.x,(LONG)m_pSelectedActor->tInfo.vPos.y });
+			break;
+		}
+		if (!bActorSelected)
+		{
+			if(pMapping->m_pSelectedPrefab)
+				pHierarchyView->CreateNewPickedItem(pMapping->m_pSelectedPrefab, pt);
+		}
+	}
+	else
+	{
+		//Pivot.Set_Pos(pt);
+	}
+
+
+
 
 	Invalidate(FALSE); 
 	CScrollView::OnLButtonDown(nFlags, point);
@@ -305,10 +427,36 @@ void CMFCToolView::OnMouseMove(UINT nFlags, CPoint point)
 
 	D3DXVECTOR3 vMouse{ float(point.x) + GetScrollPos(SB_HORZ), float(point.y) + GetScrollPos(SB_VERT), 0.f };
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(AfxGetApp()->GetMainWnd());
-	CForm* pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
-
+	CForm* pForm = dynamic_cast<CForm*>(pMain->m_tLeftSplitter.GetPane(1, 0));
+	CPoint pt = point;
+	//ScreenToClient(&pt);
+	pt.x += GetScrollPos(SB_HORZ);
+	pt.y += GetScrollPos(SB_VERT);
 //	pForm->m_tUiTool.Collision_Move(vMouse);
-
+	CPoint tDiff;
+	switch (m_iPivotMoveing)
+	{
+	case CPivot::X:
+		tDiff = pt - Pivot.Get_Pos();
+		m_pSelectedActor->tInfo.vPos.x += tDiff.x;
+		Pivot.Add_PosX(tDiff.x);
+		break;
+	case CPivot::Y:
+		tDiff = pt - Pivot.Get_Pos();
+		m_pSelectedActor->tInfo.vPos.y += tDiff.y;
+		Pivot.Add_PosY(tDiff.y);
+		break;
+	case CPivot::XY:
+		tDiff = pt - Pivot.Get_Pos();
+		m_pSelectedActor->tInfo.vPos.x += tDiff.x;
+		m_pSelectedActor->tInfo.vPos.y += tDiff.y;
+		Pivot.Add_PosX(tDiff.x);
+		Pivot.Add_PosY(tDiff.y);
+		break;
+	default:
+		break;
+	}
+	Invalidate(FALSE);
 	CScrollView::OnMouseMove(nFlags, point);
 }
 
@@ -318,8 +466,37 @@ void CMFCToolView::OnLButtonUp(UINT nFlags, CPoint point)
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	D3DXVECTOR3 vMouse{ float(point.x) + GetScrollPos(SB_HORZ), float(point.y) + GetScrollPos(SB_VERT), 0.f };
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(AfxGetApp()->GetMainWnd());
-	CForm* pForm = dynamic_cast<CForm*>(pMain->m_tSecondSplitter.GetPane(1, 0));
+	CForm* pForm = dynamic_cast<CForm*>(pMain->m_tLeftSplitter.GetPane(1, 0));
 
 	//pForm->m_tUiTool.Collision_Up();
+	CPoint pt = point;
+	//ScreenToClient(&pt);
+	pt.x += GetScrollPos(SB_HORZ);
+	pt.y += GetScrollPos(SB_VERT);
+	CPoint tDiff;
+	switch (m_iPivotMoveing)
+	{
+	case CPivot::X:
+		tDiff = pt - Pivot.Get_Pos();
+		m_pSelectedActor->tInfo.vPos.x += tDiff.x;
+		Pivot.Add_PosX(tDiff.x);
+		break;
+	case CPivot::Y:
+		tDiff = pt - Pivot.Get_Pos();
+		m_pSelectedActor->tInfo.vPos.y += tDiff.y;
+		Pivot.Add_PosY(tDiff.y);
+		break;
+	case CPivot::XY:
+		tDiff = pt - Pivot.Get_Pos();
+		m_pSelectedActor->tInfo.vPos.x += tDiff.x;
+		m_pSelectedActor->tInfo.vPos.y += tDiff.y;
+		Pivot.Add_PosX(tDiff.x);
+		Pivot.Add_PosY(tDiff.y);
+		break;
+	default:
+		break;
+	}
+	m_iPivotMoveing = -1;
+	Invalidate(FALSE);
 	CScrollView::OnLButtonUp(nFlags, point);
 }
