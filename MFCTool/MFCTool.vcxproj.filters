@@ -31,17 +31,11 @@
     <Filter Include="03.Texture\Manager">
       <UniqueIdentifier>{30803598-1580-4452-a9ab-6285be6df223}</UniqueIdentifier>
     </Filter>
-    <Filter Include="04.Terrain">
-      <UniqueIdentifier>{46493194-58ef-416f-981a-b7fca733c65c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.View\MiniView">
       <UniqueIdentifier>{15190102-0ea0-43c5-beb1-17f6b8cc0529}</UniqueIdentifier>
     </Filter>
     <Filter Include="01.View\Form">
       <UniqueIdentifier>{e6bf6496-54f9-4c4a-92b7-0a3e793747d8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.View\Form\MapTool">
-      <UniqueIdentifier>{54a5355c-81be-4bf2-8dd1-549e8d73ebc9}</UniqueIdentifier>
     </Filter>
     <Filter Include="04.Fileinfo">
       <UniqueIdentifier>{c1c658d1-a9d3-4c7b-9f45-d93f21e99a0d}</UniqueIdentifier>
@@ -108,14 +102,8 @@
     <ClInclude Include="Multi_Texture.h">
       <Filter>03.Texture\Multi_Texture</Filter>
     </ClInclude>
-    <ClInclude Include="Terrain.h">
-      <Filter>04.Terrain</Filter>
-    </ClInclude>
     <ClInclude Include="Form.h">
       <Filter>01.View\Form</Filter>
-    </ClInclude>
-    <ClInclude Include="MapTool.h">
-      <Filter>01.View\Form\MapTool</Filter>
     </ClInclude>
     <ClInclude Include="AnimationTool.h">
       <Filter>01.View\Form\AnimationTool</Filter>
@@ -180,14 +168,8 @@
     <ClCompile Include="Multi_Texture.cpp">
       <Filter>03.Texture\Multi_Texture</Filter>
     </ClCompile>
-    <ClCompile Include="Terrain.cpp">
-      <Filter>04.Terrain</Filter>
-    </ClCompile>
     <ClCompile Include="Form.cpp">
       <Filter>01.View\Form</Filter>
-    </ClCompile>
-    <ClCompile Include="MapTool.cpp">
-      <Filter>01.View\Form\MapTool</Filter>
     </ClCompile>
     <ClCompile Include="AnimationTool.cpp">
       <Filter>01.View\Form\AnimationTool</Filter>

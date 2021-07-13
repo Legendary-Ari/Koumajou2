@@ -14,13 +14,13 @@ CPivot::~CPivot()
 
 void CPivot::Add_PosX(float _fX)
 {
-	m_tPos.x += _fX;
+	m_tPos.x += (LONG)_fX;
 	UpdateRect();
 }
 
 void CPivot::Add_PosY(float _fY)
 {
-	m_tPos.y += _fY;
+	m_tPos.y += (LONG)_fY;
 	UpdateRect();
 }
 
@@ -57,12 +57,12 @@ void CPivot::Render()
 	CMFCToolView* pMFCToolView = dynamic_cast<CMFCToolView*>(pMain->m_tMainSplitter.GetPane(0, 1));
 	CGraphic_Device::Get_Instance()->Get_Sprite()->End();
 
-	float fScrollX = -pMFCToolView->GetScrollPos(SB_HORZ);
-	float fScrollY = -pMFCToolView->GetScrollPos(SB_VERT);
+	float fScrollX = (float)-pMFCToolView->GetScrollPos(SB_HORZ);
+	float fScrollY = (float)-pMFCToolView->GetScrollPos(SB_VERT);
 
 	_vec2 v2LinePos[2];
 	v2LinePos[0] = { (float)m_tPos.x, (float)m_tPos.y };
-	v2LinePos[1] = { (float)m_tPos.x, (float)m_tRect[Y].top };
+	v2LinePos[1] = { (float)m_tPos.x, (float)m_tRect[Y].bottom };
 	for (int i = 0; i < 2; ++i)
 	{
 		v2LinePos[i].x += fScrollX;
@@ -70,8 +70,8 @@ void CPivot::Render()
 	}
 	CGraphic_Device::Get_Instance()->Get_Line()->Draw(v2LinePos, 2, D3DCOLOR_ARGB(255, 150, 255, 150));
 
-	v2LinePos[0] = { (float)m_tPos.x + 5.f, (float)m_tRect[Y].top - 5.f };
-	v2LinePos[1] = { (float)m_tPos.x, (float)m_tRect[Y].top };
+	v2LinePos[0] = { (float)m_tPos.x + 5.f, (float)m_tRect[Y].bottom - 5.f };
+	v2LinePos[1] = { (float)m_tPos.x, (float)m_tRect[Y].bottom };
 	for (int i = 0; i < 2; ++i)
 	{
 		v2LinePos[i].x += fScrollX;
@@ -79,8 +79,8 @@ void CPivot::Render()
 	}
 	CGraphic_Device::Get_Instance()->Get_Line()->Draw(v2LinePos, 2, D3DCOLOR_ARGB(255, 150, 255, 150));
 
-	v2LinePos[0] = { (float)m_tPos.x - 5.f, m_tRect[Y].top - 5.f };
-	v2LinePos[1] = { (float)m_tPos.x, (float)m_tRect[Y].top };
+	v2LinePos[0] = { (float)m_tPos.x - 5.f, m_tRect[Y].bottom - 5.f };
+	v2LinePos[1] = { (float)m_tPos.x, (float)m_tRect[Y].bottom };
 	for (int i = 0; i < 2; ++i)
 	{
 		v2LinePos[i].x += fScrollX;
@@ -130,8 +130,8 @@ void CPivot::UpdateRect()
 	m_tRect[Y] =
 	{
 		(LONG)(m_tPos.x - 5.f),
-		(LONG)(m_tPos.y - 30.f),
+		(LONG)(m_tPos.y),
 		(LONG)(m_tPos.x + 5.f),
-		(LONG)(m_tPos.y)
+		(LONG)(m_tPos.y + 30.f)
 	};
 }

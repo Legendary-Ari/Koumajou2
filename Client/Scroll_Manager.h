@@ -13,8 +13,14 @@ public:
 	static void Add_Scroll(const D3DXVECTOR3& vScroll);
 	static void Add_Scroll(ID eScrollID, float fScroll);
 	static void UpdateScroll();
+	static void SetMapSize(int _vMapX, int _vMapY);
+	static int GetMapSizeX();
+	static int GetMapSizeY();
+	static void ScrollLock();
 private:
 	static D3DXVECTOR3 m_vTargetScroll; 
 	static D3DXVECTOR3 m_vCurScroll;
+	static int m_iMapSizeX;
+	static int m_iMapSizeY;
 };
 

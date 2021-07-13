@@ -41,7 +41,7 @@ int CBullet::Update_GameObject()
 	if (m_bDestroyed)
 	{
 		const ANIMATION* pPrefab = nullptr; //CPrefab_Manager::Get_Instance()->Get_AnimationPrefab();
-		CGameObject * pObject = CEffect::Create(pPrefab, m_tInfo.vPos);
+		CGameObject * pObject = CEffect::Create(pPrefab, m_tInfo.vPos, {0.f,0.f,0.f});
 		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::UI, pObject);
 		pObject = nullptr;
 		return OBJ_DESTROYED;
@@ -54,6 +54,10 @@ int CBullet::Update_GameObject()
 	m_tInfo.vPos += m_tInfo.vDir * m_pObjectInfo->fMoveSpeed;
 
 	return OBJ_NOEVENT;
+}
+
+void CBullet::InitUpdate_GameObject()
+{
 }
 
 void CBullet::Late_Update_GameObject()

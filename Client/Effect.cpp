@@ -3,8 +3,7 @@
 
 
 CEffect::CEffect()
-	:m_iCurFrame(-1)
-	,m_fTimeStack(0.f)
+	:m_fTimeStack(0.f)
 {
 }
 
@@ -13,11 +12,12 @@ CEffect::~CEffect()
 {
 }
 
-CGameObject * CEffect::Create(const ANIMATION * _tAnimationInfo, D3DXVECTOR3 _vPos)
+CGameObject * CEffect::Create(const ANIMATION * _tAnimationInfo, D3DXVECTOR3 _vPos, D3DXVECTOR3 _vDir)
 {
 	CGameObject* pInstance = new CEffect;
 	static_cast<CEffect*>(pInstance)->Set_Prefab(_tAnimationInfo);
 	pInstance->Set_Pos(_vPos);
+	static_cast<CEffect*>(pInstance)->Set_Dir(_vDir);
 	if (FAILED(pInstance->Ready_GameObject()))
 	{
 		delete pInstance;
@@ -30,6 +30,11 @@ CGameObject * CEffect::Create(const ANIMATION * _tAnimationInfo, D3DXVECTOR3 _vP
 void CEffect::Set_Prefab(const ANIMATION * _pPrefab)
 {
 	m_pAnimationInfo = _pPrefab;
+}
+
+void CEffect::Set_Dir(_vec3 _vDir)
+{
+	m_tInfo.vDir = _vDir;
 }
 
 HRESULT CEffect::Ready_GameObject()
@@ -48,19 +53,23 @@ int CEffect::Update_GameObject()
 	if (m_pAnimationInfo->fPlay_Speed <= m_fTimeStack)
 	{
 		m_fTimeStack = 0.f;
-		++m_iCurFrame;
+		++m_uiAnimationFrame;
 
-		if (m_pAnimationInfo->vecRect.size() < (unsigned)m_iCurFrame)
+		if (m_pAnimationInfo->vecRect.size() <= m_uiAnimationFrame)
 		{
-			m_iCurFrame = 0;
+			m_uiAnimationFrame = 0;
 			if (!m_pAnimationInfo->bLoop)
 				return OBJ_DESTROYED;
 		}
 			
 	}
-	
+	m_tInfo.vPos += m_tInfo.vDir;
 
 	return OBJ_NOEVENT;
+}
+
+void CEffect::InitUpdate_GameObject()
+{
 }
 
 void CEffect::Late_Update_GameObject()
@@ -70,21 +79,33 @@ void CEffect::Late_Update_GameObject()
 
 void CEffect::Render_GameObject()
 {
-	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()->Get_TexInfo(m_pAnimationInfo->wstrObjectKey,m_pAnimationInfo->wstrStateKey,m_iCurFrame);
+	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()->Get_TexInfo(m_pAnimationInfo->wstrObjectKey);
 	if (nullptr == pTexInfo)
 		return;
+	D3DXVECTOR3 vScroll = CScroll_Manager::Get_Scroll();
+	if (m_tInfo.vDir.x < 0)
+		m_bFliped = true;
+	else
+		m_bFliped = false;
 	D3DXMATRIX matScale, matRotZ, matTrans, matWorld;
-	D3DXMatrixScaling(&matScale, 1.f, 1.f, 0.f);
+	D3DXMatrixScaling(&matScale, (m_bFliped ? -10.0f : 10.0f), 3.f, 0.f);
 	D3DXMatrixRotationZ(&matRotZ, D3DXToRadian(-m_tInfo.fAngle));
-	D3DXMatrixTranslation(&matTrans, m_tInfo.vPos.x, m_tInfo.vPos.y, 0.f);
+	D3DXMatrixTranslation(&matTrans, m_tInfo.vPos.x + vScroll.x, m_tInfo.vPos.y + vScroll.y, 0.f);
 	matWorld = matScale * matRotZ * matTrans;
-	float fCenterX = float(pTexInfo->tImageInfo.Width >> 1);
-	float fCenterY = float(pTexInfo->tImageInfo.Height >> 1);
+	const RECT& rect = m_pAnimationInfo->vecRect[0];
+	float 	fCenterX = float(((rect.right - rect.left) * 0.5f));
+	float 	fCenterY = float(((rect.bottom - rect.top) * 0.5f));
+	const RECT& tRenderRect = m_pAnimationInfo->vecRect[m_uiAnimationFrame];
 	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
-	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, &m_pAnimationInfo->vecRect[m_iCurFrame], &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
+	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, &tRenderRect, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
 
 }
 
 void CEffect::Release_GameObject()
 {
+}
+
+const RENDERID::ID & CEffect::Get_RenderId() const
+{
+	return RENDERID::EFFECT;
 }

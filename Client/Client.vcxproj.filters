@@ -91,6 +91,15 @@
     <Filter Include="01.GameObject\06.Enemy\Ruler_Sword">
       <UniqueIdentifier>{85288d48-bcf3-4f16-9e1b-ac7c11dc70f1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.GameObject\06.Enemy\Rose">
+      <UniqueIdentifier>{79954292-2980-4293-85cf-ec7b3ac8f918}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\06.Enemy\Skeleton">
+      <UniqueIdentifier>{1bbea6a6-3031-4b05-a15b-f11ba6d741e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\06.Enemy\Owl">
+      <UniqueIdentifier>{93e51e37-57fc-4fd6-a971-e9984e7b1da2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -183,14 +192,29 @@
     <ClInclude Include="BackGround.h">
       <Filter>01.GameObject\04.BackGround</Filter>
     </ClInclude>
-    <ClInclude Include="Ruler_Sword.h">
-      <Filter>01.GameObject\01.BackCollision</Filter>
-    </ClInclude>
     <ClInclude Include="BackCollision.h">
       <Filter>01.GameObject\01.BackCollision</Filter>
     </ClInclude>
     <ClInclude Include="Toad.h">
       <Filter>01.GameObject\06.Enemy\Toad</Filter>
+    </ClInclude>
+    <ClInclude Include="Rose.h">
+      <Filter>01.GameObject\06.Enemy\Rose</Filter>
+    </ClInclude>
+    <ClInclude Include="Skeleton.h">
+      <Filter>01.GameObject\06.Enemy\Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="Ruler_Sword.h">
+      <Filter>01.GameObject\06.Enemy\Ruler_Sword</Filter>
+    </ClInclude>
+    <ClInclude Include="Owl.h">
+      <Filter>01.GameObject\06.Enemy\Owl</Filter>
+    </ClInclude>
+    <ClInclude Include="RoseStem.h">
+      <Filter>01.GameObject\06.Enemy\Rose</Filter>
+    </ClInclude>
+    <ClInclude Include="RoseHead.h">
+      <Filter>01.GameObject\06.Enemy\Rose</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -286,6 +310,21 @@
     </ClCompile>
     <ClCompile Include="Toad.cpp">
       <Filter>01.GameObject\06.Enemy\Toad</Filter>
+    </ClCompile>
+    <ClCompile Include="Rose.cpp">
+      <Filter>01.GameObject\06.Enemy\Rose</Filter>
+    </ClCompile>
+    <ClCompile Include="Skeleton.cpp">
+      <Filter>01.GameObject\06.Enemy\Skeleton</Filter>
+    </ClCompile>
+    <ClCompile Include="Owl.cpp">
+      <Filter>01.GameObject\06.Enemy\Owl</Filter>
+    </ClCompile>
+    <ClCompile Include="RoseStem.cpp">
+      <Filter>01.GameObject\06.Enemy\Rose</Filter>
+    </ClCompile>
+    <ClCompile Include="RoseHead.cpp">
+      <Filter>01.GameObject\06.Enemy\Rose</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

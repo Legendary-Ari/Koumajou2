@@ -34,6 +34,7 @@ HRESULT CScene_Manager::Change_Scene_Manager(const ID eID)
 			m_pScene = CStage::Create();
 			break;
 		}
+		m_pScene->InitUpdate_Scene();
 		m_eCurScene = m_eNextScene; 
 	}
 	return S_OK;
@@ -43,6 +44,11 @@ void CScene_Manager::Update_Scene_Manager()
 {
 	m_pScene->Update_Scene(); 
 	CScroll_Manager::UpdateScroll();
+}
+
+void CScene_Manager::InitUpdate_Scene_Manager()
+{
+	m_pScene->InitUpdate_Scene();
 }
 
 void CScene_Manager::Render_Scene_Manager()

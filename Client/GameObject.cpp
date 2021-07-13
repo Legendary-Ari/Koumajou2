@@ -1,16 +1,25 @@
 #include "stdafx.h"
 #include "GameObject.h"
+#include "Effect.h"
 
-
+bool CGameObject::m_bRenderCollision = false;
 CGameObject::CGameObject()
-	:m_pObjectInfo(nullptr)
+	:m_pActorInfo(nullptr)
+	, m_pObjectInfo(nullptr)
 	, m_uiAnimationFrame(0)
 	, m_tInfo({})
-	, m_bIsFliped(false)
-	, m_bRenderCollision(true)
+	, m_bFliped(false)
 	, m_bVisible(true)
 	, m_bBlockable(true)
 	, m_bOverlapable(true)
+	, m_bDead(false)
+	, m_eCurState(-1)
+	, m_ePrevState(-1)
+	, m_fAnimationCumulatedTime(0.f)
+	, m_bDieInit(false)
+	, m_bFalling(false)
+	, m_bJumping(false)
+	, m_fGravityAccelerlation(29.4f)
 {
 	
 }
@@ -27,6 +36,13 @@ void CGameObject::Set_Pos(const D3DXVECTOR3 & vPos)
 
 void CGameObject::OnOverlaped(CGameObject * _pHitObject)
 {
+	m_fCurHp -= _pHitObject->Get_Damage();
+	if (m_fCurHp <= 0.f)
+	{
+		m_bDead = true;
+		m_bDieInit = true;
+	}
+
 }
 
 void CGameObject::OnBlocked(CGameObject* pHitObject,DIRECTION::ID _eId)
@@ -35,6 +51,13 @@ void CGameObject::OnBlocked(CGameObject* pHitObject,DIRECTION::ID _eId)
 
 void CGameObject::OnBlockedTile(CGameObject * pHitObject, DIRECTION::ID _eId)
 {
+	if (!m_bOnGround && _eId == DIRECTION::S /*|| _eId == DIRECTION::SW || _eId == DIRECTION::SE*/)
+	{
+		m_bFalling = false;
+		m_bJumping = false;
+		m_bOnGround = true;
+		m_tInfo.vDir.y = 0;
+	}
 }
 
 void CGameObject::Set_OnGround(bool _b)
@@ -44,11 +67,18 @@ void CGameObject::Set_OnGround(bool _b)
 void CGameObject::Set_Prefab(const OBJECTINFO * _pPrefab)
 {
 	m_pObjectInfo = _pPrefab;
+	m_fCurHp = _pPrefab->fMaxHp;
 }
 
 void CGameObject::Set_ActorInfo(const ACTORINFO * _pPlacement)
 {
 	m_pActorInfo = _pPlacement;
+	m_tInfo = _pPlacement->tInfo;
+}
+
+void CGameObject::Set_Info(const INFO & tInfo)
+{
+	m_tInfo = tInfo;
 }
 
 void CGameObject::Add_PosX(float _fPosX)
@@ -59,6 +89,13 @@ void CGameObject::Add_PosX(float _fPosX)
 void CGameObject::Add_PosY(float _fPosY)
 {
 	m_tInfo.vPos.y += _fPosY;
+}
+
+const RENDERID::ID & CGameObject::Get_RenderId() const
+{
+	if(!m_pObjectInfo)
+		return RENDERID::END;
+	return (RENDERID::ID)m_pObjectInfo->eRenderId;
 }
 
 void CGameObject::UpdateState()
@@ -76,6 +113,23 @@ void CGameObject::UpdateBodyCollision()
 
 void CGameObject::UpdateAttackCollision()
 {
+}
+
+void CGameObject::UpdateDie()
+{
+}
+
+void CGameObject::UpdateJump()
+{
+}
+
+void CGameObject::UpdateGravity()
+{
+	float fDeltaTime = CTime_Manager::Get_Instance()->Get_DeltaTime();
+	if (!m_bJumping && !m_bFlying)
+	{
+		m_tInfo.vDir.y += m_fGravityAccelerlation * fDeltaTime;
+	}
 }
 
 void CGameObject::RenderCollision()
@@ -116,8 +170,8 @@ void CGameObject::RenderCollision()
 			_vec3 vScroll = CScroll_Manager::Get_Scroll();
 			v2LinePos[i] += {vScroll.x,vScroll.y};
 		}
-			
 		CGraphic_Device::Get_Instance()->Get_Line()->Draw(v2LinePos, dwSize, D3DCOLOR_ARGB(255, 100, 255, 255));
+		Safe_Delete(v2LinePos);
 	}
 	for (auto& tCollision : m_vecAttackCollision)
 	{
@@ -153,8 +207,14 @@ void CGameObject::RenderCollision()
 			v2LinePos[i] += {vScroll.x, vScroll.y};
 		}
 		CGraphic_Device::Get_Instance()->Get_Line()->Draw(v2LinePos, dwSize, D3DCOLOR_ARGB(255, 255, 100, 100));
+		Safe_Delete(v2LinePos);
 		
 	}
 	CGraphic_Device::Get_Instance()->Get_Sprite()->Begin(D3DXSPRITE_ALPHABLEND);
+
+	_vec3 vScroll = CScroll_Manager::Get_Scroll();
+
+	DEBUG_STRING(L" HP : %f", m_fCurHp,m_tInfo.vPos.x + vScroll.x, m_tInfo.vPos.y + vScroll.y)
+
 }
 

@@ -372,6 +372,9 @@ void CHierarchyView::LoadTreeItems(UINT _uiStageFirstIdx, UINT _uiStageSecondIdx
 	ReadFile(hFile, &uiTemp, sizeof(UINT), &dwbyte, nullptr);
 	ReadFile(hFile, &pMapping->m_uiWidth, sizeof(UINT), &dwbyte, nullptr);
 	ReadFile(hFile, &pMapping->m_uiHeight, sizeof(UINT), &dwbyte, nullptr);
+	pMapping->UpdateData(FALSE);
+	CMFCToolView* pView = dynamic_cast<CMFCToolView*>(pMain->m_tMainSplitter.GetPane(0, 1));
+	pView->SetScrollSizes(MM_TEXT, CSize(pMapping->m_uiWidth, pMapping->m_uiHeight));
 	ACTORINFO* pActorInfo = nullptr;
 	while (true)
 	{
@@ -424,7 +427,7 @@ void CHierarchyView::LoadTreeItems(UINT _uiStageFirstIdx, UINT _uiStageSecondIdx
 		}
 
 	}
-	CMFCToolView* pView = dynamic_cast<CMFCToolView*>(pMain->m_tMainSplitter.GetPane(0, 1));
+	pView = dynamic_cast<CMFCToolView*>(pMain->m_tMainSplitter.GetPane(0, 1));
 	pView->SetScrollSizes(MM_TEXT, CSize(pMapping->m_uiWidth, pMapping->m_uiHeight));
 	CloseHandle(hFile);
 }

@@ -25,6 +25,11 @@ HRESULT CStage::Ready_Scene()
 	return S_OK;
 }
 
+void CStage::InitUpdate_Scene()
+{
+	CGameObject_Manager::Get_Instance()->InitUpdate_GameObject_Manager();
+}
+
 void CStage::Update_Scene()
 {
 	CGameObject_Manager::Get_Instance()->Update_GameObject_Manager(); 

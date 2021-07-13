@@ -17,6 +17,9 @@ HRESULT CMainApp::Ready_MainApp()
 {
 	// 	E_FAIL; 
 	// 	S_OK; 
+	LARGE_INTEGER tTime;
+	QueryPerformanceCounter(&tTime);
+	srand(tTime.QuadPart);
 	CTime_Manager::Get_Instance()->Ready_Time_Manager();
 
 	if (FAILED(CGraphic_Device::Get_Instance()->Ready_Graphic_Device()))
@@ -53,6 +56,8 @@ void CMainApp::Release_MainApp()
 	CTime_Manager::Destroy_Instance();
 	CGameObject_Manager::Destroy_Instance();
 	CScene_Manager::Destroy_Instance();
+	CTexture_Manager::Destroy_Instance();
+	CPrefab_Manager::Destroy_Instance();
 	CGraphic_Device::Destroy_Instance();
 }
 

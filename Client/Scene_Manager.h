@@ -12,6 +12,7 @@ public:
 	HRESULT Change_Scene_Manager(const ID eID);
 public:
 	void Update_Scene_Manager(); 
+	void InitUpdate_Scene_Manager();
 	void Render_Scene_Manager(); 
 	void Release_Scene_Manager(); 
 private:

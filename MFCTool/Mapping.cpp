@@ -106,10 +106,11 @@ void CMapping::OnBnClickedButtonMLoad()
 {
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd());
 	CHierarchyView* pHView = dynamic_cast<CHierarchyView*>(pMain->m_tRightSplitter.GetPane(0, 0));
+	CMFCToolView* pView = dynamic_cast<CMFCToolView*>(pMain->m_tMainSplitter.GetPane(0, 1));
 	pHView->SaveTreeItems(m_uiStageFirst, m_uiStageSecond);
 	UpdateData(TRUE);
 	pHView->LoadTreeItems(m_uiStageFirst, m_uiStageSecond);
-
+	pView->SetScrollSizes(MM_TEXT, CSize(m_uiWidth, m_uiHeight));
 	UpdateData(FALSE);
 }
 

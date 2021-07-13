@@ -30,8 +30,13 @@ HRESULT CBackCollision::Ready_GameObject()
 	m_tInfo = m_pActorInfo->tInfo;
 	m_vecBodyCollision.resize(1);
 	m_vecBodyCollision[0].eId = COLLISION::C_RECT;
+	m_bOverlapable = false;
 
 	return S_OK;
+}
+
+void CBackCollision::InitUpdate_GameObject()
+{
 }
 
 int CBackCollision::Update_GameObject()
@@ -46,6 +51,7 @@ void CBackCollision::Late_Update_GameObject()
 
 void CBackCollision::Render_GameObject()
 {
+	
 	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()->Get_TexInfo(m_pObjectInfo->wstrObjectImage_ObjectKey);
 	if (nullptr == pTexInfo)
 		return;

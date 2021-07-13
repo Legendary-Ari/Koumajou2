@@ -201,6 +201,8 @@ HRESULT CPrefab_Manager::LoadActorPrefab(const wstring & _path)
 	UINT mIDX;
 	TCHAR* pBuff = nullptr;
 	ACTORINFO* pActorInfo = nullptr;
+	UINT uiMapX;
+	UINT uiMapY;
 	ReadFile(hFile, &mIDX, sizeof(UINT), &dwbyte, nullptr);
 	if (dwbyte == 0)
 	{
@@ -208,8 +210,9 @@ HRESULT CPrefab_Manager::LoadActorPrefab(const wstring & _path)
 		return E_FAIL;
 	}
 	ReadFile(hFile, &mIDX, sizeof(UINT), &dwbyte, nullptr);
-	ReadFile(hFile, &mIDX, sizeof(UINT), &dwbyte, nullptr);
-	ReadFile(hFile, &mIDX, sizeof(UINT), &dwbyte, nullptr);
+	ReadFile(hFile, &uiMapX, sizeof(UINT), &dwbyte, nullptr);
+	ReadFile(hFile, &uiMapY, sizeof(UINT), &dwbyte, nullptr);
+	CScroll_Manager::SetMapSize((int)uiMapX, (int)uiMapY);
 	while (true)
 	{
 		ReadFile(hFile, &strLen, sizeof(DWORD), &dwbyte, nullptr);
@@ -313,3 +316,4 @@ HRESULT CPrefab_Manager::SpawnObjectbyScene(const CScene_Manager::ID & _id)
 
 	return S_OK;
 }
+

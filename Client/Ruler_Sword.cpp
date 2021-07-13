@@ -78,9 +78,9 @@ void CRuler_Sword::UpdateBodyCollision()
 	float fDistance = D3DXVec3Length(&vToThis);
 	D3DXVec3Normalize(&vToThis, &vToThis);
 	_vec2 v2Radius = { (float)((rect.right - rect.left) * 0.5f), (float)((rect.bottom - rect.top) * 0.5f) };
-	for (size_t i = 0; i < m_vecBodyCollision.size(); ++i)
+	for (UINT i = 0; i < m_vecBodyCollision.size(); ++i)
 	{
-		_vec3 vColPos = m_tInfo.vPos + vToThis * ((float)(i)-2.f) * fDistance / m_vecBodyCollision.size();
+		_vec3 vColPos = m_tInfo.vPos + vToThis * (static_cast<float>(i)-2.f) * fDistance / m_vecBodyCollision.size();
 		m_vecBodyCollision[i].tFRect =
 		{
 			(float)(vColPos.x - v2Radius.x * fReduceSize * m_tInfo.vSize.x),

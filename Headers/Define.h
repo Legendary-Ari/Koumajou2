@@ -37,11 +37,20 @@ private:												\
 #define IMPLEMENT_SINGLETON(ClassName)					\
 ClassName* ClassName::m_pInstance = nullptr;
 
-#define DEBUG_STRING(L, Data, X, Y)																																						   \
-TCHAR szBuff[64];																																							   \
-swprintf_s(szBuff, L, Data);																																   \
-D3DXMATRIX mat;																																								   \
-D3DXMatrixTranslation(&mat, X, Y, 0.f);																																   \
-																																											   \
-CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&mat);																											   \
-CGraphic_Device::Get_Instance()->Get_Font()->DrawTextW(CGraphic_Device::Get_Instance()->Get_Sprite(), szBuff, lstrlen(szBuff), nullptr, 0, D3DCOLOR_ARGB(255, 255, 0, 0));	   
+#define DEBUG_STRING(L, Data, X, Y)																																				\
+{TCHAR szBuff[64];																																								\
+swprintf_s(szBuff, L, Data);																																					\
+D3DXMATRIX mat;																																									\
+D3DXMatrixTranslation(&mat, X, Y, 0.f);																																			\
+																																												\
+CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&mat);																												\
+CGraphic_Device::Get_Instance()->Get_Font()->DrawTextW(CGraphic_Device::Get_Instance()->Get_Sprite(), szBuff, lstrlen(szBuff), nullptr, 0, D3DCOLOR_ARGB(255, 255, 0, 0));}	   
+
+#define DEBUG_STRING3(L, Data, Data2, Data3, X, Y)																																\
+{TCHAR szBuff[64];																																								\
+swprintf_s(szBuff, L, Data, Data2, Data3);																																		\
+D3DXMATRIX mat;																																									\
+D3DXMatrixTranslation(&mat, X, Y, 0.f);																																			\
+																																												\
+CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&mat);																												\
+CGraphic_Device::Get_Instance()->Get_Font()->DrawTextW(CGraphic_Device::Get_Instance()->Get_Sprite(), szBuff, lstrlen(szBuff), nullptr, 0, D3DCOLOR_ARGB(255, 255, 0, 0));}	   

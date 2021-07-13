@@ -20,12 +20,14 @@ using namespace std;
 #include "Graphic_Device.h"
 #include "Texture_Manager.h"
 #ifndef _AFX
+
 #include "Time_Manager.h"
 #include "GameObject_Manager.h"
 #include "Key_Manager.h"
 #include "Scroll_Manager.h"
 #include "Prefab_Manager.h"
 #else
+
 #include "EnumToString.h"
 #endif
 

@@ -32,6 +32,10 @@ HRESULT CGui::Ready_GameObject()
 	return S_OK;
 }
 
+void CGui::InitUpdate_GameObject()
+{
+}
+
 int CGui::Update_GameObject()
 {
 	if (m_bDestroyed)

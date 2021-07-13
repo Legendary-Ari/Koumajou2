@@ -186,39 +186,51 @@ void CObjectTool::OnBnClickedAdd()
 	pObjectData->fMoveSpeed = m_fObjMoveSpeed;
 	pObjectData->eObjId = (OBJECTINFO::OBJID)iObjID;
 	pObjectData->eRenderId = (RENDERID::ID)iRenderId;
-	if (iImage == LB_ERR)
+	pObjectData->bIsSingle = m_RadioImageType[0].GetCheck();
+
+	if (pObjectData->bIsSingle)
 	{
-		pObjectData->cstrObjectImage_ObjectKey = L"";
-		pObjectData->cstrObjectImage_Path = L"";
-	}
-	else
-	{
-		m_ListBox_ObjImage.GetText(iImage, cstrName);
-		auto& iter_find = m_mapKeyToPath.find(cstrName);
-		if (iter_find == m_mapKeyToPath.end())
+		if (iImage == LB_ERR)
 		{
 			pObjectData->cstrObjectImage_ObjectKey = L"";
 			pObjectData->cstrObjectImage_Path = L"";
 		}
 		else
 		{
-			pObjectData->cstrObjectImage_ObjectKey = cstrName;
-			pObjectData->cstrObjectImage_Path = iter_find->second;
+			m_ListBox_ObjImage.GetText(iImage, cstrName);
+			auto& iter_find = m_mapKeyToPath.find(cstrName);
+			if (iter_find == m_mapKeyToPath.end())
+			{
+				pObjectData->cstrObjectImage_ObjectKey = L"";
+				pObjectData->cstrObjectImage_Path = L"";
+			}
+			else
+			{
+				pObjectData->cstrObjectImage_ObjectKey = cstrName;
+				pObjectData->cstrObjectImage_Path = iter_find->second;
+			}
+			cstrName = L"";
 		}
-		cstrName = L"";
-	}
-	if (iter_find != map.end())
-	{
-		pObjectData->cstrIdleAnimImage_ObjectKey = iter_find->second->wstrObjectKey;
-		pObjectData->cstrIdleAnimImage_StateKey = iter_find->second->wstrStateKey;
 	}
 	else
 	{
-		pObjectData->cstrIdleAnimImage_ObjectKey = L"";
-		pObjectData->cstrIdleAnimImage_StateKey = L"";
+		if (iter_find != map.end())
+		{
+			pObjectData->cstrIdleAnimImage_ObjectKey = iter_find->second->wstrObjectKey;
+			pObjectData->cstrIdleAnimImage_StateKey = iter_find->second->wstrStateKey;
+			pObjectData->cstrObjectImage_ObjectKey = iter_find->second->wstrObjectKey;
+			pObjectData->cstrObjectImage_Path = iter_find->second->wstrFilePath;
+		}
+		else
+		{
+			pObjectData->cstrIdleAnimImage_ObjectKey = L"";
+			pObjectData->cstrIdleAnimImage_StateKey = L"";
+		}
 	}
 	
-	pObjectData->bIsSingle = m_RadioImageType[0].GetCheck();
+
+	
+
 
 	pObjectData->bDestructable = (bool)m_CheckBoxDestructable.GetCheck();
 	pObjectData->eBulletType = (OBJECTINFO::BULLET_TYPE)iBulletTypeIndex;
@@ -575,7 +587,7 @@ void CObjectTool::OnLbnSelchangeAnimation()
 	if (nullptr == pTexInfo)
 		return;
 	D3DXMATRIX matScale, matTrans, matWorld;
-	D3DXMatrixScaling(&matScale, WINCX / TILECX, WINCX / TILECX, 0.f);
+	D3DXMatrixScaling(&matScale, WINCX / 128, WINCX / 128, 0.f);
 	D3DXMatrixTranslation(&matTrans, 400.f, 300.f, 0.f);
 	matWorld = matScale * matTrans;
 	float fCenterX = float(pTexInfo->tImageInfo.Width >> 1);

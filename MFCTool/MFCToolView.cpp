@@ -12,9 +12,7 @@
 #include "MFCToolDoc.h"
 #include "MFCToolView.h"
 #include "Single_Texture.h"
-#include "Terrain.h"
 #include "MainFrm.h"
-#include "MapTool.h"
 #include "Form.h"
 #include "UiTool.h"
 #include "HierarchyView.h"
@@ -190,27 +188,27 @@ void CMFCToolView::OnDraw(CDC* /*pDC*/)
 			{
 				if (pObjectInfo->tRect.bottom > 0)
 				{
-					v2LinePos[0] = { pActorInfo->tInfo.vPos.x - (rect.right - rect.left)*0.25f, pActorInfo->tInfo.vPos.y - (rect.bottom - rect.top)*0.25f };
-					v2LinePos[1] = { pActorInfo->tInfo.vPos.x + (rect.right - rect.left)*0.25f, pActorInfo->tInfo.vPos.y - (rect.bottom - rect.top)*0.25f };
-					v2LinePos[2] = { pActorInfo->tInfo.vPos.x + (rect.right - rect.left)*0.25f, pActorInfo->tInfo.vPos.y + (rect.bottom + rect.top)*0.25f };
-					v2LinePos[3] = { pActorInfo->tInfo.vPos.x - (rect.right - rect.left)*0.25f, pActorInfo->tInfo.vPos.y + (rect.bottom + rect.top)*0.25f };
+					v2LinePos[0] = { pActorInfo->tInfo.vPos.x - (rect.right - rect.left)*0.5f, pActorInfo->tInfo.vPos.y - (rect.bottom - rect.top)*0.5f };
+					v2LinePos[1] = { pActorInfo->tInfo.vPos.x + (rect.right - rect.left)*0.5f, pActorInfo->tInfo.vPos.y - (rect.bottom - rect.top)*0.5f };
+					v2LinePos[2] = { pActorInfo->tInfo.vPos.x + (rect.right - rect.left)*0.5f, pActorInfo->tInfo.vPos.y + (rect.bottom + rect.top)*0.5f };
+					v2LinePos[3] = { pActorInfo->tInfo.vPos.x - (rect.right - rect.left)*0.5f, pActorInfo->tInfo.vPos.y + (rect.bottom + rect.top)*0.5f };
 
 				}
 				else
 				{
-					v2LinePos[0] = { pActorInfo->tInfo.vPos.x - pTexInfo->tImageInfo.Width*0.25f, pActorInfo->tInfo.vPos.y - pTexInfo->tImageInfo.Height*0.25f };
-					v2LinePos[1] = { pActorInfo->tInfo.vPos.x + pTexInfo->tImageInfo.Width*0.25f, pActorInfo->tInfo.vPos.y - pTexInfo->tImageInfo.Height*0.25f };
-					v2LinePos[2] = { pActorInfo->tInfo.vPos.x + pTexInfo->tImageInfo.Width*0.25f, pActorInfo->tInfo.vPos.y + pTexInfo->tImageInfo.Height*0.25f };
-					v2LinePos[3] = { pActorInfo->tInfo.vPos.x - pTexInfo->tImageInfo.Width*0.25f, pActorInfo->tInfo.vPos.y + pTexInfo->tImageInfo.Height*0.25f };
+					v2LinePos[0] = { pActorInfo->tInfo.vPos.x - pTexInfo->tImageInfo.Width*0.5f, pActorInfo->tInfo.vPos.y - pTexInfo->tImageInfo.Height*0.5f };
+					v2LinePos[1] = { pActorInfo->tInfo.vPos.x + pTexInfo->tImageInfo.Width*0.5f, pActorInfo->tInfo.vPos.y - pTexInfo->tImageInfo.Height*0.5f };
+					v2LinePos[2] = { pActorInfo->tInfo.vPos.x + pTexInfo->tImageInfo.Width*0.5f, pActorInfo->tInfo.vPos.y + pTexInfo->tImageInfo.Height*0.5f };
+					v2LinePos[3] = { pActorInfo->tInfo.vPos.x - pTexInfo->tImageInfo.Width*0.5f, pActorInfo->tInfo.vPos.y + pTexInfo->tImageInfo.Height*0.5f };
 				}				
 			}
 			else
 			{
 
-				v2LinePos[0] = { pActorInfo->tInfo.vPos.x - (rect.right - rect.left)*0.25f, pActorInfo->tInfo.vPos.y - (rect.bottom - rect.top)*0.25f };
-				v2LinePos[1] = { pActorInfo->tInfo.vPos.x + (rect.right - rect.left)*0.25f, pActorInfo->tInfo.vPos.y - (rect.bottom - rect.top)*0.25f };
-				v2LinePos[2] = { pActorInfo->tInfo.vPos.x + (rect.right - rect.left)*0.25f, pActorInfo->tInfo.vPos.y + (rect.bottom + rect.top)*0.25f };
-				v2LinePos[3] = { pActorInfo->tInfo.vPos.x - (rect.right - rect.left)*0.25f, pActorInfo->tInfo.vPos.y + (rect.bottom + rect.top)*0.25f };
+				v2LinePos[0] = { pActorInfo->tInfo.vPos.x - (rect.right - rect.left)*0.5f, pActorInfo->tInfo.vPos.y - (rect.bottom - rect.top)*0.5f };
+				v2LinePos[1] = { pActorInfo->tInfo.vPos.x + (rect.right - rect.left)*0.5f, pActorInfo->tInfo.vPos.y - (rect.bottom - rect.top)*0.5f };
+				v2LinePos[2] = { pActorInfo->tInfo.vPos.x + (rect.right - rect.left)*0.5f, pActorInfo->tInfo.vPos.y + (rect.bottom + rect.top)*0.5f };
+				v2LinePos[3] = { pActorInfo->tInfo.vPos.x - (rect.right - rect.left)*0.5f, pActorInfo->tInfo.vPos.y + (rect.bottom + rect.top)*0.5f };
 			}
 			v2LinePos[0].x -= GetScrollPos(SB_HORZ);
 			v2LinePos[1].x -= GetScrollPos(SB_HORZ);
@@ -279,10 +277,6 @@ void CMFCToolView::OnInitialUpdate()
 {
 	CScrollView::OnInitialUpdate();
 	
-	
-
-	//CSize tsize; 
-	SetScrollSizes(MM_TEXT, CSize(CLIENTCX*2, CLIENTCY));
 	//GetScrollPos()
 	g_hWND = m_hWnd; 
 	CMainFrame* pMain = dynamic_cast<CMainFrame*>(::AfxGetApp()->GetMainWnd()); 

@@ -187,7 +187,7 @@ void CTexture_Manager::DrawPic(CString Objectkey, const RECT & _rect, int Index,
 	if (Index != -1)
 	{
 		if (fCenterX > fCenterY)
-			D3DXMatrixScaling(&matScale, WINCX / (_rect.right - _rect.left), WINCX / (_rect.right - _rect.left), 0.f);
+			D3DXMatrixScaling(&matScale, (float)WINCX / (_rect.right - _rect.left), (float)WINCX / (_rect.right - _rect.left), 0.f);
 		else
 			D3DXMatrixScaling(&matScale, WINCY / (_rect.bottom - _rect.top), WINCY / (_rect.bottom - _rect.top), 0.f);
 	}

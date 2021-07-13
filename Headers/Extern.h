@@ -7,14 +7,9 @@ const int CLIENTCY = 624;
 #else
 const int WINCX = 1040;
 const int WINCY = 624;
+const int CLIENTCX = 520;
+const int CLIENTCY = 312;
 #endif // _AFX
-
-
-
-const int TILECX = 130; 
-const int TILECY = 68; 
-const int TILEX = 20; 
-const int TILEY = 30; 
 
 extern HWND g_hWND; 
 

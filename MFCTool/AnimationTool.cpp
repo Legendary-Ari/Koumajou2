@@ -106,7 +106,11 @@ void CAnimationTool::OnBnClickedAddInfo()//여기 진행중..
 	UpdateData(TRUE);
 	//==========animation 정보 입력=======================
 
-	 
+	if (m_iHMount <= 0)
+	{
+		ERR_MSG(L"가로갯수 0개입니다");
+		return;
+	}
 
 	int iImage = m_ListBox_Image.GetCurSel();
 	if (iImage == LB_ERR)

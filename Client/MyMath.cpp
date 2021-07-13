@@ -39,6 +39,32 @@ D3DXVECTOR3 CMyMath::VecInterpTo(D3DXVECTOR3 _fCurrent, D3DXVECTOR3 _fTarget, fl
 	return _fCurrent + fDeltaMove;
 }
 
+bool CMyMath::PtInFRect(const FRECT & _fRect, const _vec2 & _v2Point)
+{
+	if (_v2Point.x > _fRect.left &&
+		_v2Point.x < _fRect.right &&
+		_v2Point.y > _fRect.top &&
+		_v2Point.y < _fRect.bottom
+		)
+		return true;
+	else
+		return false;
+}
+
+_vec2 CMyMath::Get_FRect_Center(const FRECT & _fRect)
+{
+	return _vec2(
+		((_fRect.right + _fRect.left) * 0.5f),
+		((_fRect.top + _fRect.bottom) * 0.5f));
+}
+
+_vec2 CMyMath::Get_FRect_WH(const FRECT & _fRect)
+{
+	return _vec2(
+		((_fRect.right - _fRect.left) * 0.5f),
+		((_fRect.top - _fRect.bottom) * 0.5f));
+}
+
 CMyMath::CMyMath()
 {
 }

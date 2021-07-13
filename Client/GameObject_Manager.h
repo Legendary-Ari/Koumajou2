@@ -8,9 +8,11 @@ private:
 	~CGameObject_Manager();
 public:
 	void Add_GameObject_Manager(OBJECTINFO::OBJID eID, CGameObject* pObject );
+	void InitUpdate_GameObject_Manager();
 	void Update_GameObject_Manager(); 
 	void Render_GameObject_Manager(); 
 	void Release_GameObject_Manager(); 
+	const CGameObject* Get_Player() const;
 	const list<CGameObject*>& Get_BackGroundObject() { return m_listGameObject[OBJECTINFO::BACKGROUND]; }
 private:
 	list<CGameObject*> m_listGameObject[OBJECTINFO::OBJID_END]; 

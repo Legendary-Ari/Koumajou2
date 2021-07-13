@@ -39,8 +39,8 @@ HRESULT CGraphic_Device::Ready_Graphic_Device(MODE eID /*= MODE_WIN*/)
 
 	D3DPRESENT_PARAMETERS d3dpp;
 	ZeroMemory(&d3dpp, sizeof(D3DPRESENT_PARAMETERS)); 
-	d3dpp.BackBufferWidth = WINCX;
-	d3dpp.BackBufferHeight = WINCY;
+	d3dpp.BackBufferWidth = CLIENTCX;
+	d3dpp.BackBufferHeight = CLIENTCY;
 	d3dpp.BackBufferFormat = D3DFMT_A8R8G8B8;// 0~ 255 
 	d3dpp.BackBufferCount = 1; //여기 카운트는 디폴트 1 + 내가 넣어준 카운트 만큼 . 그래서 
 	// 1을 넣어주면 총 2개 쓰겠다. 백버퍼를 ㅇㅋ  ?? 

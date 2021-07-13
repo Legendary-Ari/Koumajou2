@@ -34,6 +34,10 @@ HRESULT CBackGround::Ready_GameObject()
 	return S_OK;
 }
 
+void CBackGround::InitUpdate_GameObject()
+{
+}
+
 int CBackGround::Update_GameObject()
 {
 	if (m_bDestroyed)

@@ -51,9 +51,27 @@ int CRuler_Body::Update_GameObject()
 {
 	if (m_bDestroyed)
 		return OBJ_DESTROYED;
+	if (!UpdateActive())
+		return OBJ_NOEVENT;
+	if (m_bHit)
+	{
+		m_fHitCumulatedTime += CTime_Manager::Get_Instance()->Get_DeltaTime();
+		if (m_fHitCumulatedTime >= m_fHitMaxTime)
+		{
+			m_bHit = false;
+			m_fHitCumulatedTime = 0;
+		}
+		else
+		{
+			return OBJ_NOEVENT;
+		}
+	}
 
 
+	UpdateAnimation();
 	UpdateBodyCollision();
+	UpdateAttackCollision();
+
 	return OBJ_NOEVENT;
 }
 

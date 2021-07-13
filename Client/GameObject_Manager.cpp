@@ -22,6 +22,18 @@ void CGameObject_Manager::Add_GameObject_Manager(OBJECTINFO::OBJID eID, CGameObj
 	m_listGameObject[eID].emplace_back(pObject); 
 }
 
+void CGameObject_Manager::InitUpdate_GameObject_Manager()
+{
+	for (int i = 0; i < OBJECTINFO::OBJID_END; ++i)
+	{
+		for (auto& iter = m_listGameObject[i].begin(); iter != m_listGameObject[i].end(); ++iter)
+		{
+			(*iter)->InitUpdate_GameObject();
+
+		}
+	}
+}
+
 void CGameObject_Manager::Update_GameObject_Manager()
 {
 	for (int i = 0 ; i < OBJECTINFO::OBJID_END; ++i)
@@ -44,6 +56,7 @@ void CGameObject_Manager::Update_GameObject_Manager()
 	CCollisionMgr::Collision_BackGroundEx(m_listGameObject[OBJECTINFO::ENEMY_BULLET]);
 	CCollisionMgr::Collision_BackGroundEx(m_listGameObject[OBJECTINFO::BOSS]);
 
+	CCollisionMgr::Collision(m_listGameObject[OBJECTINFO::ENEMY], m_listGameObject[OBJECTINFO::PLAYER]);
 	CCollisionMgr::Collision_Ex(m_listGameObject[OBJECTINFO::ENEMY], m_listGameObject[OBJECTINFO::PLAYER]);
 
 	for (int i = 0; i < OBJECTINFO::OBJID_END; ++i)
@@ -64,7 +77,6 @@ void CGameObject_Manager::Render_GameObject_Manager()
 		for (auto& pGameObject : m_listGameObjectRender[i])
 		{
 			pGameObject->Render_GameObject();
-			
 		}
 		m_listGameObjectRender[i].clear();
 	}
@@ -80,4 +92,11 @@ void CGameObject_Manager::Release_GameObject_Manager()
 		}
 		m_listGameObject[i].clear();
 	}
+}
+
+const CGameObject * CGameObject_Manager::Get_Player() const
+{
+	if (m_listGameObject[OBJECTINFO::PLAYER].empty())
+		return nullptr;
+	return m_listGameObject[OBJECTINFO::PLAYER].front();
 }

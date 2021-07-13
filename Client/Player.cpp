@@ -5,22 +5,16 @@
 #include "CollisionMgr.h"
 
 CPlayer::CPlayer()
-	:m_ePrevState(STATE::STATE_END)
-	, m_eCurState(STATE::STATE_END)
-	, m_fAnimationCumulatedTime(0.f)
-	, m_bFalling(false)
-	, m_bJumping(false)
-	, m_bAttacking(false)
+	:m_bAttacking(false)
 	, m_bCrouch(false)
 	, m_bPrevIsFliped(false)
 	, m_bDodge(false)
-	, m_bFlying(false)
-	, m_bOnGround(true)
 	, m_bInvincible(false)
 	, m_fHitTimeLength(0.3f)
 	, m_fHitCumulateTime(0.f)
 	, m_bHit(false)
 	, m_fInvincibleTimeLength(1.5f)
+	, m_fJumpMaxTime(0.3f)
 {
 }
 
@@ -216,6 +210,11 @@ HRESULT CPlayer::Ready_GameObject()
 	m_vecBodyCollision[0].eId = COLLISION::C_RECT;
 	m_vecBodyCollision.resize(1);
 	m_vecBodyTileCollision.resize(1);
+	m_vecAttackCollision.resize(10);
+	for (UINT i = 1; i < m_vecAttackCollision.size(); ++i)
+	{
+		m_vecAttackCollision[i].eId = COLLISION::C_SPHERE;
+	}
 
 
 	m_bJumping = false;
@@ -233,7 +232,7 @@ int CPlayer::Update_GameObject()
 	
 	m_tInfo.vPos += m_tInfo.vDir;
 
-	UpdateBodyCollision();
+
 	Offset();
 
 	return OBJ_NOEVENT;
@@ -249,7 +248,15 @@ void CPlayer::Late_Update_GameObject()
 		m_tInfo.vPos = { 200.f, 300.f, 0.f };
 		m_tInfo.vDir.y = 0;
 	}
-		
+	float fMapSizeX = CScroll_Manager::GetMapSizeX();
+	float fMapSizeY = CScroll_Manager::GetMapSizeY();
+	if (m_tInfo.vPos.x < 0)
+		m_tInfo.vPos.x = 0;
+	if (m_tInfo.vPos.x > fMapSizeX)
+		m_tInfo.vPos.x = (float)(fMapSizeX);
+
+	UpdateBodyCollision();
+	UpdateAttackCollision();
 }
 
 void CPlayer::Render_GameObject()
@@ -262,7 +269,7 @@ void CPlayer::Render_GameObject()
 	D3DXVECTOR3 vScroll = CScroll_Manager::Get_Scroll();
 
 	D3DXMATRIX matScale, matRotZ, matTrans, matWorld;
-	D3DXMatrixScaling(&matScale, (m_bIsFliped ? -1.0f : 1.0f), 1.f, 0.f);
+	D3DXMatrixScaling(&matScale, (m_bFliped ? -1.0f : 1.0f), 1.f, 0.f);
 	D3DXMatrixRotationZ(&matRotZ, D3DXToRadian(-m_tInfo.fAngle));
 	D3DXMatrixTranslation(&matTrans, m_tInfo.vPos.x + vScroll.x, m_tInfo.vPos.y + vScroll.y, 0.f);
 	matWorld = matScale * matRotZ * matTrans;
@@ -272,7 +279,6 @@ void CPlayer::Render_GameObject()
 	const RECT& tRenderRect = m_vecAnimation[m_eCurState]->vecRect[m_uiAnimationFrame];
 	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
 	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, &tRenderRect, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
-
 	RenderCollision();
 }
 
@@ -282,6 +288,7 @@ void CPlayer::Release_GameObject()
 
 void CPlayer::OnBlocked(CGameObject * pHitObject, DIRECTION::ID _eId)
 {
+	m_fCurHp -= pHitObject->Get_Damage();
 	m_eCurState = HIT;
 	m_bBlockable = false;
 	m_bHit = true;
@@ -309,16 +316,18 @@ CGameObject * CPlayer::Create(const ACTORINFO* _pActorInfo, const OBJECTINFO* _p
 
 void CPlayer::OnBlockedTile(CGameObject * pHitObject, DIRECTION::ID _eId)
 {
-	if (!m_bOnGround && _eId == DIRECTION::S /*|| _eId == DIRECTION::SW || _eId == DIRECTION::SE*/)
-	{
-		m_bFalling = false;
-		m_bJumping = false;
-		m_bOnGround = true;
-		m_bAttacking = false;
-		m_eCurState = IDLE;
-		m_uiAnimationFrame = 0;
-		m_tInfo.vDir.y = 0;
-	}
+	CGameObject::OnBlockedTile(pHitObject, _eId);
+}
+
+void CPlayer::OnOverlaped(CGameObject * pHitObject)
+{
+	CGameObject::OnOverlaped(pHitObject);
+	m_fCurHp -= pHitObject->Get_Damage();
+	m_eCurState = HIT;
+	m_bBlockable = false;
+	m_bOverlapable = false;
+	m_bHit = true;
+	m_uiAnimationFrame = 0;
 }
 
 void CPlayer::UpdateState()
@@ -335,6 +344,7 @@ void CPlayer::UpdateState()
 			m_tInfo.vDir.y = 0;
 			m_bOnGround = false;
 			m_bVisible = true;
+			m_bOverlapable = true;
 		} 
 		else if (m_fHitCumulateTime > m_fHitTimeLength)
 		{
@@ -360,7 +370,7 @@ void CPlayer::UpdateState()
 		}
 		else
 		{
-			if (m_bJumping)
+			if (m_bJumping && m_eCurState != FALLING)
 			{
 				if (m_eCurState != FALLING)
 				{
@@ -376,7 +386,7 @@ void CPlayer::UpdateState()
 			}
 			else
 			{
-				if (m_bFalling)
+				if (m_bFalling || m_eCurState == FALLING && !m_bOnGround)
 					eState = FALLING;
 				else
 				{
@@ -388,7 +398,7 @@ void CPlayer::UpdateState()
 					{
 						if (m_tInfo.vDir.x != 0)
 						{
-							if (m_bIsFliped != m_bPrevIsFliped)
+							if (m_bFliped != m_bPrevIsFliped)
 								eState = TURNING;
 							else if (m_eCurState == S_WALKING || m_eCurState == IDLE)
 								eState = S_WALKING;
@@ -406,7 +416,7 @@ void CPlayer::UpdateState()
 	}
 	else
 	{
-		if (m_bJumping || m_bFalling)
+		if (!m_bOnGround)
 		{
 			if(m_bCrouch)
 				eState = JUMP_D_ATTACK;
@@ -429,7 +439,7 @@ void CPlayer::UpdateState()
 		}
 	}
 
-	m_bPrevIsFliped = m_bIsFliped;
+	m_bPrevIsFliped = m_bFliped;
 	m_eCurState = eState;
 
 	if (m_eCurState != m_ePrevState)
@@ -560,7 +570,8 @@ void CPlayer::UpdateBodyCollision()
 	RECT rect = m_vecAnimation[0]->vecRect[0];
 	
 	_vec2 v2Radius = { (float)((rect.right - rect.left) * 0.5f), (float)((rect.bottom - rect.top) * 0.5f) };
-	v2Radius *= fSize;
+	v2Radius.x *= m_tInfo.vSize.x;
+	v2Radius.y *= m_tInfo.vSize.y;
 	m_vecBodyCollision[0].tFRect = 
 	{
 		(float)(m_tInfo.vPos.x - v2Radius.x * fReduceSizeX * m_tInfo.vSize.x),
@@ -571,11 +582,82 @@ void CPlayer::UpdateBodyCollision()
 
 	m_vecBodyTileCollision[0].tFRect =
 	{
-		(float)(m_tInfo.vPos.x) - (float)(v2Radius.x * fReduceSizeX * m_tInfo.vSize.x),
-		(float)(m_tInfo.vPos.y) - (float)(v2Radius.y * fReduceSizeUp * m_tInfo.vSize.y),
-		(float)(m_tInfo.vPos.x) + (float)(v2Radius.x * fReduceSizeX * m_tInfo.vSize.x),
-		(float)(m_tInfo.vPos.y) + (float)(v2Radius.y * m_tInfo.vSize.y)
+		(float)(m_tInfo.vPos.x) - (float)(v2Radius.x * fReduceSizeX ),
+		(float)(m_tInfo.vPos.y) - (float)(v2Radius.y * fReduceSizeUp),
+		(float)(m_tInfo.vPos.x) + (float)(v2Radius.x * fReduceSizeX ),
+		(float)(m_tInfo.vPos.y) + (float)(v2Radius.y)
 	};
+}
+
+void CPlayer::UpdateAttackCollision()
+{
+	RECT rect = m_vecAnimation[0]->vecRect[0];
+
+	_vec2 v2Radius = { (float)((rect.right - rect.left) * 0.5f), (float)((rect.bottom - rect.top) * 0.5f) };
+	v2Radius.x *= m_tInfo.vSize.x;
+	v2Radius.y *= m_tInfo.vSize.y;
+	if (m_bOnGround && m_bAttacking && m_bCrouch && m_uiAnimationFrame > 4 && m_uiAnimationFrame < 8)
+	{
+		m_vecAttackCollision[0].tFRect = FRECT();
+		for (UINT i = 1; i < m_vecAttackCollision.size(); ++i)
+		{
+			m_vecAttackCollision[i].tFRect.left = (float)(m_tInfo.vPos.x + v2Radius.x * 0.25f * (i - 0.25f));
+			m_vecAttackCollision[i].tFRect.top = (float)(m_tInfo.vPos.y - v2Radius.y * (0.4f - (i - 1) * 0.1f));
+			m_vecAttackCollision[i].tFRect.right = (float)(m_tInfo.vPos.x + v2Radius.x * 0.25f * i);
+			m_vecAttackCollision[i].tFRect.bottom = (float)(m_tInfo.vPos.y - v2Radius.y * (0.4f - i) * 0.1f);
+			if (m_bFliped)
+			{
+				float fTemp = m_vecAttackCollision[i].tFRect.left;
+				m_vecAttackCollision[i].tFRect.left = m_tInfo.vPos.x - (m_vecAttackCollision[i].tFRect.right - m_tInfo.vPos.x);
+				m_vecAttackCollision[i].tFRect.right = m_tInfo.vPos.x - (fTemp - m_tInfo.vPos.x);
+			}
+		}
+
+	}
+	else if (m_bAttacking && m_bCrouch && m_uiAnimationFrame > 4 && m_uiAnimationFrame < 8)
+	{
+		m_vecAttackCollision[0].tFRect = FRECT();
+		for (UINT i = 1; i < m_vecAttackCollision.size(); ++i)
+		{
+			m_vecAttackCollision[i].tFRect.left = (float)(m_tInfo.vPos.x + v2Radius.x * 0.25f * (i - 0.25f));
+			m_vecAttackCollision[i].tFRect.top = (float)(m_tInfo.vPos.y - v2Radius.y * (0.5f - (i - 1) * 0.1f));
+			m_vecAttackCollision[i].tFRect.right = (float)(m_tInfo.vPos.x + v2Radius.x * 0.25f * i);
+			m_vecAttackCollision[i].tFRect.bottom = (float)(m_tInfo.vPos.y - v2Radius.y * (0.5f - i) * 0.1f);
+			if (m_bFliped)
+			{
+				float fTemp = m_vecAttackCollision[i].tFRect.left;
+				m_vecAttackCollision[i].tFRect.left = m_tInfo.vPos.x - (m_vecAttackCollision[i].tFRect.right - m_tInfo.vPos.x);
+				m_vecAttackCollision[i].tFRect.right = m_tInfo.vPos.x - (fTemp - m_tInfo.vPos.x);
+			}
+		}
+	}
+	else if (!m_bCrouch && m_bAttacking && m_uiAnimationFrame > 2 && m_uiAnimationFrame < 12)
+	{
+		m_vecAttackCollision[0].tFRect =
+		{
+			(float)(m_tInfo.vPos.x) ,
+			(float)(m_tInfo.vPos.y - v2Radius.y * 0.3f) ,
+			(float)(m_tInfo.vPos.x) + v2Radius.x * 2.5f,
+			(float)(m_tInfo.vPos.y - v2Radius.y * 0.1f)
+		};
+		if (m_bFliped)
+		{
+			float fTemp = m_vecAttackCollision[0].tFRect.left;
+			m_vecAttackCollision[0].tFRect.left = m_tInfo.vPos.x - (m_vecAttackCollision[0].tFRect.right - m_tInfo.vPos.x);
+			m_vecAttackCollision[0].tFRect.right = m_tInfo.vPos.x - (fTemp - m_tInfo.vPos.x);
+		}
+		for (UINT i = 1; i < m_vecAttackCollision.size(); ++i)
+		{
+			m_vecAttackCollision[i].tFRect = FRECT();
+		}
+	}
+	else
+	{
+		for (UINT i = 0; i < m_vecAttackCollision.size(); ++i)
+		{
+			m_vecAttackCollision[i].tFRect = FRECT();
+		}
+	}
 }
 
 void CPlayer::UpdateMoveWithPressKey()
@@ -584,7 +666,7 @@ void CPlayer::UpdateMoveWithPressKey()
 	float fMoveSpeed = fDeltaTime * m_pObjectInfo->fMoveSpeed;
 	if (m_bHit)
 	{
-		m_tInfo.vDir.x = m_bIsFliped ? fMoveSpeed : -fMoveSpeed;
+		m_tInfo.vDir.x = m_bFliped ? fMoveSpeed : -fMoveSpeed;
 		fMoveSpeed *= 0.5f;
 		m_tInfo.vDir.y = -fMoveSpeed;
 		return;
@@ -592,16 +674,16 @@ void CPlayer::UpdateMoveWithPressKey()
 
 	float fTargetDirX{ 0.f };
 
-	if (!m_bAttacking)
+	if (!(m_bAttacking && m_bOnGround))
 	{
 		if (CKey_Manager::Get_Instance()->Key_Pressing(KEY_LEFT))
 		{
-			m_bIsFliped = true;
+			m_bFliped = true;
 			fTargetDirX = -fMoveSpeed;
 		}
 		else if (CKey_Manager::Get_Instance()->Key_Pressing(KEY_RIGHT))
 		{
-			m_bIsFliped = false;
+			m_bFliped = false;
 			fTargetDirX = +fMoveSpeed;
 		}
 		else
@@ -621,8 +703,10 @@ void CPlayer::UpdateMoveWithPressKey()
 		{
 			m_bCrouch = false;
 		}
-
-		if (CKey_Manager::Get_Instance()->Key_Down(KEY_C))
+	}
+	if (!m_bAttacking)
+	{
+		if (CKey_Manager::Get_Instance()->Key_Down(KEY_Z))
 		{
 			m_bAttacking = true;
 			if (m_bOnGround)
@@ -633,23 +717,41 @@ void CPlayer::UpdateMoveWithPressKey()
 		}
 	}
 
-	if (!m_bFalling && !m_bJumping && CKey_Manager::Get_Instance()->Key_Pressing(KEY_X) && m_tInfo.vDir.y > -12.f)
+
+
+	if (CKey_Manager::Get_Instance()->Key_Down(KEY_F1))
+	{
+		m_bRenderCollision = !m_bRenderCollision;
+	}
+
+	if (!m_bFalling && !m_bJumping && CKey_Manager::Get_Instance()->Key_Pressing(KEY_X))
 	{
 		m_bJumping = true;
 		m_bFalling = false;
 		m_bOnGround = false;
+		m_fActionRamainedTime = m_fJumpMaxTime;
 	}
-	else if (!m_bFalling && m_bJumping && (m_tInfo.vDir.y < -12.f || !CKey_Manager::Get_Instance()->Key_Pressing(KEY_X)))
+	else if (!m_bFalling && m_bJumping && !CKey_Manager::Get_Instance()->Key_Pressing(KEY_X))
 	{
-		m_tInfo.vDir.y = -7.f;
 		m_bJumping = false;
 		m_bFalling = true;
 		m_bOnGround = false;
+	
+	}
+	else if (m_fActionRamainedTime > 0.f)
+	{
+		m_fActionRamainedTime -= fDeltaTime;
+		if (m_fActionRamainedTime <= 0)
+		{
+			m_bJumping = false;
+			m_bFalling = true;
+			m_bOnGround = false;
+		}
 	}
 
 	if (m_bJumping)
 	{
-		m_tInfo.vDir.y -= (40.f - m_tInfo.vDir.y) * fDeltaTime;
+		m_tInfo.vDir.y = -300.f * fDeltaTime;
 	}
 	
 	m_tInfo.vDir.x = CMyMath::FInterpTo(m_tInfo.vDir.x, fTargetDirX, fDeltaTime, 8.f);
@@ -662,19 +764,18 @@ void CPlayer::UpdateMoveWithPressKey()
 	else
 		m_bStoping = false;
 
-	//if (m_bFalling)
-	//{
-
-	m_tInfo.vDir.y += 29.4f * fDeltaTime;
-
-	//}
-
+	UpdateGravity();
 
 }
 
 void CPlayer::Offset()
 {
 	D3DXVECTOR3 vScroll = CScroll_Manager::Get_Scroll();
-	D3DXVECTOR3 vDiff = m_tInfo.vPos - D3DXVECTOR3{ float(WINCX>>1), float(WINCY>>1), 0.f};
+	D3DXVECTOR3 vDiff = m_tInfo.vPos - D3DXVECTOR3{ float(CLIENTCX>>1), float(CLIENTCY>>1), 0.f};
 	CScroll_Manager::Set_Scroll(-vDiff);
+	
+}
+
+void CPlayer::InitUpdate_GameObject()
+{
 }

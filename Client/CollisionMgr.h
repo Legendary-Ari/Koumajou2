@@ -23,6 +23,8 @@ public:
 	static bool Check_Sphere(const FRECT& _Dst, const FRECT& _Src, float* _x = nullptr, float* _y = nullptr);
 	static bool Check_Rect(const FRECT& _Dst, const FRECT& _Src, float* _x = nullptr, float* _y = nullptr);
 	static bool Check_RectAndSphere(const FRECT & _Dst, const FRECT & _Src, float* _x = nullptr, float* _y = nullptr);
+	static bool Check_SphereAndPoint(const FRECT& _Dst, _vec2 _v2Point, float *_x=nullptr, float *_y=nullptr);
+	static bool Check_RectAndPoint(const FRECT& _Dst, _vec2 _v2Point);
 	static bool Check_Collision(const COLLISION& _Dst, const COLLISION& _Src);
 };
 

@@ -3,7 +3,6 @@
 
 
 // CForm Æû ºäÀÔ´Ï´Ù.
-#include "MapTool.h"
 #include "UiTool.h"
 #include "ObjectTool.h"
 #include "AnimationTool.h"
@@ -16,7 +15,6 @@ protected:
 	virtual ~CForm();
 
 public:
-	CMapTool m_tMapTool; 
 	CAnimationTool m_tAnimationTool;
 	CObjectTool	m_tObjectTool;
 
@@ -36,7 +34,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	virtual void OnInitialUpdate();
-	afx_msg void OnBnClickedMapTool();
 	afx_msg void OnBnClickedAnimationTool();
 	afx_msg void OnBnClickedBulletTool();
 };

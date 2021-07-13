@@ -165,7 +165,9 @@ const TEXINFO * CTexture_Manager::Get_TexInfo(const wstring & wstrObjectKey, con
 void CTexture_Manager::Release_Texture_Manager()
 {
 	for (pair<const wstring, CTexture*>& rPair : m_mapTexture)
+	{
 		Safe_Delete(rPair.second);
+	}	
 	m_mapTexture.clear(); 
 	for (auto& rPair : m_mapLoadedTexInfo)
 	{
