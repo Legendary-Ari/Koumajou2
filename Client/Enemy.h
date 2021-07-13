@@ -14,6 +14,8 @@ public:
 	virtual void Late_Update_GameObject() override;
 	virtual void Render_GameObject() override;
 	virtual void Release_GameObject() override;
+	virtual void Set_Hit(bool _bHit);
+	virtual void Set_Die();
 
 	virtual void OnOverlaped(CGameObject* _pHitObject) override;
 

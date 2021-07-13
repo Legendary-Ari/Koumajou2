@@ -88,7 +88,7 @@ void CEffect::Render_GameObject()
 	else
 		m_bFliped = false;
 	D3DXMATRIX matScale, matRotZ, matTrans, matWorld;
-	D3DXMatrixScaling(&matScale, (m_bFliped ? -10.0f : 10.0f), 3.f, 0.f);
+	D3DXMatrixScaling(&matScale, (m_bFliped ? -1.0f : 1.0f), 1.f, 0.f);
 	D3DXMatrixRotationZ(&matRotZ, D3DXToRadian(-m_tInfo.fAngle));
 	D3DXMatrixTranslation(&matTrans, m_tInfo.vPos.x + vScroll.x, m_tInfo.vPos.y + vScroll.y, 0.f);
 	matWorld = matScale * matRotZ * matTrans;

@@ -17,6 +17,6 @@ public:
 	virtual void Render_GameObject() override;
 	virtual void Release_GameObject() override;
 protected:
-	virtual void	UpdateBodyCollision() override;
+	virtual void	UpdateTileCollision() override;
 };
 

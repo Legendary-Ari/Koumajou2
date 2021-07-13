@@ -119,8 +119,17 @@ void COwl::Render_GameObject()
 	float 	fCenterY = float(((rect.bottom - rect.top) * 0.5f));
 	const RECT& tRenderRect = m_vecAnimation[IDLE]->vecRect[m_uiAnimationFrame];
 	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
-	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, &tRenderRect, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
+	D3DCOLOR tColor;
+	if (m_bHit)
+		tColor = D3DCOLOR_ARGB(255, 100, 100, 100);
+	else
+		tColor = D3DCOLOR_ARGB(255, 255, 255, 255);
+	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, &tRenderRect, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, tColor);
 	RenderCollision();
+	if (m_bDead)
+	{
+		RenderDieEffect(m_tInfo.vPos);
+	}
 }
 
 void COwl::UpdatePattern()

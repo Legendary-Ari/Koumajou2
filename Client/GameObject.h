@@ -27,7 +27,7 @@ public:
 	inline const INFO&	Get_Info() const { return m_tInfo; }
 	inline virtual const vector<COLLISION>& Get_BodyCollision() const { return m_vecBodyCollision; }
 	inline virtual const vector<COLLISION>& Get_AttackCollision() const { return m_vecAttackCollision; }
-	inline virtual const vector<COLLISION>& Get_TileCollision() const { return m_vecBodyCollision; }
+	inline virtual const vector<COLLISION>& Get_TileCollision() const { return m_vecTileCollision; }
 	inline const bool& Get_IsBlockable() const { return m_bBlockable; }
 	inline const bool& Get_IsOverlapable() const { return m_bOverlapable; }
 	inline const float& Get_Damage() const { return m_pObjectInfo->fAtk; }
@@ -35,12 +35,14 @@ public:
 protected:
 	virtual void UpdateState();
 	virtual void UpdateAnimation();
+	virtual void UpdateTileCollision();
 	virtual void UpdateBodyCollision();
 	virtual void UpdateAttackCollision();
 	virtual void UpdateDie();
 	virtual void UpdateJump();
 	virtual void UpdateGravity();
 	void		RenderCollision();
+	virtual void RenderDieEffect(_vec3 _vPos);
 
 protected:
 	bool	m_bDestroyed;
@@ -66,9 +68,13 @@ protected:
 	vector<const ANIMATION*> m_vecAnimation;
 	vector<COLLISION> m_vecBodyCollision;
 	vector<COLLISION> m_vecAttackCollision;
+	vector<COLLISION> m_vecTileCollision;
 
 	UINT	m_uiAnimationFrame;
 	float	m_fAnimationCumulatedTime;
+
+	float	m_fCoolDownDieEffectRemainTime;
+	float	m_fMaxCoolDownDieEffectTime;
 
 	BYTE m_ePrevState;
 	BYTE m_eCurState;

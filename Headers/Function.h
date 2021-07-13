@@ -10,6 +10,16 @@ void Safe_Delete(T& rObj)
 	}
 }
 
+template<class T>
+void Safe_Delete_Arr(T& rObj)
+{
+	if (rObj)
+	{
+		delete[] rObj;
+		rObj = nullptr;
+	}
+}
+
 struct RectSort
 {
 	bool operator()(const RECT& _r1, const RECT& _r2)

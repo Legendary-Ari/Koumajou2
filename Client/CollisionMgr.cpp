@@ -95,7 +95,7 @@ void CCollisionMgr::Collision_BackGroundEx( list<CGameObject*>& _Src , bool _bFo
 	{
 		for (auto& pSrc : _Src)
 		{
-			if (IsObj_OverlappedEx(pDst->Get_BodyCollision(), pSrc->Get_TileCollision(), &fX, &fY))
+			if (IsObj_OverlappedEx(pDst->Get_TileCollision(), pSrc->Get_TileCollision(), &fX, &fY))
 			{
 				if (fX < fY)
 				{

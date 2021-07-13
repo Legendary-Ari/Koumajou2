@@ -20,6 +20,8 @@ CGameObject::CGameObject()
 	, m_bFalling(false)
 	, m_bJumping(false)
 	, m_fGravityAccelerlation(29.4f)
+	, m_fMaxCoolDownDieEffectTime(0.15f)
+	, m_fCoolDownDieEffectRemainTime(0.f)
 {
 	
 }
@@ -115,6 +117,11 @@ void CGameObject::UpdateAttackCollision()
 {
 }
 
+void CGameObject::UpdateTileCollision()
+{
+	
+}
+
 void CGameObject::UpdateDie()
 {
 }
@@ -171,7 +178,7 @@ void CGameObject::RenderCollision()
 			v2LinePos[i] += {vScroll.x,vScroll.y};
 		}
 		CGraphic_Device::Get_Instance()->Get_Line()->Draw(v2LinePos, dwSize, D3DCOLOR_ARGB(255, 100, 255, 255));
-		Safe_Delete(v2LinePos);
+		Safe_Delete_Arr(v2LinePos);
 	}
 	for (auto& tCollision : m_vecAttackCollision)
 	{
@@ -182,10 +189,10 @@ void CGameObject::RenderCollision()
 		{
 			dwSize = 5;
 			v2LinePos = new _vec2[dwSize];
-			v2LinePos[0] = {(float)( tCollision.tFRect.left), (float)(tCollision.tFRect.top) };
-			v2LinePos[1] = {(float)( tCollision.tFRect.right),(float)( tCollision.tFRect.top) };
-			v2LinePos[2] = {(float)( tCollision.tFRect.right),(float)( tCollision.tFRect.bottom) };
-			v2LinePos[3] = {(float)( tCollision.tFRect.left), (float)(tCollision.tFRect.bottom) };
+			v2LinePos[0] = { (float)(tCollision.tFRect.left), (float)(tCollision.tFRect.top) };
+			v2LinePos[1] = { (float)(tCollision.tFRect.right),(float)(tCollision.tFRect.top) };
+			v2LinePos[2] = { (float)(tCollision.tFRect.right),(float)(tCollision.tFRect.bottom) };
+			v2LinePos[3] = { (float)(tCollision.tFRect.left), (float)(tCollision.tFRect.bottom) };
 			v2LinePos[4] = v2LinePos[0];
 		}
 		else
@@ -194,7 +201,7 @@ void CGameObject::RenderCollision()
 			float fRadius = (tCollision.tFRect.right - tCollision.tFRect.left) * 0.5f;
 			dwSize = 9;
 			v2LinePos = new _vec2[dwSize];
-			for (int i = 0; i < int(dwSize-1); ++i)
+			for (int i = 0; i < int(dwSize - 1); ++i)
 			{
 				v2LinePos[i] = v2Center + fRadius * _vec2{ cosf(D3DXToRadian(-i * 45.f)),sinf(D3DXToRadian(-i * 45.f)) };
 			}
@@ -207,7 +214,44 @@ void CGameObject::RenderCollision()
 			v2LinePos[i] += {vScroll.x, vScroll.y};
 		}
 		CGraphic_Device::Get_Instance()->Get_Line()->Draw(v2LinePos, dwSize, D3DCOLOR_ARGB(255, 255, 100, 100));
-		Safe_Delete(v2LinePos);
+		Safe_Delete_Arr(v2LinePos);
+	}
+	for (auto& tCollision : m_vecTileCollision)
+	{
+
+		D3DXVECTOR2* v2LinePos;
+		DWORD dwSize = 0;
+		if (tCollision.eId == COLLISION::C_RECT)
+		{
+			dwSize = 5;
+			v2LinePos = new _vec2[dwSize];
+			v2LinePos[0] = { (float)(tCollision.tFRect.left), (float)(tCollision.tFRect.top) };
+			v2LinePos[1] = { (float)(tCollision.tFRect.right),(float)(tCollision.tFRect.top) };
+			v2LinePos[2] = { (float)(tCollision.tFRect.right),(float)(tCollision.tFRect.bottom) };
+			v2LinePos[3] = { (float)(tCollision.tFRect.left), (float)(tCollision.tFRect.bottom) };
+			v2LinePos[4] = v2LinePos[0];
+		}
+		else
+		{
+			_vec2 v2Center = { (tCollision.tFRect.right + tCollision.tFRect.left) * 0.5f, (tCollision.tFRect.top + tCollision.tFRect.bottom) * 0.5f };
+			float fRadius = (tCollision.tFRect.right - tCollision.tFRect.left) * 0.5f;
+			dwSize = 9;
+			v2LinePos = new _vec2[dwSize];
+			for (int i = 0; i < int(dwSize - 1); ++i)
+			{
+				v2LinePos[i] = v2Center + fRadius * _vec2{ cosf(D3DXToRadian(-i * 45.f)),sinf(D3DXToRadian(-i * 45.f)) };
+			}
+			v2LinePos[8] = v2LinePos[0];
+
+		}
+		for (DWORD i = 0; i < dwSize; ++i)
+		{
+			_vec3 vScroll = CScroll_Manager::Get_Scroll();
+			v2LinePos[i] += {vScroll.x, vScroll.y};
+		}
+		CGraphic_Device::Get_Instance()->Get_Line()->Draw(v2LinePos, dwSize, D3DCOLOR_ARGB(100, 100, 100, 100));
+		Safe_Delete_Arr(v2LinePos);
+	
 		
 	}
 	CGraphic_Device::Get_Instance()->Get_Sprite()->Begin(D3DXSPRITE_ALPHABLEND);
@@ -216,5 +260,25 @@ void CGameObject::RenderCollision()
 
 	DEBUG_STRING(L" HP : %f", m_fCurHp,m_tInfo.vPos.x + vScroll.x, m_tInfo.vPos.y + vScroll.y)
 
+}
+
+void CGameObject::RenderDieEffect(_vec3 _vPos)
+{
+	m_fCoolDownDieEffectRemainTime -= CTime_Manager::Get_Instance()->Get_DeltaTime();
+	if (m_fCoolDownDieEffectRemainTime > 0)
+		return;
+	m_fCoolDownDieEffectRemainTime = m_fMaxCoolDownDieEffectTime;
+	const ANIMATION* pAnim;
+
+	pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(L"Common_EffectsDie");
+
+	CGameObject* pEffect = CEffect::Create(pAnim, _vPos, _vec3{0.f,0.f,0.f});
+	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::EFFECT,pEffect);
+
+	_vec3 vBlack = _vPos;
+	vBlack.y += 10.f;
+	pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(L"Common_EffectsDieBlack");
+	pEffect = CEffect::Create(pAnim, vBlack, _vec3{ 0.f,0.f,0.f });
+	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::EFFECT, pEffect);
 }
 

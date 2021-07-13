@@ -34,6 +34,7 @@ HRESULT CRoseStem::Ready_GameObject()
 	
 	m_vecAttackCollision.resize(1);
 	m_vecAttackCollision[0].eId = COLLISION::C_SPHERE;
+	m_vecTileCollision = m_vecAttackCollision;
 
 	return S_OK;
 }
@@ -61,7 +62,21 @@ int CRoseStem::Update_GameObject()
 	if (!UpdateActive())
 		return OBJ_NOEVENT;
 	float fDeltaTime = CTime_Manager::Get_Instance()->Get_DeltaTime();
-
+	if (m_bDead)
+	{
+		if (m_bDieInit)
+		{
+			m_bFlying = false;
+			m_bFalling = true;
+			m_bOnGround = false;
+			ZeroMemory(&m_vecAttackCollision[0].tFRect, sizeof(FRECT));
+			m_bDieInit = false;
+			m_bBlockable = true;
+		}
+		UpdateGravity();
+		m_tInfo.vPos += m_tInfo.vDir;
+		return OBJ_NOEVENT;
+	}
 	if (m_bHit)
 	{
 		m_fHitCumulatedTime += CTime_Manager::Get_Instance()->Get_DeltaTime();
@@ -82,6 +97,7 @@ int CRoseStem::Update_GameObject()
 
 void CRoseStem::Late_Update_GameObject()
 {
+	UpdateTileCollision();
 	UpdateAttackCollision();
 }
 
@@ -104,6 +120,16 @@ void CRoseStem::Render_GameObject()
 
 
 	RenderCollision();
+	if (m_bDead)
+	{
+		RenderDieEffect(m_tInfo.vPos);
+	}
+		
+}
+
+void CRoseStem::OnBlockedTile(CGameObject * pHitObject, DIRECTION::ID _eId)
+{
+	m_bDestroyed = true;
 }
 
 void CRoseStem::Set_Rose(const CGameObject * _pRose)
@@ -118,6 +144,8 @@ void CRoseStem::Set_OrbitRadius(float _fOrbitRadius)
 
 void CRoseStem::UpdateAttackCollision()
 {
+	if (!m_bDead)
+		return;
 	float fSizeX = m_tInfo.vSize.x;
 	float fSizeY = m_tInfo.vSize.y;
 	float fReduceSizeLeft = 0.25f;
@@ -131,6 +159,29 @@ void CRoseStem::UpdateAttackCollision()
 	v2Radius.x *= fSizeX;
 	v2Radius.y *= fSizeY;
 	m_vecAttackCollision[0].tFRect =
+	{
+		(float)(m_tInfo.vPos.x - v2Radius.x * m_tInfo.vSize.x * fReduceSizeLeft),
+		(float)(m_tInfo.vPos.y - v2Radius.y * m_tInfo.vSize.y * fReduceSizeUp),
+		(float)(m_tInfo.vPos.x + v2Radius.x * m_tInfo.vSize.x * fReduceSizeRight),
+		(float)(m_tInfo.vPos.y + v2Radius.y * m_tInfo.vSize.y * fReduceSizeDown)
+	};
+}
+
+void CRoseStem::UpdateTileCollision()
+{
+	float fSizeX = m_tInfo.vSize.x;
+	float fSizeY = m_tInfo.vSize.y;
+	float fReduceSizeLeft = 0.25f;
+	float fReduceSizeRight = 0.25f;
+	float fReduceSizeUp = 0.25f;
+	float fReduceSizeDown = 0.25f;
+
+	RECT rect = m_pObjectInfo->tRect;
+
+	_vec2 v2Radius = { (float)((rect.right - rect.left) * 0.5f), (float)((rect.bottom - rect.top) * 0.5f) };
+	v2Radius.x *= fSizeX;
+	v2Radius.y *= fSizeY;
+	m_vecTileCollision[0].tFRect =
 	{
 		(float)(m_tInfo.vPos.x - v2Radius.x * m_tInfo.vSize.x * fReduceSizeLeft),
 		(float)(m_tInfo.vPos.y - v2Radius.y * m_tInfo.vSize.y * fReduceSizeUp),

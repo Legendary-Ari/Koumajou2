@@ -19,6 +19,7 @@ public:
 private:
 	virtual void	UpdateBodyCollision() override;
 	virtual void	UpdateAttackCollision() override;
+	virtual void	UpdateTileCollision() override;
 	virtual void	UpdatePattern() override;
 	virtual void	UpdateState() override;
 	virtual void	UpdateAnimation() override;
@@ -26,4 +27,5 @@ private:
 	virtual void	UpdateDie() override ;
 
 };
+
 

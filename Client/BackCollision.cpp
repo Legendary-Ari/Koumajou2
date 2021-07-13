@@ -28,8 +28,8 @@ CGameObject * CBackCollision::Create(const ACTORINFO * _pActorInfo, const OBJECT
 HRESULT CBackCollision::Ready_GameObject()
 {
 	m_tInfo = m_pActorInfo->tInfo;
-	m_vecBodyCollision.resize(1);
-	m_vecBodyCollision[0].eId = COLLISION::C_RECT;
+	m_vecTileCollision.resize(1);
+	m_vecTileCollision[0].eId = COLLISION::C_RECT;
 	m_bOverlapable = false;
 
 	return S_OK;
@@ -41,7 +41,7 @@ void CBackCollision::InitUpdate_GameObject()
 
 int CBackCollision::Update_GameObject()
 {
-	UpdateBodyCollision();
+	UpdateTileCollision();
 	return OBJ_NOEVENT;
 }
 
@@ -73,7 +73,7 @@ void CBackCollision::Release_GameObject()
 {
 }
 
-void CBackCollision::UpdateBodyCollision()
+void CBackCollision::UpdateTileCollision()
 {
 
 	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()->Get_TexInfo(m_pObjectInfo->wstrObjectImage_ObjectKey);
@@ -81,7 +81,7 @@ void CBackCollision::UpdateBodyCollision()
 		return;
 	_vec2 v2Radius = { (float)(pTexInfo->tImageInfo.Width>>1), (float)(pTexInfo->tImageInfo.Height>>1) };
 	
-	m_vecBodyCollision[0].tFRect =
+	m_vecTileCollision[0].tFRect =
 	{
 		(float)(m_tInfo.vPos.x - v2Radius.x  * m_tInfo.vSize.x),
 		(float)(m_tInfo.vPos.y - v2Radius.y  * m_tInfo.vSize.y),

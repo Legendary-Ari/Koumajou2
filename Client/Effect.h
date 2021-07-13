@@ -3,7 +3,7 @@
 class CEffect :
 	public CGameObject
 {
-private:
+public:
 	explicit CEffect();
 public:
 	virtual ~CEffect();

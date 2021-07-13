@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "RoseHead.h"
-
+#include "Rose.h"
 
 CRoseHead::CRoseHead()
 	:m_fOrbitRadius(30.f)
@@ -12,7 +12,7 @@ CRoseHead::~CRoseHead()
 {
 }
 
-CGameObject * CRoseHead::Create(const INFO& _tInfo, const OBJECTINFO * _pObjectInfo, const CGameObject * _pRose, float _OrbitRadius)
+CGameObject * CRoseHead::Create(const INFO& _tInfo, const OBJECTINFO * _pObjectInfo, CGameObject * _pRose, float _OrbitRadius)
 {
 	CGameObject* pInstance = new CRoseHead;
 	pInstance->Set_Prefab(_pObjectInfo);
@@ -43,7 +43,7 @@ HRESULT CRoseHead::Ready_GameObject()
 
 	m_vecBodyCollision.resize(1);
 	m_vecBodyCollision[0].eId = COLLISION::C_SPHERE;
-
+	m_vecTileCollision = m_vecBodyCollision;
 	return S_OK;
 }
 
@@ -70,8 +70,26 @@ int CRoseHead::Update_GameObject()
 	if (!UpdateActive())
 		return OBJ_NOEVENT;
 	float fDeltaTime = CTime_Manager::Get_Instance()->Get_DeltaTime();
+	if (m_bDead)
+	{
+		if (m_bDieInit)
+		{
+			m_bFlying = false;
+			m_bFalling = true;
+			m_bOnGround = false;
+			ZeroMemory(&m_vecBodyCollision[0].tFRect, sizeof(FRECT));
+			m_bDieInit = false;
+			m_bBlockable = true;
+			static_cast<CEnemy*>(m_pRose)->Set_Die();
+		}
+		UpdateGravity();
+		m_tInfo.vPos += m_tInfo.vDir;
+		
+		return OBJ_NOEVENT;
+	}
 	if (m_bHit)
 	{
+		static_cast<CEnemy*>(m_pRose)->Set_Hit(true);
 		m_fHitCumulatedTime += fDeltaTime;
 		if (m_fHitCumulatedTime >= m_fHitMaxTime)
 		{
@@ -91,7 +109,9 @@ int CRoseHead::Update_GameObject()
 
 void CRoseHead::Late_Update_GameObject()
 {
+	UpdateTileCollision();
 	UpdateBodyCollision();
+	
 }
 
 void CRoseHead::Render_GameObject()
@@ -110,11 +130,26 @@ void CRoseHead::Render_GameObject()
 	float 	fCenterY = float(((rect.bottom - rect.top) * 0.5f));
 	const RECT& tRenderRect = m_vecAnimation[0]->vecRect[m_uiAnimationFrame];
 	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
-	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, &tRenderRect, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
+	D3DCOLOR tColor;
+	if (m_bHit)
+		tColor= D3DCOLOR_ARGB(255, 100, 100, 100);
+	else
+		tColor = D3DCOLOR_ARGB(255, 255, 255, 255);
+	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, &tRenderRect, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, tColor);
+	
 	RenderCollision();
+	if (m_bDead)
+	{
+		RenderDieEffect(m_tInfo.vPos);
+	}
 }
 
-void CRoseHead::Set_Rose(const CGameObject * _pRose)
+void CRoseHead::OnBlockedTile(CGameObject * pHitObject, DIRECTION::ID _eId)
+{
+	m_bDestroyed = true;
+}
+
+void CRoseHead::Set_Rose(CGameObject * _pRose)
 {
 	m_pRose = _pRose;
 }
@@ -128,8 +163,8 @@ void CRoseHead::UpdateBodyCollision()
 {
 	float fSizeX = m_tInfo.vSize.x;
 	float fSizeY = m_tInfo.vSize.y;
-	float fReduceSizeLeft = 0.0f;
-	float fReduceSizeRight = 1.0f;
+	float fReduceSizeLeft = 1.0f;
+	float fReduceSizeRight = 0.0f;
 	float fReduceSizeUp = 0.5f;
 	float fReduceSizeDown = 0.5f;
 
@@ -139,6 +174,29 @@ void CRoseHead::UpdateBodyCollision()
 	v2Radius.x *= fSizeX;
 	v2Radius.y *= fSizeY;
 	m_vecBodyCollision[0].tFRect =
+	{
+		(float)(m_tInfo.vPos.x - v2Radius.x * m_tInfo.vSize.x * fReduceSizeLeft),
+		(float)(m_tInfo.vPos.y - v2Radius.y * m_tInfo.vSize.y * fReduceSizeUp),
+		(float)(m_tInfo.vPos.x + v2Radius.x * m_tInfo.vSize.x * fReduceSizeRight),
+		(float)(m_tInfo.vPos.y + v2Radius.y * m_tInfo.vSize.y * fReduceSizeDown)
+	};
+}
+
+void CRoseHead::UpdateTileCollision()
+{
+	float fSizeX = m_tInfo.vSize.x;
+	float fSizeY = m_tInfo.vSize.y;
+	float fReduceSizeLeft = 1.0f;
+	float fReduceSizeRight = 0.0f;
+	float fReduceSizeUp = 0.5f;
+	float fReduceSizeDown = 0.5f;
+
+	RECT rect = m_vecAnimation[0]->vecRect[0];
+
+	_vec2 v2Radius = { (float)((rect.right - rect.left) * 0.5f), (float)((rect.bottom - rect.top) * 0.5f) };
+	v2Radius.x *= fSizeX;
+	v2Radius.y *= fSizeY;
+	m_vecTileCollision[0].tFRect =
 	{
 		(float)(m_tInfo.vPos.x - v2Radius.x * m_tInfo.vSize.x * fReduceSizeLeft),
 		(float)(m_tInfo.vPos.y - v2Radius.y * m_tInfo.vSize.y * fReduceSizeUp),

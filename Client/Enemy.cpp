@@ -83,6 +83,17 @@ void CEnemy::Release_GameObject()
 {
 }
 
+void CEnemy::Set_Hit(bool _bHit)
+{
+	m_bHit = _bHit;
+}
+
+void CEnemy::Set_Die()
+{
+	m_bDead = true;
+	m_bDieInit = true;
+}
+
 void CEnemy::OnOverlaped(CGameObject * _pHitObject)
 {
 	if (!m_bHit)

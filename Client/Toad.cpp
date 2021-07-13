@@ -64,6 +64,7 @@ HRESULT CToad::Ready_GameObject()
 
 	m_vecBodyCollision.resize(1);
 	m_vecBodyCollision[0].eId = COLLISION::C_RECT;
+	m_vecTileCollision = m_vecBodyCollision;
 	m_vecAttackCollision.resize(1);
 	m_vecAttackCollision[0].eId = COLLISION::C_RECT;
 	return S_OK;
@@ -115,6 +116,7 @@ void CToad::Late_Update_GameObject()
 {
 	UpdateState();
 	UpdateAnimation();
+	UpdateTileCollision();
 	UpdateBodyCollision();
 	UpdateAttackCollision();
 }
@@ -136,8 +138,18 @@ void CToad::Render_GameObject()
 	float 	fCenterY = float(((rect.bottom - rect.top) * 0.5f));
 	const RECT& tRenderRect = m_vecAnimation[m_eCurState]->vecRect[m_uiAnimationFrame];
 	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
-	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, &tRenderRect, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
+	D3DCOLOR tColor;
+	if (m_bHit)
+		tColor = D3DCOLOR_ARGB(255, 100, 100, 100);
+	else
+		tColor = D3DCOLOR_ARGB(255, 255, 255, 255);
+	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, &tRenderRect, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, tColor);
 	RenderCollision();
+
+	if (m_bDead)
+	{
+		RenderDieEffect(m_tInfo.vPos);
+	}
 }
 
 void CToad::UpdateBodyCollision()
@@ -155,6 +167,27 @@ void CToad::UpdateBodyCollision()
 	_vec2 v2Radius = { (float)((rect.right - rect.left) * 0.5f), (float)((rect.bottom - rect.top) * 0.5f) };
 	v2Radius *= fSize;
 	m_vecBodyCollision[0].tFRect =
+	{
+		(float)(m_tInfo.vPos.x - v2Radius.x * m_tInfo.vSize.x * fReduceSizeLeft),
+		(float)(m_tInfo.vPos.y - v2Radius.y * m_tInfo.vSize.y * fReduceSizeUp),
+		(float)(m_tInfo.vPos.x + v2Radius.x * m_tInfo.vSize.x * fReduceSizeRight),
+		(float)(m_tInfo.vPos.y + v2Radius.y * m_tInfo.vSize.y * fReduceSizeDown)
+	};
+}
+
+void CToad::UpdateTileCollision()
+{
+	float fSize = m_tInfo.vSize.x;
+	float fReduceSizeLeft = 0.25f;
+	float fReduceSizeRight = 0.25f;
+	float fReduceSizeUp = 0.f;
+	float fReduceSizeDown = 1.f;
+
+	RECT rect = m_vecAnimation[0]->vecRect[0];
+
+	_vec2 v2Radius = { (float)((rect.right - rect.left) * 0.5f), (float)((rect.bottom - rect.top) * 0.5f) };
+	v2Radius *= fSize;
+	m_vecTileCollision[0].tFRect =
 	{
 		(float)(m_tInfo.vPos.x - v2Radius.x * m_tInfo.vSize.x * fReduceSizeLeft),
 		(float)(m_tInfo.vPos.y - v2Radius.y * m_tInfo.vSize.y * fReduceSizeUp),

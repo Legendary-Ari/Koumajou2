@@ -85,6 +85,15 @@ int CRose::Update_GameObject()
 	{
 		pRostParts->Set_Active(true);
 	}
+	if (m_bDead)
+	{
+		if (m_bDieInit)
+		{
+			ZeroMemory(&m_vecAttackCollision[0].tFRect, sizeof(FRECT));
+			m_bDieInit = false;
+		}
+		return OBJ_DESTROYED;
+	}
 	if (m_bHit)
 	{
 		m_fHitCumulatedTime += CTime_Manager::Get_Instance()->Get_DeltaTime();
@@ -110,8 +119,24 @@ void CRose::Render_GameObject()
 	RenderCollision();
 }
 
+void CRose::Set_Hit(bool _bHit)
+{
+	for (auto& pRoseParts : m_vecRoseParts)
+		pRoseParts->Set_Hit(true);
+}
+
+void CRose::Set_Die()
+{
+	for (UINT i=0; i<m_vecRoseParts.size()-1; ++i)
+		m_vecRoseParts[i]->Set_Die();
+	m_bDieInit = true;
+	m_bDead = true;
+}
+
 void CRose::UpdateAttackCollision()
 {
+	if (!m_bDead)
+		return;
 	float fSizeX = m_tInfo.vSize.x;
 	float fSizeY = m_tInfo.vSize.y;
 	float fReduceSizeLeft = 0.5f;

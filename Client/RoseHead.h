@@ -8,7 +8,7 @@ private:
 public:
 	virtual ~CRoseHead();
 public:
-	static CGameObject* Create(const INFO& _tInfo, const OBJECTINFO* _pObjectInfo, const CGameObject* _pRose, float _OrbitRadius);
+	static CGameObject* Create(const INFO& _tInfo, const OBJECTINFO* _pObjectInfo,CGameObject* _pRose, float _OrbitRadius);
 
 	virtual HRESULT Ready_GameObject() override;
 	virtual void	InitUpdate_GameObject() override;
@@ -16,12 +16,15 @@ public:
 	virtual void	Late_Update_GameObject() override;
 	virtual void	Render_GameObject() override;
 
-	void			Set_Rose(const CGameObject* _pRose);
+	virtual void	OnBlockedTile(CGameObject* pHitObject, DIRECTION::ID _eId);
+
+	void			Set_Rose(CGameObject* _pRose);
 	void			Set_OrbitRadius(float _fOrbitRadius);
 private:
 	virtual void	UpdateBodyCollision() override;
+	virtual void	UpdateTileCollision() override;
 private:
-	const CGameObject*	m_pRose;
+	CGameObject*	m_pRose;
 	_vec3			m_vCenterPos;
 	float			m_fOrbitRadius;
 };

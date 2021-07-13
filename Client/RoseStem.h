@@ -16,10 +16,13 @@ public:
 	virtual void	Late_Update_GameObject() override;
 	virtual void	Render_GameObject() override;
 
+	virtual void	OnBlockedTile(CGameObject* pHitObject, DIRECTION::ID _eId);
+
 	void			Set_Rose(const CGameObject* _pRose);
 	void			Set_OrbitRadius(float _fOrbitRadius);
 private:
 	virtual void	UpdateAttackCollision() override;
+	virtual void	UpdateTileCollision() override;
 private:
 	const CGameObject*	m_pRose;
 	_vec3			m_vCenterPos;
