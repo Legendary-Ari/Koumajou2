@@ -1,52 +1,56 @@
 #include "stdafx.h"
-#include "Stage.h"
+#include "Stage1_4.h"
 #include "Prefab_Manager.h"
 #include "Player.h"
+#include "StageUi.h"
 
-CStage::CStage()
+CStage1_4::CStage1_4()
 {
 }
 
 
-CStage::~CStage()
+CStage1_4::~CStage1_4()
 {
+	Release_Scene();
 }
 
-HRESULT CStage::Ready_Scene()
+HRESULT CStage1_4::Ready_Scene()
 {
 	CGameObject* pObject = nullptr;
 	//pObject =	CTerrain::Create();
 	//CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::BACKGROUND, pObject);
 	//pObject = nullptr;
 
-	CPrefab_Manager::Get_Instance()->SpawnObjectbyScene(CScene_Manager::STAGE_1_1);
+	CPrefab_Manager::Get_Instance()->SpawnObjectbyScene(CScene_Manager::STAGE_1_4);
 
+	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::UI, CStageUi::Create());
 
 	return S_OK;
 }
 
-void CStage::InitUpdate_Scene()
+void CStage1_4::InitUpdate_Scene()
 {
 	CGameObject_Manager::Get_Instance()->InitUpdate_GameObject_Manager();
 }
 
-void CStage::Update_Scene()
+void CStage1_4::Update_Scene()
 {
 	CGameObject_Manager::Get_Instance()->Update_GameObject_Manager(); 
 }
 
-void CStage::Render_Scene()
+void CStage1_4::Render_Scene()
 {
 	CGameObject_Manager::Get_Instance()->Render_GameObject_Manager();
 }
 
-void CStage::Release_Scene()
+void CStage1_4::Release_Scene()
 {
+	CGameObject_Manager::Get_Instance()->Release_StageObject();
 }
 
-CScene * CStage::Create()
+CScene * CStage1_4::Create()
 {
-	CScene* pInstance = new CStage; 
+	CScene* pInstance = new CStage1_4;
 	if (FAILED(pInstance->Ready_Scene()))
 	{
 		Safe_Delete(pInstance);

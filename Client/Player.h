@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+class CVSkill;
 class CPlayer final:
 	public CGameObject
 {
@@ -9,6 +10,8 @@ public:
 		, ATTACK, JUMP_ATTACK, BOUNCE, HIT, F_LANDING, L_FLYING
 		, R_FLYING, DODGE, DODGE_ATTACK, D_ATTACK, JUMP_D_ATTACK
 		, S_KNIFE, E_KNIFE, DS_KNIFE, DE_KNIFE, STATE_END	};
+private:
+	enum SKILL { PREV, CUR, NEXT, SKILL_END };
 private:
 	explicit CPlayer();
 public:
@@ -23,12 +26,13 @@ public:
 	virtual void	Release_GameObject() override;
 	virtual void	OnBlocked(CGameObject* pHitObject, DIRECTION::ID _eId) override;
 	virtual void	Set_OnGround(bool _b) override;
+	virtual const float* Get_HpPointer() const { return &m_fCurHp; }
 public:
 	static CGameObject* Create(const ACTORINFO* _pActorInfo, const OBJECTINFO* _pPrefab);
 
 public:
 	virtual void	OnBlockedTile(CGameObject* pHitObject, DIRECTION::ID _eId)override;
-	virtual void	OnOverlaped(CGameObject* pHitObject) override ;
+	virtual void	OnOverlaped(CGameObject* _pHitObject, _vec3 vHitPos) override;
 	const vector<COLLISION>& Get_TileCollision() const { return m_vecBodyTileCollision; }
 private:
 	virtual void	UpdateState() override;
@@ -40,7 +44,7 @@ private:
 	void	Offset();
 	
 private:
-	
+	const OBJECTINFO*	m_pBulletInfo;
 	vector<COLLISION> m_vecBodyTileCollision;
 
 	bool	m_bHit;
@@ -51,13 +55,15 @@ private:
 
 	bool	m_bPrevIsFliped;
 	bool	m_bAttacking;
+	bool	m_bKnifeAttacking;
 	bool	m_bCrouch;
 	bool	m_bStoping;
 	bool	m_bDodge;
 	float	m_fActionRamainedTime;
 	const float	m_fJumpMaxTime;
+	const float m_fMaxKnifeTime;
 
-
+	const CVSkill*	m_pVSkill[SKILL_END];
 
 };
 

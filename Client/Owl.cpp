@@ -158,7 +158,7 @@ void COwl::UpdateBodyCollision()
 	float fReduceSizeLeft = 1.0f;
 	float fReduceSizeRight = 1.0f;
 	float fReduceSizeUp = 0.5f;
-	float fReduceSizeDown = 1.f;
+	float fReduceSizeDown = 0.75f;
 
 	RECT rect = m_vecAnimation[0]->vecRect[0];
 

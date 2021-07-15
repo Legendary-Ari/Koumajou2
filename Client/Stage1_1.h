@@ -1,12 +1,12 @@
 #pragma once
 #include "Scene.h"
-class CStage final :
+class CStage1_1 final :
 	public CScene
 {
 private:
-	explicit CStage();
+	explicit CStage1_1();
 public:
-	virtual ~CStage();
+	virtual ~CStage1_1();
 public:
 	// CScene을(를) 통해 상속됨
 	virtual HRESULT Ready_Scene() override;

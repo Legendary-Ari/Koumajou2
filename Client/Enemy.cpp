@@ -1,13 +1,14 @@
 #include "stdafx.h"
 #include "Enemy.h"
 #include "Effect.h"
+#include "Knife.h"
 
 CEnemy::CEnemy()
 	:m_bActived(false)
 	,m_bHit(false)
 	,m_fHitMaxTime(0.2f)
 	, m_fHitCumulatedTime(0.f)
-	, m_fAttackCoolDownRemainTime(0.f)
+	, m_fActionCoolDownRemainTime(0.f)
 	, m_fMaxAttackCoolDownTime(3.f)
 {
 }
@@ -94,14 +95,22 @@ void CEnemy::Set_Die()
 	m_bDieInit = true;
 }
 
-void CEnemy::OnOverlaped(CGameObject * _pHitObject)
+void CEnemy::OnOverlaped(CGameObject* _pHitObject, _vec3 vHitPos)
 {
-	if (!m_bHit)
+	if (!m_bHit || dynamic_cast<CKnife*>(_pHitObject))
 	{
-		CGameObject::OnOverlaped(_pHitObject);
+		CGameObject::OnOverlaped(_pHitObject, vHitPos);
 		m_bHit = true;
 		const ANIMATION* pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(L"SakuyaMelee");
-		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::EFFECT), CEffect::Create(pAnim, m_tInfo.vPos, {1.f,0.f,0.f}));
+		INFO tInfo;
+		ZeroMemory(&tInfo, sizeof(INFO));
+		tInfo.vPos = vHitPos;
+		if(vHitPos.x < m_tInfo.vPos.x)
+			tInfo.vDir = { 3.0f,0.0f,0.f };
+		else
+			tInfo.vDir = { -3.0f,0.0f,0.f };
+		tInfo.vSize = { 5.0f,3.0f,0.f };
+		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::EFFECT), CEffect::Create(pAnim, tInfo));
 	}
 
 }
@@ -139,13 +148,13 @@ void CEnemy::UpdatePattern()
 {
 }
 
-void CEnemy::UpdateAttackCoolDown()
+void CEnemy::UpdateActionCoolDown()
 {
-	if (m_fAttackCoolDownRemainTime <= 0.f)
+	if (m_fActionCoolDownRemainTime <= 0.f)
 		return;
-	m_fAttackCoolDownRemainTime -= CTime_Manager::Get_Instance()->Get_DeltaTime();
-	if (m_fAttackCoolDownRemainTime <= 0.f)
-		m_fAttackCoolDownRemainTime = 0.f;
+	m_fActionCoolDownRemainTime -= CTime_Manager::Get_Instance()->Get_DeltaTime();
+	if (m_fActionCoolDownRemainTime <= 0.f)
+		m_fActionCoolDownRemainTime = 0.f;
 }
 
 void CEnemy::UpdateAnimation()

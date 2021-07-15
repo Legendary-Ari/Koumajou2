@@ -8,9 +8,9 @@ public:
 public:
 	virtual ~CEffect();
 public:
-	static	CGameObject* Create(const ANIMATION*	_tAnimationInfo, D3DXVECTOR3 _vPos, D3DXVECTOR3 _vDir);
+	static	CGameObject* Create(const ANIMATION*	_tAnimationInfo, const INFO& _tInfo);
 
-	void Set_Prefab(const ANIMATION * _pPrefab);
+	void Set_Animation(const ANIMATION * _pPrefab);
 	void Set_Dir(_vec3 _vDir);
 
 	virtual HRESULT Ready_GameObject() override;

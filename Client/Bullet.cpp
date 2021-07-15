@@ -40,9 +40,13 @@ int CBullet::Update_GameObject()
 {
 	if (m_bDestroyed)
 	{
-		const ANIMATION* pPrefab = nullptr; //CPrefab_Manager::Get_Instance()->Get_AnimationPrefab();
-		CGameObject * pObject = CEffect::Create(pPrefab, m_tInfo.vPos, {0.f,0.f,0.f});
-		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::UI, pObject);
+		const ANIMATION* pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(L"SakuyaMelee");
+		INFO tInfo;
+		ZeroMemory(&tInfo, sizeof(INFO));
+		tInfo.vPos = m_tInfo.vPos;
+		tInfo.vSize = { 1.0f,1.0f,0.f };
+		CGameObject * pObject = CEffect::Create(pAnim, tInfo);
+		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::EFFECT, pObject);
 		pObject = nullptr;
 		return OBJ_DESTROYED;
 	}

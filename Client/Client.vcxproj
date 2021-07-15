@@ -151,8 +151,12 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AluraUne.h" />
+    <ClInclude Include="AluraUneGEffrect.h" />
+    <ClInclude Include="AluraUneProjectile.h" />
     <ClInclude Include="BackCollision.h" />
     <ClInclude Include="BackGround.h" />
+    <ClInclude Include="BossAlice.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="CollisionMgr.h" />
@@ -161,13 +165,17 @@
     <ClInclude Include="Frame_Manager.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObject_Manager.h" />
+    <ClInclude Include="Game_Manager.h" />
     <ClInclude Include="Graphic_Device.h" />
     <ClInclude Include="Gui.h" />
+    <ClInclude Include="Item.h" />
     <ClInclude Include="Key_Manager.h" />
+    <ClInclude Include="Knife.h" />
     <ClInclude Include="MainApp.h" />
     <ClInclude Include="Multi_Texture.h" />
     <ClInclude Include="MyMath.h" />
     <ClInclude Include="Owl.h" />
+    <ClInclude Include="Pillor.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Prefab_Manager.h" />
     <ClInclude Include="Resource.h" />
@@ -177,22 +185,32 @@
     <ClInclude Include="Ruler_Body.h" />
     <ClInclude Include="Ruler_Sword.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneChanger.h" />
     <ClInclude Include="Scene_Manager.h" />
     <ClInclude Include="Scroll_Manager.h" />
     <ClInclude Include="Single_Texture.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="Spawn_Manager.h" />
-    <ClInclude Include="Stage.h" />
+    <ClInclude Include="Stage1_1.h" />
+    <ClInclude Include="Stage1_4.h" />
+    <ClInclude Include="StageUi.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Texture_Manager.h" />
     <ClInclude Include="Time_Manager.h" />
     <ClInclude Include="Toad.h" />
+    <ClInclude Include="Une.h" />
+    <ClInclude Include="VKnife.h" />
+    <ClInclude Include="VSkill.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AluraUne.cpp" />
+    <ClCompile Include="AluraUneGEffrect.cpp" />
+    <ClCompile Include="AluraUneProjectile.cpp" />
     <ClCompile Include="BackCollision.cpp" />
     <ClCompile Include="BackGround.cpp" />
+    <ClCompile Include="BossAlice.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="CollisionMgr.cpp" />
@@ -201,13 +219,17 @@
     <ClCompile Include="Frame_Manager.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameObject_Manager.cpp" />
+    <ClCompile Include="Game_Manager.cpp" />
     <ClCompile Include="Graphic_Device.cpp" />
     <ClCompile Include="Gui.cpp" />
+    <ClCompile Include="Item.cpp" />
     <ClCompile Include="Key_Manager.cpp" />
+    <ClCompile Include="Knife.cpp" />
     <ClCompile Include="MainApp.cpp" />
     <ClCompile Include="Multi_Texture.cpp" />
     <ClCompile Include="MyMath.cpp" />
     <ClCompile Include="Owl.cpp" />
+    <ClCompile Include="Pillor.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Prefab_Manager.cpp" />
     <ClCompile Include="Rose.cpp" />
@@ -216,12 +238,15 @@
     <ClCompile Include="Ruler_Body.cpp" />
     <ClCompile Include="Ruler_Sword.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneChanger.cpp" />
     <ClCompile Include="Scene_Manager.cpp" />
     <ClCompile Include="Scroll_Manager.cpp" />
     <ClCompile Include="Single_Texture.cpp" />
     <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="Spawn_Manager.cpp" />
-    <ClCompile Include="Stage.cpp" />
+    <ClCompile Include="Stage1_1.cpp" />
+    <ClCompile Include="Stage1_4.cpp" />
+    <ClCompile Include="StageUi.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -232,6 +257,9 @@
     <ClCompile Include="Texture_Manager.cpp" />
     <ClCompile Include="Time_Manager.cpp" />
     <ClCompile Include="Toad.cpp" />
+    <ClCompile Include="Une.cpp" />
+    <ClCompile Include="VKnife.cpp" />
+    <ClCompile Include="VSkill.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc" />

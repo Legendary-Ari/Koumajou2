@@ -13,6 +13,8 @@
 #include "Skeleton.h"
 #include "Rose.h"
 #include "Owl.h"
+#include "AluraUne.h"
+#include "Pillor.h"
 
 CSpawn_Manager::CSpawn_Manager()
 {
@@ -42,9 +44,13 @@ HRESULT CSpawn_Manager::Spawn(const wstring _wstrObjName, const ACTORINFO * _pAc
 	{
 		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)_pObjectInfo->eObjId, CBackCollision::Create(_pActorInfo, _pObjectInfo));
 	}
-	else if (wstrPrefab == L"Ruler_Body")
+	else if (wstrPrefab == L"Alura_Une")
 	{
-		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)_pObjectInfo->eObjId, CRuler_Body::Create(_pActorInfo, _pObjectInfo));
+		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)_pObjectInfo->eObjId, CAluraUne::Create(_pActorInfo, _pObjectInfo));
+	}
+	else if (wstrPrefab == L"s02o03")
+	{
+		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)_pObjectInfo->eObjId, CPillor::Create(_pActorInfo, _pObjectInfo));
 	}
 	else if (wstrPrefab == L"Toad")
 	{
@@ -62,6 +68,15 @@ HRESULT CSpawn_Manager::Spawn(const wstring _wstrObjName, const ACTORINFO * _pAc
 	{
 		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)_pObjectInfo->eObjId, COwl::Create(_pActorInfo, _pObjectInfo));
 	}
+	else if (wstrPrefab == L"Alura_Une")
+	{
+		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)_pObjectInfo->eObjId, CAluraUne::Create(_pActorInfo, _pObjectInfo));
+	}
+	else if (wstrPrefab == L"Une")
+	{
+		//CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)_pObjectInfo->eObjId, CAluraUne::Create(_pActorInfo, _pObjectInfo));
+	}
+
 
 
 	return S_OK;

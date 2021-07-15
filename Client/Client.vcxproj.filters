@@ -100,6 +100,45 @@
     <Filter Include="01.GameObject\06.Enemy\Owl">
       <UniqueIdentifier>{93e51e37-57fc-4fd6-a971-e9984e7b1da2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.GameObject\06.Enemy\Alura_Une">
+      <UniqueIdentifier>{28e0ff9b-5769-43c2-bfc2-f6e68b429d8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\06.Enemy\Une">
+      <UniqueIdentifier>{a3b6ab37-d2e1-4b05-999e-0d20f636df67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\05.Gui\StageUi%27">
+      <UniqueIdentifier>{c1cff981-2b13-43fa-a5e0-b6721e94a9a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\07.Item">
+      <UniqueIdentifier>{4c1671e0-7958-4f4e-96b6-5387e19f83d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\00.Player\01.VSkill">
+      <UniqueIdentifier>{ad39a3dd-7f8a-4168-a333-17b35f648a5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\00.Player\Player_Bullet">
+      <UniqueIdentifier>{11a6f41e-7eab-40dc-bc70-4ac2d3876bfa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\00.Player\Player_Bullet\00.Knife">
+      <UniqueIdentifier>{ad973f28-7199-4a66-aa7b-abb9f023ca67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\00.Player\01.VSkill\VS_Knife">
+      <UniqueIdentifier>{7a7b1392-6387-425d-b585-89536e590a4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\Game_Manager">
+      <UniqueIdentifier>{4269f65d-6b74-413d-97a7-4e744b98ebc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Scene\Stage\Stage1">
+      <UniqueIdentifier>{55e96e38-6e77-4983-bdc6-5dd01215a494}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\08.SceneChanger">
+      <UniqueIdentifier>{40523752-8404-46e9-8149-d65bb644c772}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\09.Boss">
+      <UniqueIdentifier>{11f9bbed-df2c-4f64-b386-71aeb036cbb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\01.BackCollision\01.Pillor">
+      <UniqueIdentifier>{a06b6f95-0b26-4ec9-9ec2-2780e56ee2b9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -143,9 +182,6 @@
     </ClInclude>
     <ClInclude Include="Scene_Manager.h">
       <Filter>03.Scene\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="Stage.h">
-      <Filter>03.Scene\Stage</Filter>
     </ClInclude>
     <ClInclude Include="Scroll_Manager.h">
       <Filter>Manager\04.Scroll_Manager</Filter>
@@ -216,6 +252,51 @@
     <ClInclude Include="RoseHead.h">
       <Filter>01.GameObject\06.Enemy\Rose</Filter>
     </ClInclude>
+    <ClInclude Include="AluraUne.h">
+      <Filter>01.GameObject\06.Enemy\Alura_Une</Filter>
+    </ClInclude>
+    <ClInclude Include="AluraUneProjectile.h">
+      <Filter>01.GameObject\06.Enemy\Alura_Une</Filter>
+    </ClInclude>
+    <ClInclude Include="AluraUneGEffrect.h">
+      <Filter>01.GameObject\06.Enemy\Alura_Une</Filter>
+    </ClInclude>
+    <ClInclude Include="Une.h">
+      <Filter>01.GameObject\06.Enemy\Une</Filter>
+    </ClInclude>
+    <ClInclude Include="StageUi.h">
+      <Filter>01.GameObject\05.Gui\StageUi%27</Filter>
+    </ClInclude>
+    <ClInclude Include="Knife.h">
+      <Filter>01.GameObject\00.Player\Player_Bullet\00.Knife</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>01.GameObject\07.Item</Filter>
+    </ClInclude>
+    <ClInclude Include="VSkill.h">
+      <Filter>01.GameObject\00.Player\01.VSkill</Filter>
+    </ClInclude>
+    <ClInclude Include="VKnife.h">
+      <Filter>01.GameObject\00.Player\01.VSkill\VS_Knife</Filter>
+    </ClInclude>
+    <ClInclude Include="Game_Manager.h">
+      <Filter>Manager\Game_Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Stage1_1.h">
+      <Filter>03.Scene\Stage\Stage1</Filter>
+    </ClInclude>
+    <ClInclude Include="Stage1_4.h">
+      <Filter>03.Scene\Stage\Stage1</Filter>
+    </ClInclude>
+    <ClInclude Include="BossAlice.h">
+      <Filter>01.GameObject\09.Boss</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneChanger.h">
+      <Filter>01.GameObject\08.SceneChanger</Filter>
+    </ClInclude>
+    <ClInclude Include="Pillor.h">
+      <Filter>01.GameObject\01.BackCollision\01.Pillor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -253,9 +334,6 @@
     </ClCompile>
     <ClCompile Include="Scene_Manager.cpp">
       <Filter>03.Scene\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="Stage.cpp">
-      <Filter>03.Scene\Stage</Filter>
     </ClCompile>
     <ClCompile Include="Scroll_Manager.cpp">
       <Filter>Manager\04.Scroll_Manager</Filter>
@@ -325,6 +403,51 @@
     </ClCompile>
     <ClCompile Include="RoseHead.cpp">
       <Filter>01.GameObject\06.Enemy\Rose</Filter>
+    </ClCompile>
+    <ClCompile Include="AluraUne.cpp">
+      <Filter>01.GameObject\06.Enemy\Alura_Une</Filter>
+    </ClCompile>
+    <ClCompile Include="AluraUneProjectile.cpp">
+      <Filter>01.GameObject\06.Enemy\Alura_Une</Filter>
+    </ClCompile>
+    <ClCompile Include="AluraUneGEffrect.cpp">
+      <Filter>01.GameObject\06.Enemy\Alura_Une</Filter>
+    </ClCompile>
+    <ClCompile Include="Une.cpp">
+      <Filter>01.GameObject\06.Enemy\Une</Filter>
+    </ClCompile>
+    <ClCompile Include="StageUi.cpp">
+      <Filter>01.GameObject\05.Gui\StageUi%27</Filter>
+    </ClCompile>
+    <ClCompile Include="Knife.cpp">
+      <Filter>01.GameObject\00.Player\Player_Bullet\00.Knife</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>01.GameObject\07.Item</Filter>
+    </ClCompile>
+    <ClCompile Include="VSkill.cpp">
+      <Filter>01.GameObject\00.Player\01.VSkill</Filter>
+    </ClCompile>
+    <ClCompile Include="VKnife.cpp">
+      <Filter>01.GameObject\00.Player\01.VSkill\VS_Knife</Filter>
+    </ClCompile>
+    <ClCompile Include="Game_Manager.cpp">
+      <Filter>Manager\Game_Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Stage1_1.cpp">
+      <Filter>03.Scene\Stage\Stage1</Filter>
+    </ClCompile>
+    <ClCompile Include="Stage1_4.cpp">
+      <Filter>03.Scene\Stage\Stage1</Filter>
+    </ClCompile>
+    <ClCompile Include="BossAlice.cpp">
+      <Filter>01.GameObject\09.Boss</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneChanger.cpp">
+      <Filter>01.GameObject\08.SceneChanger</Filter>
+    </ClCompile>
+    <ClCompile Include="Pillor.cpp">
+      <Filter>01.GameObject\01.BackCollision\01.Pillor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

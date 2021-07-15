@@ -14,13 +14,14 @@ public:
 	virtual void	Render_GameObject( )PURE; 
 	virtual void	Release_GameObject()PURE; 
 
-	virtual void	OnOverlaped(CGameObject* _pHitObject);
+	virtual void	OnOverlaped(CGameObject* _pHitObject, _vec3 vHitPos);
 	virtual void	OnBlocked(CGameObject* pHitObject, DIRECTION::ID _eId);
 	virtual void	OnBlockedTile(CGameObject* pHitObject, DIRECTION::ID _eId);
 	virtual void	Set_OnGround(bool _b);
 	virtual void	Set_Prefab(const OBJECTINFO* _pPrefab);
 	void			Set_ActorInfo(const ACTORINFO* _pPlacement);
 	void			Set_Info(const INFO& tInfo);
+	void			Set_Angle(float _fAngle);
 	void			Add_PosX(float _fPosX);
 	void			Add_PosY(float _fPosY);
 	virtual const RENDERID::ID&	Get_RenderId() const;

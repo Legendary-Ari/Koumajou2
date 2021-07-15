@@ -55,6 +55,12 @@ void CScroll_Manager::Add_Scroll(ID eScrollID, float fScroll)
 	}
 }
 
+void CScroll_Manager::Force_Set_Scroll(const D3DXVECTOR3 & vScroll)
+{
+	m_vTargetScroll = vScroll;
+	m_vCurScroll = vScroll;
+}
+
 void CScroll_Manager::UpdateScroll()
 {
 	ScrollLock();

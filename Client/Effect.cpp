@@ -12,12 +12,11 @@ CEffect::~CEffect()
 {
 }
 
-CGameObject * CEffect::Create(const ANIMATION * _tAnimationInfo, D3DXVECTOR3 _vPos, D3DXVECTOR3 _vDir)
+CGameObject * CEffect::Create(const ANIMATION * _tAnimationInfo, const INFO& _tInfo)
 {
 	CGameObject* pInstance = new CEffect;
-	static_cast<CEffect*>(pInstance)->Set_Prefab(_tAnimationInfo);
-	pInstance->Set_Pos(_vPos);
-	static_cast<CEffect*>(pInstance)->Set_Dir(_vDir);
+	static_cast<CEffect*>(pInstance)->Set_Animation(_tAnimationInfo);
+	pInstance->Set_Info(_tInfo);
 	if (FAILED(pInstance->Ready_GameObject()))
 	{
 		delete pInstance;
@@ -27,9 +26,9 @@ CGameObject * CEffect::Create(const ANIMATION * _tAnimationInfo, D3DXVECTOR3 _vP
 	return pInstance;
 }
 
-void CEffect::Set_Prefab(const ANIMATION * _pPrefab)
+void CEffect::Set_Animation(const ANIMATION * _tAnimationInfo)
 {
-	m_pAnimationInfo = _pPrefab;
+	m_pAnimationInfo = _tAnimationInfo;
 }
 
 void CEffect::Set_Dir(_vec3 _vDir)
@@ -83,12 +82,12 @@ void CEffect::Render_GameObject()
 	if (nullptr == pTexInfo)
 		return;
 	D3DXVECTOR3 vScroll = CScroll_Manager::Get_Scroll();
-	if (m_tInfo.vDir.x < 0)
+	if (m_tInfo.vDir.x > 0)
 		m_bFliped = true;
 	else
 		m_bFliped = false;
 	D3DXMATRIX matScale, matRotZ, matTrans, matWorld;
-	D3DXMatrixScaling(&matScale, (m_bFliped ? -1.0f : 1.0f), 1.f, 0.f);
+	D3DXMatrixScaling(&matScale, (m_bFliped ? -m_tInfo.vSize.x : m_tInfo.vSize.x), m_tInfo.vSize.y, 0.f);
 	D3DXMatrixRotationZ(&matRotZ, D3DXToRadian(-m_tInfo.fAngle));
 	D3DXMatrixTranslation(&matTrans, m_tInfo.vPos.x + vScroll.x, m_tInfo.vPos.y + vScroll.y, 0.f);
 	matWorld = matScale * matRotZ * matTrans;

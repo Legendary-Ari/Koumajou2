@@ -80,7 +80,10 @@ int CRoseHead::Update_GameObject()
 			ZeroMemory(&m_vecBodyCollision[0].tFRect, sizeof(FRECT));
 			m_bDieInit = false;
 			m_bBlockable = true;
-			static_cast<CEnemy*>(m_pRose)->Set_Die();
+			if (m_pRose)
+			{
+				static_cast<CEnemy*>(m_pRose)->Set_Die();
+			}				
 		}
 		UpdateGravity();
 		m_tInfo.vPos += m_tInfo.vDir;
@@ -104,6 +107,8 @@ int CRoseHead::Update_GameObject()
 	m_tInfo.fAngle += fDeltaTime * 100.f;
 	m_tInfo.vPos = m_vCenterPos + _vec3{ m_fOrbitRadius * cosf(D3DXToRadian (-m_tInfo.fAngle)), m_fOrbitRadius * sinf(D3DXToRadian (-m_tInfo.fAngle)), 0.f };
 	
+	UpdateAnimation();
+
 	return OBJ_NOEVENT;
 }
 
@@ -203,4 +208,16 @@ void CRoseHead::UpdateTileCollision()
 		(float)(m_tInfo.vPos.x + v2Radius.x * m_tInfo.vSize.x * fReduceSizeRight),
 		(float)(m_tInfo.vPos.y + v2Radius.y * m_tInfo.vSize.y * fReduceSizeDown)
 	};
+}
+
+void CRoseHead::UpdateAnimation()
+{
+	m_fAnimationCumulatedTime += CTime_Manager::Get_Instance()->Get_DeltaTime();
+	if (m_fAnimationCumulatedTime >= m_vecAnimation[0]->fPlay_Speed)
+	{
+		++m_uiAnimationFrame;
+		if (m_uiAnimationFrame >= m_vecAnimation[0]->vecRect.size())
+			m_uiAnimationFrame = 0;
+		m_fAnimationCumulatedTime = 0.f;
+	}
 }

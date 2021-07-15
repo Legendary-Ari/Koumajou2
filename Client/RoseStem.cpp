@@ -64,6 +64,7 @@ int CRoseStem::Update_GameObject()
 	float fDeltaTime = CTime_Manager::Get_Instance()->Get_DeltaTime();
 	if (m_bDead)
 	{
+		return OBJ_DESTROYED;
 		if (m_bDieInit)
 		{
 			m_bFlying = false;

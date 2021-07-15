@@ -433,19 +433,19 @@ void CMFCToolView::OnMouseMove(UINT nFlags, CPoint point)
 	case CPivot::X:
 		tDiff = pt - Pivot.Get_Pos();
 		m_pSelectedActor->tInfo.vPos.x += tDiff.x;
-		Pivot.Add_PosX(tDiff.x);
+		Pivot.Add_PosX((float)tDiff.x);
 		break;
 	case CPivot::Y:
 		tDiff = pt - Pivot.Get_Pos();
 		m_pSelectedActor->tInfo.vPos.y += tDiff.y;
-		Pivot.Add_PosY(tDiff.y);
+		Pivot.Add_PosY((float)tDiff.y);
 		break;
 	case CPivot::XY:
 		tDiff = pt - Pivot.Get_Pos();
-		m_pSelectedActor->tInfo.vPos.x += tDiff.x;
-		m_pSelectedActor->tInfo.vPos.y += tDiff.y;
-		Pivot.Add_PosX(tDiff.x);
-		Pivot.Add_PosY(tDiff.y);
+		m_pSelectedActor->tInfo.vPos.x += (float)tDiff.x;
+		m_pSelectedActor->tInfo.vPos.y += (float)tDiff.y;
+		Pivot.Add_PosX((float)tDiff.x);
+		Pivot.Add_PosY((float)tDiff.y);
 		break;
 	default:
 		break;
@@ -472,20 +472,20 @@ void CMFCToolView::OnLButtonUp(UINT nFlags, CPoint point)
 	{
 	case CPivot::X:
 		tDiff = pt - Pivot.Get_Pos();
-		m_pSelectedActor->tInfo.vPos.x += tDiff.x;
-		Pivot.Add_PosX(tDiff.x);
+		m_pSelectedActor->tInfo.vPos.x += (float)tDiff.x;
+		Pivot.Add_PosX((float)tDiff.x);
 		break;
 	case CPivot::Y:
 		tDiff = pt - Pivot.Get_Pos();
-		m_pSelectedActor->tInfo.vPos.y += tDiff.y;
-		Pivot.Add_PosY(tDiff.y);
+		m_pSelectedActor->tInfo.vPos.y += (float)tDiff.y;
+		Pivot.Add_PosY((float)tDiff.y);
 		break;
 	case CPivot::XY:
 		tDiff = pt - Pivot.Get_Pos();
-		m_pSelectedActor->tInfo.vPos.x += tDiff.x;
-		m_pSelectedActor->tInfo.vPos.y += tDiff.y;
-		Pivot.Add_PosX(tDiff.x);
-		Pivot.Add_PosY(tDiff.y);
+		m_pSelectedActor->tInfo.vPos.x += (float)tDiff.x;
+		m_pSelectedActor->tInfo.vPos.y += (float)tDiff.y;
+		Pivot.Add_PosX((float)tDiff.x);
+		Pivot.Add_PosY((float)tDiff.y);
 		break;
 	default:
 		break;

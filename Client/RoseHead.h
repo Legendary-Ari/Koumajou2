@@ -23,6 +23,7 @@ public:
 private:
 	virtual void	UpdateBodyCollision() override;
 	virtual void	UpdateTileCollision() override;
+	virtual void	UpdateAnimation() override;
 private:
 	CGameObject*	m_pRose;
 	_vec3			m_vCenterPos;

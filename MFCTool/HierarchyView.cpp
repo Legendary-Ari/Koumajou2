@@ -161,8 +161,8 @@ void CHierarchyView::InsertTreeItem(bool _bIsFolder, CString& _cstrName)
 	auto& iter_find_item = m_mapActorInfo.find(cstrSelectedItem);
 	if (iter_find_item == m_mapActorInfo.end())
 	{
-		ERR_MSG(L"CHierarchyView::InsertTreeItem 등록되엇으나 없는 키입니다. 첫번째 폴더에 저장합니다");
-		selectedItem = tree.GetChildItem(m_RootTreeItem);
+		ERR_MSG(L"CHierarchyView::InsertTreeItem 등록되엇으나 없는 키입니다. 루트에 저장합니다");
+		selectedItem = m_RootTreeItem;
 	}
 	else
 	{

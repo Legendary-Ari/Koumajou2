@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Scene_Manager.h"
-#include "Stage.h"
+#include "Stage1_1.h"
+#include "Stage1_4.h"
 IMPLEMENT_SINGLETON(CScene_Manager)
 CScene_Manager::CScene_Manager()
 	:m_eCurScene(END)
@@ -20,18 +21,24 @@ HRESULT CScene_Manager::Change_Scene_Manager(const ID eID)
 	m_eNextScene = eID; 
 	if (m_eCurScene != m_eNextScene)
 	{
+
 		Safe_Delete(m_pScene); 
 		switch (m_eNextScene)
 		{
 		case CScene_Manager::SCENE_LOADING:
 			break;
 		case CScene_Manager::SCENE_STAGE:
-			m_pScene = CStage::Create(); 
+			break;
+		case CScene_Manager::STAGE_1_1:
+			m_pScene = CStage1_1::Create();
+			break;
+		case CScene_Manager::STAGE_1_4:
+			m_pScene = CStage1_4::Create();
 			break;
 		case CScene_Manager::END:
 			break;
 		default:
-			m_pScene = CStage::Create();
+			m_pScene = CStage1_1::Create();
 			break;
 		}
 		m_pScene->InitUpdate_Scene();

@@ -36,7 +36,7 @@ void CGameObject::Set_Pos(const D3DXVECTOR3 & vPos)
 	m_tInfo.vPos = vPos; 
 }
 
-void CGameObject::OnOverlaped(CGameObject * _pHitObject)
+void CGameObject::OnOverlaped(CGameObject * _pHitObject, _vec3 vHitPos)
 {
 	m_fCurHp -= _pHitObject->Get_Damage();
 	if (m_fCurHp <= 0.f)
@@ -81,6 +81,11 @@ void CGameObject::Set_ActorInfo(const ACTORINFO * _pPlacement)
 void CGameObject::Set_Info(const INFO & tInfo)
 {
 	m_tInfo = tInfo;
+}
+
+void CGameObject::Set_Angle(float _fAngle)
+{
+	m_tInfo.fAngle = _fAngle;
 }
 
 void CGameObject::Add_PosX(float _fPosX)
@@ -272,13 +277,25 @@ void CGameObject::RenderDieEffect(_vec3 _vPos)
 
 	pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(L"Common_EffectsDie");
 
-	CGameObject* pEffect = CEffect::Create(pAnim, _vPos, _vec3{0.f,0.f,0.f});
+	INFO tInfo;
+	ZeroMemory(&tInfo, sizeof(INFO));
+	tInfo.vPos = _vPos;
+	tInfo.vDir = { 0.0f,0.0f,0.f };
+	tInfo.vSize = { 1.0f,1.0f,0.f };
+
+	CGameObject* pEffect = CEffect::Create(pAnim, tInfo);
 	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::EFFECT,pEffect);
 
 	_vec3 vBlack = _vPos;
 	vBlack.y += 10.f;
+
+	ZeroMemory(&tInfo, sizeof(INFO));
+	tInfo.vPos = vBlack;
+	tInfo.vDir = { 0.0f,0.0f,0.f };
+	tInfo.vSize = { 1.0f,1.0f,0.f };
+
 	pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(L"Common_EffectsDieBlack");
-	pEffect = CEffect::Create(pAnim, vBlack, _vec3{ 0.f,0.f,0.f });
+	pEffect = CEffect::Create(pAnim, tInfo);
 	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::EFFECT, pEffect);
 }
 

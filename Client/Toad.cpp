@@ -61,6 +61,7 @@ HRESULT CToad::Ready_GameObject()
 
 	m_eCurState = IDLE;
 	m_fJumpPower = -7.f;
+	m_fMaxAttackCoolDownTime = 2.0f;
 
 	m_vecBodyCollision.resize(1);
 	m_vecBodyCollision[0].eId = COLLISION::C_RECT;
@@ -139,8 +140,8 @@ void CToad::Render_GameObject()
 	const RECT& tRenderRect = m_vecAnimation[m_eCurState]->vecRect[m_uiAnimationFrame];
 	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
 	D3DCOLOR tColor;
-	if (m_bHit)
-		tColor = D3DCOLOR_ARGB(255, 100, 100, 100);
+	if (m_bHit || m_bDead)
+		tColor = D3DCOLOR_ARGB(255, 150, 150, 150);
 	else
 		tColor = D3DCOLOR_ARGB(255, 255, 255, 255);
 	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, &tRenderRect, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, tColor);
@@ -227,7 +228,7 @@ void CToad::UpdateAttackCollision()
 
 void CToad::UpdatePattern()
 {
-	UpdateAttackCoolDown();
+	UpdateActionCoolDown();
 	float fDeltaTime = CTime_Manager::Get_Instance()->Get_DeltaTime();
 	const CGameObject* pPlayer = CGameObject_Manager::Get_Instance()->Get_Player();
 	_vec3 vDiff = pPlayer->Get_Info().vPos - m_tInfo.vPos;
@@ -235,12 +236,20 @@ void CToad::UpdatePattern()
 	D3DXVec3Normalize(&vDiffNomalized, &vDiff);
 	if ( D3DXVec3Length(&vDiff) > 100.f)
 	{
-		if (m_fAttackCoolDownRemainTime == 0.f)
+		if (m_fActionCoolDownRemainTime > 0.5f)
+		{
+			if (m_tInfo.vPos.x > CGameObject_Manager::Get_Instance()->Get_Player()->Get_Info().vPos.x)
+				m_bFliped = true;
+			else
+				m_bFliped = false;
+		}
+			
+		if (m_fActionCoolDownRemainTime == 0.f)
 		{
 			if (m_ePrevState != JUMP && m_ePrevState != ATTACK)
 			{
 				m_eCurState = JUMP;
-				m_fAttackCoolDownRemainTime = m_fMaxAttackCoolDownTime;
+				m_fActionCoolDownRemainTime = m_fMaxAttackCoolDownTime;
 				if (m_tInfo.vPos.x > CGameObject_Manager::Get_Instance()->Get_Player()->Get_Info().vPos.x)
 					m_bFliped = true;
 				else
@@ -253,13 +262,10 @@ void CToad::UpdatePattern()
 	}
 	else
 	{
-		if (m_fAttackCoolDownRemainTime == 0.f && !m_bJumping)
+		if (m_fActionCoolDownRemainTime == 0.f && !m_bJumping)
 		{
 			m_eCurState = ATTACK;
-			if (m_tInfo.vPos.x > CGameObject_Manager::Get_Instance()->Get_Player()->Get_Info().vPos.x && m_eCurState)
-				m_bFliped = true;
-			else
-				m_bFliped = false;
+
 		}
 	}
 	//--------------------------------------
@@ -287,6 +293,10 @@ void CToad::UpdateState()
 		case JUMP:
 			break;
 		case ATTACK:
+			if (m_tInfo.vPos.x > CGameObject_Manager::Get_Instance()->Get_Player()->Get_Info().vPos.x && m_eCurState)
+				m_bFliped = true;
+			else
+				m_bFliped = false;
 			m_tInfo.vDir.x = 0;
 			break;
 		case DIE:
@@ -324,7 +334,7 @@ void CToad::UpdateAnimation()
 					break;
 				case CToad::ATTACK:
 					m_eCurState = IDLE;
-					m_fAttackCoolDownRemainTime = m_fMaxAttackCoolDownTime;
+					m_fActionCoolDownRemainTime = m_fMaxAttackCoolDownTime;
 					m_uiAnimationFrame = 0;
 					break;
 				case CToad::JUMP:

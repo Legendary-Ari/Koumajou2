@@ -76,16 +76,23 @@ void CBackCollision::Release_GameObject()
 void CBackCollision::UpdateTileCollision()
 {
 
-	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()->Get_TexInfo(m_pObjectInfo->wstrObjectImage_ObjectKey);
-	if (nullptr == pTexInfo)
-		return;
-	_vec2 v2Radius = { (float)(pTexInfo->tImageInfo.Width>>1), (float)(pTexInfo->tImageInfo.Height>>1) };
-	
+	float fSizeX = m_tInfo.vSize.x;
+	float fSizeY = m_tInfo.vSize.y;
+	float fReduceSizeLeft = 1.f;
+	float fReduceSizeRight = 1.f;
+	float fReduceSizeUp = 0.75f;
+	float fReduceSizeDown = 1.f;
+
+	RECT rect = m_pObjectInfo->tRect;
+
+	_vec2 v2Radius = { (float)((rect.right - rect.left) * 0.5f), (float)((rect.bottom - rect.top) * 0.5f) };
+	v2Radius.x *= fSizeX;
+	v2Radius.y *= fSizeY;
 	m_vecTileCollision[0].tFRect =
 	{
-		(float)(m_tInfo.vPos.x - v2Radius.x  * m_tInfo.vSize.x),
-		(float)(m_tInfo.vPos.y - v2Radius.y  * m_tInfo.vSize.y),
-		(float)(m_tInfo.vPos.x + v2Radius.x  * m_tInfo.vSize.x),
-		(float)(m_tInfo.vPos.y + v2Radius.y  * m_tInfo.vSize.y)
+		(float)(m_tInfo.vPos.x - v2Radius.x * m_tInfo.vSize.x * fReduceSizeLeft),
+		(float)(m_tInfo.vPos.y - v2Radius.y * m_tInfo.vSize.y * fReduceSizeUp),
+		(float)(m_tInfo.vPos.x + v2Radius.x * m_tInfo.vSize.x * fReduceSizeRight),
+		(float)(m_tInfo.vPos.y + v2Radius.y * m_tInfo.vSize.y * fReduceSizeDown)
 	};
 }

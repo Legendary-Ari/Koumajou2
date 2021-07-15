@@ -3,6 +3,10 @@
 #include "Prefab_Manager.h"
 #include "Bullet.h"
 #include "CollisionMgr.h"
+#include "Knife.h"
+#include "VSkill.h"
+#include "VKnife.h"
+#include "SceneChanger.h"
 
 CPlayer::CPlayer()
 	:m_bAttacking(false)
@@ -14,7 +18,8 @@ CPlayer::CPlayer()
 	, m_fHitCumulateTime(0.f)
 	, m_bHit(false)
 	, m_fInvincibleTimeLength(1.5f)
-	, m_fJumpMaxTime(0.3f)
+	, m_fJumpMaxTime(0.7f)
+	, m_fMaxKnifeTime(0.5f)
 {
 }
 
@@ -215,7 +220,7 @@ HRESULT CPlayer::Ready_GameObject()
 	{
 		m_vecAttackCollision[i].eId = COLLISION::C_SPHERE;
 	}
-
+	m_pBulletInfo = CPrefab_Manager::Get_Instance()->Get_ObjectPrefab(L"Sakuya_Knife");
 
 	m_bJumping = false;
 	m_bFalling = false;
@@ -248,8 +253,8 @@ void CPlayer::Late_Update_GameObject()
 		m_tInfo.vPos = { 200.f, 300.f, 0.f };
 		m_tInfo.vDir.y = 0;
 	}
-	float fMapSizeX = CScroll_Manager::GetMapSizeX();
-	float fMapSizeY = CScroll_Manager::GetMapSizeY();
+	float fMapSizeX = (float)CScroll_Manager::GetMapSizeX();
+	float fMapSizeY = (float)CScroll_Manager::GetMapSizeY();
 	if (m_tInfo.vPos.x < 0)
 		m_tInfo.vPos.x = 0;
 	if (m_tInfo.vPos.x > fMapSizeX)
@@ -319,10 +324,18 @@ void CPlayer::OnBlockedTile(CGameObject * pHitObject, DIRECTION::ID _eId)
 	CGameObject::OnBlockedTile(pHitObject, _eId);
 }
 
-void CPlayer::OnOverlaped(CGameObject * pHitObject)
+void CPlayer::OnOverlaped(CGameObject* _pHitObject, _vec3 vHitPos)
 {
-	CGameObject::OnOverlaped(pHitObject);
-	m_fCurHp -= pHitObject->Get_Damage();
+	CSceneChanger* _pChanger = dynamic_cast<CSceneChanger*>(_pHitObject);
+	if (_pChanger)
+	{
+		_pChanger->Set_Change();
+		return;
+	}
+	if (m_bHit)
+		return;
+	CGameObject::OnOverlaped(_pHitObject, vHitPos);
+	m_fCurHp -= _pHitObject->Get_Damage();
 	m_eCurState = HIT;
 	m_bBlockable = false;
 	m_bOverlapable = false;
@@ -360,7 +373,7 @@ void CPlayer::UpdateState()
 	CPlayer::STATE eState = IDLE;
 
 	float fMoveSpeed = fDeltaTime * m_pObjectInfo->fMoveSpeed;
-	if (!m_bAttacking)
+	if (!m_bAttacking && !m_bKnifeAttacking)
 	{
 		if (m_tInfo.vDir.y <= -14.0f && m_bJumping)
 		{
@@ -414,7 +427,7 @@ void CPlayer::UpdateState()
 			}
 		}
 	}
-	else
+	else if (m_bAttacking)
 	{
 		if (!m_bOnGround)
 		{
@@ -434,6 +447,53 @@ void CPlayer::UpdateState()
 				else
 				{
 					eState = ATTACK;
+				}
+			}
+		}
+	}
+	else if (m_bKnifeAttacking)
+	{
+		if (!m_bOnGround)
+		{
+			m_bKnifeAttacking = false;
+		}			
+		if (m_bJumping && m_eCurState != FALLING)
+		{
+			if (m_eCurState != FALLING)
+			{
+				if (m_eCurState == U_JUMPING)
+					eState = U_JUMPING;
+				else if (m_eCurState == JUMPING)
+					eState = JUMPING;
+				else if (abs(m_tInfo.vDir.x) < (fMoveSpeed * 0.5f))
+					eState = U_JUMPING;
+				else
+					eState = JUMPING;
+			}
+		}
+		else
+		{
+			if (m_bFalling || m_eCurState == FALLING && !m_bOnGround)
+				eState = FALLING;
+			else
+			{
+				if (!m_bCrouch && m_eCurState == CROUCH)
+					eState = STANDUP;
+				else if (m_bCrouch && m_eCurState != DE_KNIFE)
+				{
+					eState = DS_KNIFE;
+				}
+				else if (m_bCrouch && m_eCurState == DE_KNIFE)
+				{
+					eState = DE_KNIFE;
+				}
+				else if (m_eCurState != E_KNIFE)
+				{
+					eState = S_KNIFE;
+				}
+				else if (m_eCurState == E_KNIFE)
+				{
+					eState = E_KNIFE;
 				}
 			}
 		}
@@ -517,6 +577,7 @@ void CPlayer::UpdateAnimation()
 					break;
 				case CPlayer::D_ATTACK:
 					m_bAttacking = false;
+					m_ePrevState = CROUCH;
 					m_eCurState = CROUCH;
 					m_uiAnimationFrame = m_vecAnimation[CROUCH]->vecRect.size()-1;
 					break;
@@ -526,15 +587,23 @@ void CPlayer::UpdateAnimation()
 					break;
 				case CPlayer::S_KNIFE:
 					m_uiAnimationFrame = m_vecAnimation[m_eCurState]->vecRect.size() - 1;
+					if (m_fActionRamainedTime <= 0)
+						m_eCurState = E_KNIFE;
 					break;
 				case CPlayer::E_KNIFE:
+					m_bKnifeAttacking = false;
 					m_eCurState = IDLE;
 					break;
 				case CPlayer::DS_KNIFE:
 					m_uiAnimationFrame = m_vecAnimation[m_eCurState]->vecRect.size() - 1;
+					if (m_fActionRamainedTime <= 0)
+						m_eCurState = DE_KNIFE;
 					break;
 				case CPlayer::DE_KNIFE:
-					m_eCurState = IDLE;
+					m_bKnifeAttacking = false;
+					m_eCurState = CROUCH;
+					m_ePrevState = CROUCH;
+					m_uiAnimationFrame = m_vecAnimation[CROUCH]->vecRect.size() - 1;
 					break;
 				case CPlayer::STATE_END:
 					break;
@@ -663,6 +732,10 @@ void CPlayer::UpdateAttackCollision()
 void CPlayer::UpdateMoveWithPressKey()
 {
 	float fDeltaTime = CTime_Manager::Get_Instance()->Get_DeltaTime();
+	if (m_fActionRamainedTime > 0)
+		m_fActionRamainedTime -= fDeltaTime;
+	else
+		m_fActionRamainedTime = 0.f;
 	float fMoveSpeed = fDeltaTime * m_pObjectInfo->fMoveSpeed;
 	if (m_bHit)
 	{
@@ -674,7 +747,7 @@ void CPlayer::UpdateMoveWithPressKey()
 
 	float fTargetDirX{ 0.f };
 
-	if (!(m_bAttacking && m_bOnGround))
+	if (!(m_bAttacking && m_bOnGround && m_bKnifeAttacking))
 	{
 		if (CKey_Manager::Get_Instance()->Key_Pressing(KEY_LEFT))
 		{
@@ -704,7 +777,7 @@ void CPlayer::UpdateMoveWithPressKey()
 			m_bCrouch = false;
 		}
 	}
-	if (!m_bAttacking)
+	if (!m_bAttacking && !m_bKnifeAttacking)
 	{
 		if (CKey_Manager::Get_Instance()->Key_Down(KEY_Z))
 		{
@@ -713,6 +786,42 @@ void CPlayer::UpdateMoveWithPressKey()
 			{
 				m_tInfo.vDir.x = 0;
 				fTargetDirX = 0;
+			}
+		}
+		if (CKey_Manager::Get_Instance()->Key_Down(KEY_C))
+		{
+			
+			m_bKnifeAttacking = true;
+			if (m_bOnGround)
+			{
+				m_tInfo.vDir.x = 0;
+				fTargetDirX = 0;
+				m_fActionRamainedTime = m_fMaxKnifeTime;
+
+				if (/*dynamic_cast<CVKnife*>(m_pVSkill[CUR])*/true)
+				{
+					INFO tBullet;
+					tBullet.vPos = m_tInfo.vPos;
+					tBullet.vPos.y -= 10.f;
+					tBullet.fAngle = !m_bFliped ? 0.f : 180.f;
+					CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)m_pBulletInfo->eObjId, CKnife::Create(m_pBulletInfo, tBullet.vPos, tBullet.fAngle));
+					tBullet.vPos.y += 20.f;
+					CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)m_pBulletInfo->eObjId, CKnife::Create(m_pBulletInfo, tBullet.vPos, tBullet.fAngle));
+				}
+				else
+				{
+			/*		INFO tInfo;
+					m_pVSkill[CUR]->Use(tInfo);*/
+				}
+			}
+			else
+			{
+				m_bKnifeAttacking = true;
+				m_fActionRamainedTime = 0.001f;
+			}
+			if (/*dynamic_cast<CVKnife*>(m_pVSkill[CUR])*/true)
+			{
+				CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)m_pBulletInfo->eObjId,CKnife::Create(m_pBulletInfo, m_tInfo.vPos, !m_bFliped ? 0 : 180));
 			}
 		}
 	}
@@ -754,7 +863,7 @@ void CPlayer::UpdateMoveWithPressKey()
 		m_tInfo.vDir.y = -300.f * fDeltaTime;
 	}
 	
-	m_tInfo.vDir.x = CMyMath::FInterpTo(m_tInfo.vDir.x, fTargetDirX, fDeltaTime, 8.f);
+	m_tInfo.vDir.x = CMyMath::FInterpTo(m_tInfo.vDir.x, fTargetDirX, fDeltaTime, 5.f);
 	
 	if (abs(abs(m_tInfo.vDir.x) - fTargetDirX) < 1.f)
 		m_tInfo.vDir.x = fTargetDirX;

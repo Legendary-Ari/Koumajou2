@@ -15,22 +15,22 @@ CCollisionMgr::~CCollisionMgr()
 
 void CCollisionMgr::Collision( list<CGameObject*>& _Dst, list<CGameObject*>& _Src )
 {
-
+	_vec3 vColPos;
 	for ( auto& pDst : _Dst )
 	{
 		for ( auto& pSrc : _Src )
 		{
-			if ( IsObj_Overlapped( pDst->Get_BodyCollision(), pSrc->Get_AttackCollision()) )
+			if ( IsObj_Overlapped( pDst->Get_BodyCollision(), pSrc->Get_AttackCollision(), &vColPos) )
 			{
 				if (pDst->Get_IsOverlapable())
-					pDst->OnOverlaped(pSrc);
+					pDst->OnOverlaped(pSrc, vColPos);
 
 			}
-			if (IsObj_Overlapped(pDst->Get_AttackCollision(), pSrc->Get_BodyCollision()))
+			if (IsObj_Overlapped(pDst->Get_AttackCollision(), pSrc->Get_BodyCollision(), &vColPos))
 			{
 
 				if (pSrc->Get_IsOverlapable())
-					pSrc->OnOverlaped(pDst);
+					pSrc->OnOverlaped(pDst, vColPos);
 			}
 		}
 	}
@@ -133,40 +133,57 @@ void CCollisionMgr::Collision_BackGroundEx( list<CGameObject*>& _Src , bool _bFo
 	}
 }
 
-bool CCollisionMgr::IsObj_Overlapped(const vector<COLLISION>& _Dst, const vector<COLLISION>& _Src )
+bool CCollisionMgr::IsObj_Overlapped(const vector<COLLISION>& _Dst, const vector<COLLISION>& _Src, _vec3* vHitPos)
 {
 	RECT rc = {};
 	if (_Dst.empty() || _Src.empty())
 		return false;
+	float fX, fY;
 	for ( auto& tDst : _Dst )
 	{
 		for ( auto& tSrc : _Src )
 		{
 			if (tDst.eId == COLLISION::C_RECT, tSrc.eId == COLLISION::C_RECT)
 			{
-				if (Check_Rect(tDst.tFRect, tSrc.tFRect))
+				if (Check_Rect(tDst.tFRect, tSrc.tFRect, &fX, &fY))
 				{
+					_vec2 v2Center = CMyMath::Get_FRect_Center(tDst.tFRect);
+					vHitPos->x = v2Center.x - fX;
+					vHitPos->y = v2Center.y - fY;
+					vHitPos->z = 0;
 					return true;
 				}
 			}
 			else if (tDst.eId == COLLISION::C_RECT, tSrc.eId == COLLISION::C_SPHERE)
 			{
-				if (Check_RectAndSphere(tDst.tFRect, tSrc.tFRect))
+				if (Check_RectAndSphere(tDst.tFRect, tSrc.tFRect, &fX, &fY))
 				{
+					_vec2 v2Center = CMyMath::Get_FRect_Center(tDst.tFRect);
+					vHitPos->x = v2Center.x - fX;
+					vHitPos->y = v2Center.y - fY;
+					vHitPos->z = 0;
 					return true;
 				}
 			}
 			else if (tDst.eId == COLLISION::C_SPHERE, tSrc.eId == COLLISION::C_RECT)
 			{
-				if (Check_RectAndSphere(tSrc.tFRect, tDst.tFRect))
+				if (Check_RectAndSphere(tDst.tFRect, tSrc.tFRect, &fX, &fY))
 				{
+					_vec2 v2Center = CMyMath::Get_FRect_Center(tDst.tFRect);
+					vHitPos->x = v2Center.x - fX;
+					vHitPos->y = v2Center.y - fY;
+					vHitPos->z = 0;
 					return true;
 				}
 			}
 			else if (tDst.eId == COLLISION::C_SPHERE, tSrc.eId == COLLISION::C_SPHERE)
 			{
-				if (Check_Sphere(tDst.tFRect, tSrc.tFRect))
+				if (Check_Sphere(tDst.tFRect, tSrc.tFRect, &fX, &fY))
 				{
+					_vec2 v2Center = CMyMath::Get_FRect_Center(tDst.tFRect);
+					vHitPos->x = v2Center.x - fX;
+					vHitPos->y = v2Center.y - fY;
+					vHitPos->z = 0;
 					return true;
 				}
 			}
@@ -224,7 +241,7 @@ bool CCollisionMgr::IsWalking(const CPlayer* _pSrc)
 {
 	auto& listBackGround = CGameObject_Manager::Get_Instance()->Get_BackGroundObject();
 	float fX = 0.f, fY = 0.f;
-
+	_vec3 vColPos;
 	for (auto& pDst : listBackGround)
 	{
 		if (!pDst->Get_IsOverlapable())
@@ -232,7 +249,7 @@ bool CCollisionMgr::IsWalking(const CPlayer* _pSrc)
 		vector<COLLISION> vecPlusBottom(_pSrc->Get_BodyCollision());
 		for (auto& tCol : vecPlusBottom)
 			tCol.tFRect.bottom += 5;
-		if (IsObj_Overlapped(pDst->Get_BodyCollision(), _pSrc->Get_BodyCollision()))
+		if (IsObj_Overlapped(pDst->Get_BodyCollision(), _pSrc->Get_BodyCollision(), &vColPos))
 		{
 			return true;
 		}

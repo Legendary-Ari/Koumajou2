@@ -17,7 +17,7 @@ public:
 	virtual void Set_Hit(bool _bHit);
 	virtual void Set_Die();
 
-	virtual void OnOverlaped(CGameObject* _pHitObject) override;
+	virtual void OnOverlaped(CGameObject* _pHitObject, _vec3 vHitPos) override;
 
 	void			Set_Active(bool _bActive);
 	void			Set_Fliped(bool _bFliped);
@@ -25,15 +25,16 @@ protected:
 	virtual void UpdateGravity() override;
 	virtual bool UpdateActive();
 	virtual void UpdatePattern();
-	virtual void UpdateAttackCoolDown();
+	virtual void UpdateActionCoolDown();
 	virtual void UpdateAnimation() override;
 protected:
 	bool	m_bActived;
 	bool	m_bHit;
 	float	m_fHitCumulatedTime;
 	const float m_fHitMaxTime;
-	float	m_fAttackCoolDownRemainTime;
+	float	m_fActionCoolDownRemainTime;
 	float	m_fMaxAttackCoolDownTime;
 	float	m_fJumpPower;
+	float	m_fAttackWakeDistance;
 };
 
