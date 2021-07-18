@@ -8,7 +8,7 @@ private:
 public:
 	virtual ~CBackGround();
 public:
-	static	CGameObject* Create(const ACTORINFO * _pActorInfo, const OBJECTINFO * _pObjectInfo);
+	static	CGameObject* Create(const OBJECTINFO * _pObjectInfo);
 
 	virtual HRESULT Ready_GameObject() override;
 	virtual void InitUpdate_GameObject() override;

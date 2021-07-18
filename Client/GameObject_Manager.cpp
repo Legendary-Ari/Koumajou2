@@ -58,11 +58,13 @@ void CGameObject_Manager::Update_GameObject_Manager()
 	CCollisionMgr::Collision_BackGroundEx(m_listGameObject[OBJECTINFO::BOSS]);
 
 	CCollisionMgr::Collision(m_listGameObject[OBJECTINFO::ENEMY], m_listGameObject[OBJECTINFO::PLAYER]);
+	CCollisionMgr::Collision(m_listGameObject[OBJECTINFO::BOSS], m_listGameObject[OBJECTINFO::PLAYER]);
 	CCollisionMgr::Collision(m_listGameObject[OBJECTINFO::ENEMY], m_listGameObject[OBJECTINFO::PLAYER_BULLET]);
 	CCollisionMgr::Collision(m_listGameObject[OBJECTINFO::ENEMY_BULLET], m_listGameObject[OBJECTINFO::PLAYER]);
 	CCollisionMgr::Collision(m_listGameObject[OBJECTINFO::COLLISION], m_listGameObject[OBJECTINFO::PLAYER]);
 	CCollisionMgr::Collision_Ex(m_listGameObject[OBJECTINFO::ENEMY], m_listGameObject[OBJECTINFO::PLAYER_BULLET]);
 	CCollisionMgr::Collision_Ex(m_listGameObject[OBJECTINFO::ENEMY], m_listGameObject[OBJECTINFO::PLAYER]);
+	CCollisionMgr::Collision_Ex(m_listGameObject[OBJECTINFO::BOSS], m_listGameObject[OBJECTINFO::PLAYER]);
 
 	
 
@@ -133,4 +135,16 @@ CGameObject * CGameObject_Manager::Get_Player()
 	if (m_listGameObject[OBJECTINFO::PLAYER].empty())
 		return nullptr;
 	return m_listGameObject[OBJECTINFO::PLAYER].front();
+}
+
+CGameObject * CGameObject_Manager::Get_Boss()
+{
+	if (m_listGameObject[OBJECTINFO::BOSS].empty())
+		return nullptr;
+	return m_listGameObject[OBJECTINFO::BOSS].front();
+}
+
+list<CGameObject*>& CGameObject_Manager::Get_EnemyList()
+{
+	return m_listGameObject[OBJECTINFO::ENEMY];
 }

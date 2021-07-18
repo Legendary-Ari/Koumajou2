@@ -80,7 +80,7 @@ void CRuler_Sword::UpdateBodyCollision()
 	_vec2 v2Radius = { (float)((rect.right - rect.left) * 0.5f), (float)((rect.bottom - rect.top) * 0.5f) };
 	for (UINT i = 0; i < m_vecBodyCollision.size(); ++i)
 	{
-		_vec3 vColPos = m_tInfo.vPos + vToThis * (static_cast<float>(i)-2.f) * fDistance / m_vecBodyCollision.size();
+		_vec3 vColPos = m_tInfo.vPos + vToThis * (static_cast<float>((int)i)-2.f) * fDistance / m_vecBodyCollision.size();
 		m_vecBodyCollision[i].tFRect =
 		{
 			(float)(vColPos.x - v2Radius.x * fReduceSize * m_tInfo.vSize.x),

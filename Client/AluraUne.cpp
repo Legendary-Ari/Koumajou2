@@ -93,6 +93,7 @@ int CAluraUne::Update_GameObject()
 
 	UpdatePattern();
 
+	return OBJ_NOEVENT;
 }
 
 void CAluraUne::Late_Update_GameObject()
@@ -243,6 +244,8 @@ void CAluraUne::UpdateState()
 
 void CAluraUne::UpdateAnimation()
 {
+	if (m_bTimeStop)
+		return;
 	m_fAnimationCumulatedTime += CTime_Manager::Get_Instance()->Get_DeltaTime();
 	if (m_fAnimationCumulatedTime > m_vecAnimation[m_eCurState]->fPlay_Speed)
 	{

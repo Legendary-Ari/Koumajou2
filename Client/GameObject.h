@@ -32,6 +32,7 @@ public:
 	inline const bool& Get_IsBlockable() const { return m_bBlockable; }
 	inline const bool& Get_IsOverlapable() const { return m_bOverlapable; }
 	inline const float& Get_Damage() const { return m_pObjectInfo->fAtk; }
+	inline const float& Get_Hp() const { return m_fCurHp; }
 	
 protected:
 	virtual void UpdateState();

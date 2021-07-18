@@ -21,12 +21,14 @@ public:
 
 	void			Set_Active(bool _bActive);
 	void			Set_Fliped(bool _bFliped);
+	void			Set_TimeStop(bool _bStop);
 protected:
 	virtual void UpdateGravity() override;
 	virtual bool UpdateActive();
 	virtual void UpdatePattern();
 	virtual void UpdateActionCoolDown();
 	virtual void UpdateAnimation() override;
+	virtual void RenderDieEffect(_vec3 _vPos);
 protected:
 	bool	m_bActived;
 	bool	m_bHit;
@@ -36,5 +38,6 @@ protected:
 	float	m_fMaxAttackCoolDownTime;
 	float	m_fJumpPower;
 	float	m_fAttackWakeDistance;
+	bool	m_bTimeStop;
 };
 

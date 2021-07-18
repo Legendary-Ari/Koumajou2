@@ -28,8 +28,8 @@ CGameObject * CStageUi::Create()
 HRESULT CStageUi::Ready_GameObject()
 {
 	m_tInfo.vPos = { 154.f, 36.f, 0.f };
-	m_vHpBarInfo.vPos = { 115.f, 20.0f, 0.f };
-	m_vHpBarInfo.vSize = { 6.f,0.75f,0.f };
+	m_tHpBarInfo.vPos = { 115.f, 20.0f, 0.f };
+	m_tHpBarInfo.vSize = { 6.f,0.75f,0.f };
 	m_vMPBarInfo.vPos = { 117.f, 28.0f, 0.f };
 	m_vMPBarInfo.vSize = { 0.75f,0.75f,0.f };
 	m_vRingInfo.vPos = { 0.f, 0.f, 0.f };
@@ -62,11 +62,11 @@ int CStageUi::Update_GameObject()
 
 void CStageUi::Late_Update_GameObject()
 {
-	m_vHpBarInfo.vSize.x = 6.f * 0.01f * (*m_pCurHp);
-	if (m_vHpBarInfo.vSize.x < 0)
-		m_vHpBarInfo.vSize.x = 0;
+	m_tHpBarInfo.vSize.x = 6.f * 0.01f * (*m_pCurHp);
+	if (m_tHpBarInfo.vSize.x < 0)
+		m_tHpBarInfo.vSize.x = 0;
 	if (m_vMPBarInfo.vSize.x < 0)
-		m_vHpBarInfo.vSize.x = 0;
+		m_tHpBarInfo.vSize.x = 0;
 }
 
 void CStageUi::Render_GameObject()
@@ -109,8 +109,8 @@ void CStageUi::RenderHp()
 	D3DXVECTOR3 vScroll = CScroll_Manager::Get_Scroll();
 
 	D3DXMATRIX matScale, matTrans, matWorld;
-	D3DXMatrixScaling(&matScale, m_vHpBarInfo.vSize.x, m_vHpBarInfo.vSize.y, 0.f);
-	D3DXMatrixTranslation(&matTrans, m_vHpBarInfo.vPos.x, m_vHpBarInfo.vPos.y, 0.f);
+	D3DXMatrixScaling(&matScale, m_tHpBarInfo.vSize.x, m_tHpBarInfo.vSize.y, 0.f);
+	D3DXMatrixTranslation(&matTrans, m_tHpBarInfo.vPos.x, m_tHpBarInfo.vPos.y, 0.f);
 	matWorld = matScale * matTrans;
 	const RECT& rect = pObjectInfo->tRect;
 	float 	fCenterX = 0.f;
@@ -164,7 +164,7 @@ void CStageUi::RenderRing()
 
 void CStageUi::RenderIcon()
 {
-	for (int i = 0; i < m_uiIconMount; ++i)
+	for (UINT i = 0; i < m_uiIconMount; ++i)
 	{
 		const OBJECTINFO* pObjectInfo = CPrefab_Manager::Get_Instance()->Get_ObjectPrefab(L"StageWeaponIcon");
 		const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()->Get_TexInfo(pObjectInfo->wstrObjectImage_ObjectKey);

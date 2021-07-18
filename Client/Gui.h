@@ -8,7 +8,9 @@ public:
 public:
 	virtual ~CGui();
 public:
-
+	
 protected:
 };
 
+
+//virtual inline const RENDERID::ID& Get_RenderId() const { return RENDERID::UI; }

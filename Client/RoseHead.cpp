@@ -136,7 +136,7 @@ void CRoseHead::Render_GameObject()
 	const RECT& tRenderRect = m_vecAnimation[0]->vecRect[m_uiAnimationFrame];
 	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
 	D3DCOLOR tColor;
-	if (m_bHit)
+	if (m_bHit || m_bDead)
 		tColor= D3DCOLOR_ARGB(255, 100, 100, 100);
 	else
 		tColor = D3DCOLOR_ARGB(255, 255, 255, 255);

@@ -59,7 +59,7 @@ int CRoseStem::Update_GameObject()
 {
 	if (m_bDestroyed)
 		return OBJ_DESTROYED;
-	if (!UpdateActive())
+	if (!m_bActived || m_bTimeStop)
 		return OBJ_NOEVENT;
 	float fDeltaTime = CTime_Manager::Get_Instance()->Get_DeltaTime();
 	if (m_bDead)
@@ -145,7 +145,7 @@ void CRoseStem::Set_OrbitRadius(float _fOrbitRadius)
 
 void CRoseStem::UpdateAttackCollision()
 {
-	if (!m_bDead)
+	if (m_bDead)
 		return;
 	float fSizeX = m_tInfo.vSize.x;
 	float fSizeY = m_tInfo.vSize.y;

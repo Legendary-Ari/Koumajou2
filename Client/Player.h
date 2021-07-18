@@ -28,7 +28,7 @@ public:
 	virtual void	Set_OnGround(bool _b) override;
 	virtual const float* Get_HpPointer() const { return &m_fCurHp; }
 public:
-	static CGameObject* Create(const ACTORINFO* _pActorInfo, const OBJECTINFO* _pPrefab);
+	static CGameObject* Create(const OBJECTINFO* _pPrefab, const INFO& _tInfo);
 
 public:
 	virtual void	OnBlockedTile(CGameObject* pHitObject, DIRECTION::ID _eId)override;
@@ -42,7 +42,6 @@ private:
 	
 	void	UpdateMoveWithPressKey();
 	void	Offset();
-	
 private:
 	const OBJECTINFO*	m_pBulletInfo;
 	vector<COLLISION> m_vecBodyTileCollision;
@@ -63,7 +62,7 @@ private:
 	const float	m_fJumpMaxTime;
 	const float m_fMaxKnifeTime;
 
-	const CVSkill*	m_pVSkill[SKILL_END];
+	CVSkill*	m_pVSkill[SKILL_END];
 
 };
 

@@ -26,6 +26,7 @@ using namespace std;
 #include "Key_Manager.h"
 #include "Scroll_Manager.h"
 #include "Prefab_Manager.h"
+#include "Game_Manager.h"
 #else
 
 #include "EnumToString.h"

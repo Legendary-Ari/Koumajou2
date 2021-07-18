@@ -146,6 +146,7 @@ void CGameObject::UpdateGravity()
 
 void CGameObject::RenderCollision()
 {
+#ifdef _DEBUG
 	if (!m_bRenderCollision)
 		return;
 	CGraphic_Device::Get_Instance()->Get_Sprite()->End();
@@ -264,7 +265,7 @@ void CGameObject::RenderCollision()
 	_vec3 vScroll = CScroll_Manager::Get_Scroll();
 
 	DEBUG_STRING(L" HP : %f", m_fCurHp,m_tInfo.vPos.x + vScroll.x, m_tInfo.vPos.y + vScroll.y)
-
+#endif //_DEBUG
 }
 
 void CGameObject::RenderDieEffect(_vec3 _vPos)

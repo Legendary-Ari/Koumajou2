@@ -10,6 +10,7 @@ CEnemy::CEnemy()
 	, m_fHitCumulatedTime(0.f)
 	, m_fActionCoolDownRemainTime(0.f)
 	, m_fMaxAttackCoolDownTime(3.f)
+	, m_bTimeStop(false)
 {
 }
 
@@ -125,6 +126,11 @@ void CEnemy::Set_Fliped(bool _bFliped)
 	m_bFliped = _bFliped;
 }
 
+void CEnemy::Set_TimeStop(bool _bStop)
+{
+	m_bTimeStop = _bStop;
+}
+
 void CEnemy::UpdateGravity()
 {
 	float fDeltaTime = CTime_Manager::Get_Instance()->Get_DeltaTime();
@@ -136,6 +142,22 @@ void CEnemy::UpdateGravity()
 
 bool CEnemy::UpdateActive()
 {
+	if (m_bTimeStop)
+	{
+		if (m_bHit)
+		{
+			m_fHitCumulatedTime += CTime_Manager::Get_Instance()->Get_DeltaTime();
+			ZeroMemory(&m_vecBodyCollision[0].tFRect, sizeof(FRECT));
+			if (m_fHitCumulatedTime >= m_fHitMaxTime)
+			{
+				m_bHit = false;
+				m_fHitCumulatedTime = 0;
+			}
+
+		}
+		return false;
+	}
+
 	if (m_bActived)
 		return m_bActived;
 	_vec3 vDiff = CGameObject_Manager::Get_Instance()->Get_Player()->Get_Info().vPos - m_tInfo.vPos;
@@ -168,4 +190,11 @@ void CEnemy::UpdateAnimation()
 		m_fAnimationCumulatedTime = 0.f;
 	}
 	
+}
+
+void CEnemy::RenderDieEffect(_vec3 _vPos)
+{
+	if (m_bTimeStop)
+		return;
+	CGameObject::RenderDieEffect(_vPos);
 }

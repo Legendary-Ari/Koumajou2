@@ -151,12 +151,17 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AliceBBlue.h" />
     <ClInclude Include="AluraUne.h" />
     <ClInclude Include="AluraUneGEffrect.h" />
     <ClInclude Include="AluraUneProjectile.h" />
     <ClInclude Include="BackCollision.h" />
     <ClInclude Include="BackGround.h" />
+    <ClInclude Include="BAliceDoll.h" />
+    <ClInclude Include="BGSelectCastle.h" />
     <ClInclude Include="BossAlice.h" />
+    <ClInclude Include="BossHpUi.h" />
+    <ClInclude Include="BossSkillEffect.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="CollisionMgr.h" />
@@ -171,6 +176,7 @@
     <ClInclude Include="Item.h" />
     <ClInclude Include="Key_Manager.h" />
     <ClInclude Include="Knife.h" />
+    <ClInclude Include="LunaDial.h" />
     <ClInclude Include="MainApp.h" />
     <ClInclude Include="Multi_Texture.h" />
     <ClInclude Include="MyMath.h" />
@@ -186,6 +192,7 @@
     <ClInclude Include="Ruler_Sword.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneChanger.h" />
+    <ClInclude Include="SceneWeaponSelect.h" />
     <ClInclude Include="Scene_Manager.h" />
     <ClInclude Include="Scroll_Manager.h" />
     <ClInclude Include="Single_Texture.h" />
@@ -203,14 +210,28 @@
     <ClInclude Include="Une.h" />
     <ClInclude Include="VKnife.h" />
     <ClInclude Include="VSkill.h" />
+    <ClInclude Include="VS_Alice.h" />
+    <ClInclude Include="VS_Clock.h" />
+    <ClInclude Include="VS_Flandre.h" />
+    <ClInclude Include="VS_Meling.h" />
+    <ClInclude Include="VS_Patchuri.h" />
+    <ClInclude Include="VS_Reimu.h" />
+    <ClInclude Include="WeaponSelectCursor.h" />
+    <ClInclude Include="WeaponSelectedUi.h" />
+    <ClInclude Include="WeaponSelectUi.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AliceBBlue.cpp" />
     <ClCompile Include="AluraUne.cpp" />
     <ClCompile Include="AluraUneGEffrect.cpp" />
     <ClCompile Include="AluraUneProjectile.cpp" />
     <ClCompile Include="BackCollision.cpp" />
     <ClCompile Include="BackGround.cpp" />
+    <ClCompile Include="BAliceDoll.cpp" />
+    <ClCompile Include="BGSelectCastle.cpp" />
     <ClCompile Include="BossAlice.cpp" />
+    <ClCompile Include="BossHpUi.cpp" />
+    <ClCompile Include="BossSkillEffect.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="CollisionMgr.cpp" />
@@ -225,6 +246,7 @@
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="Key_Manager.cpp" />
     <ClCompile Include="Knife.cpp" />
+    <ClCompile Include="LunaDial.cpp" />
     <ClCompile Include="MainApp.cpp" />
     <ClCompile Include="Multi_Texture.cpp" />
     <ClCompile Include="MyMath.cpp" />
@@ -239,6 +261,7 @@
     <ClCompile Include="Ruler_Sword.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneChanger.cpp" />
+    <ClCompile Include="SceneWeaponSelect.cpp" />
     <ClCompile Include="Scene_Manager.cpp" />
     <ClCompile Include="Scroll_Manager.cpp" />
     <ClCompile Include="Single_Texture.cpp" />
@@ -260,6 +283,15 @@
     <ClCompile Include="Une.cpp" />
     <ClCompile Include="VKnife.cpp" />
     <ClCompile Include="VSkill.cpp" />
+    <ClCompile Include="VS_Alice.cpp" />
+    <ClCompile Include="VS_Clock.cpp" />
+    <ClCompile Include="VS_Flandre.cpp" />
+    <ClCompile Include="VS_Meling.cpp" />
+    <ClCompile Include="VS_Patchuri.cpp" />
+    <ClCompile Include="VS_Reimu.cpp" />
+    <ClCompile Include="WeaponSelectCursor.cpp" />
+    <ClCompile Include="WeaponSelectedUi.cpp" />
+    <ClCompile Include="WeaponSelectUi.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc" />

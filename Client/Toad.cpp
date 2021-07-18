@@ -310,6 +310,8 @@ void CToad::UpdateState()
 
 void CToad::UpdateAnimation()
 {
+	if (m_bTimeStop)
+		return;
 	m_fAnimationCumulatedTime += CTime_Manager::Get_Instance()->Get_DeltaTime();
 	if (m_fAnimationCumulatedTime > m_vecAnimation[m_eCurState]->fPlay_Speed)
 	{

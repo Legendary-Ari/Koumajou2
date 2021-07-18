@@ -4,11 +4,13 @@ class CVSkill abstract
 	:public CGameObject
 {
 public:
+	enum SKILL_ID { KNIFE, CLOCK, MEILING, ALICE, PATCHURI, REIMU, FLANDRE, SKILL_END };
+public:
 	explicit CVSkill();
 	virtual ~CVSkill();
 public:
 	virtual void Use(const INFO& tInfo)PURE;
-private:
-	OBJECTINFO* m_pObjectInfo;
+	virtual void Render_GameObject();
+	inline virtual const RENDERID::ID& Get_RenderId() const { return RENDERID::UI2; }
 };
 

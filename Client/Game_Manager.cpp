@@ -2,7 +2,7 @@
 #include "Game_Manager.h"
 #include "VKnife.h"
 
-
+IMPLEMENT_SINGLETON(CGame_Manager)
 CGame_Manager::CGame_Manager()
 {
 }

@@ -63,10 +63,11 @@ void CPillor::Render_GameObject()
 	D3DXMatrixRotationZ(&matRotZ, D3DXToRadian(-m_tInfo.fAngle));
 	D3DXMatrixTranslation(&matTrans, m_tInfo.vPos.x + vScroll.x, m_tInfo.vPos.y + vScroll.y, 0.f);
 	matWorld = matScale *matRotZ* matTrans;
-	float fCenterX = float(pTexInfo->tImageInfo.Width >> 1);
-	float fCenterY = float(pTexInfo->tImageInfo.Height >> 1);
+	const RECT& rect = m_pObjectInfo->tRect;
+	float 	fCenterX = float(((rect.right - rect.left)*0.5f));
+	float 	fCenterY = float(((rect.bottom - rect.top) * 0.5f));
 	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
-	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, nullptr, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
+	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, &rect, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
 	RenderCollision();
 }
 

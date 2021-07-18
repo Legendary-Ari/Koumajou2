@@ -14,6 +14,8 @@ public:
 	void Release_GameObject_Manager(); 
 	void Release_StageObject();
 	CGameObject* Get_Player();
+	CGameObject* Get_Boss();
+	list<CGameObject*>& Get_EnemyList();
 	const list<CGameObject*>& Get_BackGroundObject() { return m_listGameObject[OBJECTINFO::BACKGROUND]; }
 private:
 	list<CGameObject*> m_listGameObject[OBJECTINFO::OBJID_END]; 

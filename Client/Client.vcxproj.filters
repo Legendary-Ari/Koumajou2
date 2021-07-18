@@ -139,6 +139,54 @@
     <Filter Include="01.GameObject\01.BackCollision\01.Pillor">
       <UniqueIdentifier>{a06b6f95-0b26-4ec9-9ec2-2780e56ee2b9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.GameObject\09.Boss\Alice">
+      <UniqueIdentifier>{94ad5cd8-44c6-48c5-b75a-0e3673b9c80d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\09.Boss\Alice\Blue">
+      <UniqueIdentifier>{af4bac88-0635-4f50-b7c9-b2792e800463}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\09.Boss\Alice\Doll">
+      <UniqueIdentifier>{63f964c5-45c3-4131-84a2-b95b792feee9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\09.Boss\Effect">
+      <UniqueIdentifier>{c4124f27-39d5-4092-ace0-373068746118}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\05.Gui\BossUi">
+      <UniqueIdentifier>{820afd3c-b453-4ab5-8222-8f1b3d8a8b4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\05.Gui\WeaponSelectUi">
+      <UniqueIdentifier>{51a44e37-a804-4577-b918-586b125d1ce5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\04.BackGround\SelectBGCastle">
+      <UniqueIdentifier>{561810b7-f61c-4d35-915f-d4a34f04ee79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Scene\Stage\WeaponSelect">
+      <UniqueIdentifier>{e591c155-2169-47eb-b039-839942df8c4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\05.Gui\WeaponSelectCursor">
+      <UniqueIdentifier>{32d1f657-890e-497c-897d-fb8b32d5af2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\00.Player\01.VSkill\VS_Clock">
+      <UniqueIdentifier>{ee1a1f98-9725-42b4-b047-424bfffe0827}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\00.Player\01.VSkill\VS_Meling">
+      <UniqueIdentifier>{0ccbfc8a-8937-4776-9d06-d7b97e1679b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\00.Player\01.VSkill\VS_Alice">
+      <UniqueIdentifier>{157f8e94-37f9-4878-9023-344b46d3ab2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\00.Player\01.VSkill\VS_Patchuri">
+      <UniqueIdentifier>{7aadb6c3-cfa0-407b-b474-057b743073dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\00.Player\01.VSkill\VS_Reimu">
+      <UniqueIdentifier>{0259b2a2-e6b5-4f89-a27c-89b13550eee0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\00.Player\01.VSkill\VS_Flandre">
+      <UniqueIdentifier>{1c73832d-f113-4c4f-b6b3-655b2a5d2fb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\05.Gui\WeaponSelectedUi">
+      <UniqueIdentifier>{045893eb-e5ba-4082-b869-4e2156f9c3c8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -288,15 +336,61 @@
     <ClInclude Include="Stage1_4.h">
       <Filter>03.Scene\Stage\Stage1</Filter>
     </ClInclude>
-    <ClInclude Include="BossAlice.h">
-      <Filter>01.GameObject\09.Boss</Filter>
-    </ClInclude>
     <ClInclude Include="SceneChanger.h">
       <Filter>01.GameObject\08.SceneChanger</Filter>
     </ClInclude>
     <ClInclude Include="Pillor.h">
       <Filter>01.GameObject\01.BackCollision\01.Pillor</Filter>
     </ClInclude>
+    <ClInclude Include="BossAlice.h">
+      <Filter>01.GameObject\09.Boss\Alice</Filter>
+    </ClInclude>
+    <ClInclude Include="AliceBBlue.h">
+      <Filter>01.GameObject\09.Boss\Alice\Blue</Filter>
+    </ClInclude>
+    <ClInclude Include="BAliceDoll.h">
+      <Filter>01.GameObject\09.Boss\Alice\Doll</Filter>
+    </ClInclude>
+    <ClInclude Include="BossSkillEffect.h">
+      <Filter>01.GameObject\09.Boss\Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="BossHpUi.h">
+      <Filter>01.GameObject\05.Gui\BossUi</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneWeaponSelect.h">
+      <Filter>03.Scene\Stage\WeaponSelect</Filter>
+    </ClInclude>
+    <ClInclude Include="WeaponSelectUi.h">
+      <Filter>01.GameObject\05.Gui\WeaponSelectUi</Filter>
+    </ClInclude>
+    <ClInclude Include="BGSelectCastle.h">
+      <Filter>01.GameObject\04.BackGround\SelectBGCastle</Filter>
+    </ClInclude>
+    <ClInclude Include="WeaponSelectCursor.h">
+      <Filter>01.GameObject\05.Gui\WeaponSelectCursor</Filter>
+    </ClInclude>
+    <ClInclude Include="VS_Clock.h">
+      <Filter>01.GameObject\00.Player\01.VSkill\VS_Clock</Filter>
+    </ClInclude>
+    <ClInclude Include="VS_Meling.h">
+      <Filter>01.GameObject\00.Player\01.VSkill\VS_Meling</Filter>
+    </ClInclude>
+    <ClInclude Include="VS_Alice.h">
+      <Filter>01.GameObject\00.Player\01.VSkill\VS_Alice</Filter>
+    </ClInclude>
+    <ClInclude Include="VS_Patchuri.h">
+      <Filter>01.GameObject\00.Player\01.VSkill\VS_Patchuri</Filter>
+    </ClInclude>
+    <ClInclude Include="VS_Reimu.h">
+      <Filter>01.GameObject\00.Player\01.VSkill\VS_Reimu</Filter>
+    </ClInclude>
+    <ClInclude Include="VS_Flandre.h">
+      <Filter>01.GameObject\00.Player\01.VSkill\VS_Flandre</Filter>
+    </ClInclude>
+    <ClInclude Include="WeaponSelectedUi.h">
+      <Filter>01.GameObject\05.Gui\WeaponSelectedUi</Filter>
+    </ClInclude>
+    <ClInclude Include="LunaDial.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -440,15 +534,61 @@
     <ClCompile Include="Stage1_4.cpp">
       <Filter>03.Scene\Stage\Stage1</Filter>
     </ClCompile>
-    <ClCompile Include="BossAlice.cpp">
-      <Filter>01.GameObject\09.Boss</Filter>
-    </ClCompile>
     <ClCompile Include="SceneChanger.cpp">
       <Filter>01.GameObject\08.SceneChanger</Filter>
     </ClCompile>
     <ClCompile Include="Pillor.cpp">
       <Filter>01.GameObject\01.BackCollision\01.Pillor</Filter>
     </ClCompile>
+    <ClCompile Include="BossAlice.cpp">
+      <Filter>01.GameObject\09.Boss\Alice</Filter>
+    </ClCompile>
+    <ClCompile Include="AliceBBlue.cpp">
+      <Filter>01.GameObject\09.Boss\Alice\Blue</Filter>
+    </ClCompile>
+    <ClCompile Include="BAliceDoll.cpp">
+      <Filter>01.GameObject\09.Boss\Alice\Doll</Filter>
+    </ClCompile>
+    <ClCompile Include="BossSkillEffect.cpp">
+      <Filter>01.GameObject\09.Boss\Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="BossHpUi.cpp">
+      <Filter>01.GameObject\05.Gui\BossUi</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneWeaponSelect.cpp">
+      <Filter>03.Scene\Stage\WeaponSelect</Filter>
+    </ClCompile>
+    <ClCompile Include="WeaponSelectUi.cpp">
+      <Filter>01.GameObject\05.Gui\WeaponSelectUi</Filter>
+    </ClCompile>
+    <ClCompile Include="BGSelectCastle.cpp">
+      <Filter>01.GameObject\04.BackGround\SelectBGCastle</Filter>
+    </ClCompile>
+    <ClCompile Include="WeaponSelectCursor.cpp">
+      <Filter>01.GameObject\05.Gui\WeaponSelectCursor</Filter>
+    </ClCompile>
+    <ClCompile Include="VS_Clock.cpp">
+      <Filter>01.GameObject\00.Player\01.VSkill\VS_Clock</Filter>
+    </ClCompile>
+    <ClCompile Include="VS_Meling.cpp">
+      <Filter>01.GameObject\00.Player\01.VSkill\VS_Meling</Filter>
+    </ClCompile>
+    <ClCompile Include="VS_Alice.cpp">
+      <Filter>01.GameObject\00.Player\01.VSkill\VS_Alice</Filter>
+    </ClCompile>
+    <ClCompile Include="VS_Patchuri.cpp">
+      <Filter>01.GameObject\00.Player\01.VSkill\VS_Patchuri</Filter>
+    </ClCompile>
+    <ClCompile Include="VS_Reimu.cpp">
+      <Filter>01.GameObject\00.Player\01.VSkill\VS_Reimu</Filter>
+    </ClCompile>
+    <ClCompile Include="VS_Flandre.cpp">
+      <Filter>01.GameObject\00.Player\01.VSkill\VS_Flandre</Filter>
+    </ClCompile>
+    <ClCompile Include="WeaponSelectedUi.cpp">
+      <Filter>01.GameObject\05.Gui\WeaponSelectedUi</Filter>
+    </ClCompile>
+    <ClCompile Include="LunaDial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">

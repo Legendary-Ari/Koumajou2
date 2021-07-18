@@ -557,10 +557,10 @@ void CAnimationTool::OnBnClickedDeleteAnimationList()
 	auto& iter_find = m_mapAnima.find(wstrFindName);
 
 	Safe_Delete(iter_find->second);
-	m_mapAnima.erase(iter_find);
+	
 
 	m_Animation_ListBox.DeleteString(iIndex);
-	m_pSelectedAnimation = iter_find->second;
+	m_pSelectedAnimation = m_mapAnima.erase(iter_find)->second;
 
 	UpdateData(FALSE);
 }

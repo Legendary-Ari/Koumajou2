@@ -25,7 +25,7 @@ private:
 	void	RenderChiText();
 	void	RenderLifeText();
 private:
-	INFO	m_vHpBarInfo;
+	INFO	m_tHpBarInfo;
 	INFO	m_vMPBarInfo;
 	INFO	m_vRingInfo;
 	INFO	m_vIconInfo[3];

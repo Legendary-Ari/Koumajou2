@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Scene_Manager.h"
+#include "SceneWeaponSelect.h"
 #include "Stage1_1.h"
 #include "Stage1_4.h"
 IMPLEMENT_SINGLETON(CScene_Manager)
@@ -27,7 +28,10 @@ HRESULT CScene_Manager::Change_Scene_Manager(const ID eID)
 		{
 		case CScene_Manager::SCENE_LOADING:
 			break;
-		case CScene_Manager::SCENE_STAGE:
+		case CScene_Manager::MENU:
+			break;
+		case CScene_Manager::SELECT:
+			m_pScene = CSceneWeaponSelect::Create();
 			break;
 		case CScene_Manager::STAGE_1_1:
 			m_pScene = CStage1_1::Create();
@@ -35,8 +39,12 @@ HRESULT CScene_Manager::Change_Scene_Manager(const ID eID)
 		case CScene_Manager::STAGE_1_4:
 			m_pScene = CStage1_4::Create();
 			break;
-		case CScene_Manager::END:
-			break;
+		//case CScene_Manager::STAGE_2_1:
+		//	m_pScene = CStage2_1::Create();
+		//	break;
+		//case CScene_Manager::STAGE_2_4:
+		//	m_pScene = CStage2_4::Create();
+		//	break;
 		default:
 			m_pScene = CStage1_1::Create();
 			break;
