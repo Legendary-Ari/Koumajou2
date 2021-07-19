@@ -37,6 +37,7 @@ void CGameObject_Manager::InitUpdate_GameObject_Manager()
 
 void CGameObject_Manager::Update_GameObject_Manager()
 {
+	CCollisionMgr::PlayerCheckBottom();
 	for (int i = 0 ; i < OBJECTINFO::OBJID_END; ++i)
 	{
 		for (auto& iter = m_listGameObject[i].begin() ; iter != m_listGameObject[i].end() ; )
@@ -60,6 +61,7 @@ void CGameObject_Manager::Update_GameObject_Manager()
 	CCollisionMgr::Collision(m_listGameObject[OBJECTINFO::ENEMY], m_listGameObject[OBJECTINFO::PLAYER]);
 	CCollisionMgr::Collision(m_listGameObject[OBJECTINFO::BOSS], m_listGameObject[OBJECTINFO::PLAYER]);
 	CCollisionMgr::Collision(m_listGameObject[OBJECTINFO::ENEMY], m_listGameObject[OBJECTINFO::PLAYER_BULLET]);
+	CCollisionMgr::Collision(m_listGameObject[OBJECTINFO::BOSS], m_listGameObject[OBJECTINFO::PLAYER_BULLET]);
 	CCollisionMgr::Collision(m_listGameObject[OBJECTINFO::ENEMY_BULLET], m_listGameObject[OBJECTINFO::PLAYER]);
 	CCollisionMgr::Collision(m_listGameObject[OBJECTINFO::COLLISION], m_listGameObject[OBJECTINFO::PLAYER]);
 	CCollisionMgr::Collision_Ex(m_listGameObject[OBJECTINFO::ENEMY], m_listGameObject[OBJECTINFO::PLAYER_BULLET]);
@@ -119,7 +121,7 @@ void CGameObject_Manager::Release_StageObject()
 {
 	for (int i = 0; i < OBJECTINFO::OBJID_END; ++i)
 	{
-		if (i == OBJECTINFO::PLAYER)
+		if (i == OBJECTINFO::PLAYER || i == OBJECTINFO::VSKILL)
 			continue;
 		for (auto& pObject : m_listGameObject[i])
 		{

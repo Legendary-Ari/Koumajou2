@@ -18,6 +18,6 @@ public:
 	virtual void Use(const INFO& tInfo) override;
 
 private:
-	OBJECTINFO* m_pBulletInfo;
+	const OBJECTINFO* m_pBulletInfo;
 };
 

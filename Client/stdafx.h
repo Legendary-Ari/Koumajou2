@@ -26,10 +26,15 @@
 // D3DVECTOR; 
 // D3DXVECTOR3; 
 
+///////////////////////////////////////////////////////////////////////////
+// »ç¿îµå
+#include <io.h>
+#include "fmod.h"
+#pragma comment (lib, "fmodex_vc.lib")
+
 
 #include "Headers.h"
 #include "MyMath.h"
-
 
 
 

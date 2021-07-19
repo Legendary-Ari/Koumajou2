@@ -16,6 +16,9 @@ public:
 	virtual void Late_Update_GameObject() override;
 	virtual void Release_GameObject() override;
 	virtual void Use(const INFO& tInfo) override;
+
+	void	ReleaseCoolDown();
 private:
+	bool	m_bCoolDown;
 };
 

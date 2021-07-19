@@ -67,9 +67,25 @@ int CRoseHead::Update_GameObject()
 {
 	if (m_bDestroyed)
 		return OBJ_DESTROYED;
-	if (!UpdateActive())
-		return OBJ_NOEVENT;
 	float fDeltaTime = CTime_Manager::Get_Instance()->Get_DeltaTime();
+	if (m_bHit)
+	{
+		if(!m_bDead)
+			static_cast<CEnemy*>(m_pRose)->Set_Hit(true);
+		m_fHitCumulatedTime += fDeltaTime;
+		if (m_fHitCumulatedTime >= m_fHitMaxTime)
+		{
+			m_bHit = false;
+			m_fHitCumulatedTime = 0;
+		}
+		else
+		{
+			return OBJ_NOEVENT;
+		}
+	}
+	if (!m_bActived || m_bTimeStop)
+		return OBJ_NOEVENT;
+
 	if (m_bDead)
 	{
 		if (m_bDieInit)
@@ -83,6 +99,7 @@ int CRoseHead::Update_GameObject()
 			if (m_pRose)
 			{
 				static_cast<CEnemy*>(m_pRose)->Set_Die();
+				m_pRose = nullptr;
 			}				
 		}
 		UpdateGravity();
@@ -90,20 +107,7 @@ int CRoseHead::Update_GameObject()
 		
 		return OBJ_NOEVENT;
 	}
-	if (m_bHit)
-	{
-		static_cast<CEnemy*>(m_pRose)->Set_Hit(true);
-		m_fHitCumulatedTime += fDeltaTime;
-		if (m_fHitCumulatedTime >= m_fHitMaxTime)
-		{
-			m_bHit = false;
-			m_fHitCumulatedTime = 0;
-		}
-		else
-		{
-			return OBJ_NOEVENT;
-		}
-	}
+	
 	m_tInfo.fAngle += fDeltaTime * 100.f;
 	m_tInfo.vPos = m_vCenterPos + _vec3{ m_fOrbitRadius * cosf(D3DXToRadian (-m_tInfo.fAngle)), m_fOrbitRadius * sinf(D3DXToRadian (-m_tInfo.fAngle)), 0.f };
 	
@@ -116,7 +120,6 @@ void CRoseHead::Late_Update_GameObject()
 {
 	UpdateTileCollision();
 	UpdateBodyCollision();
-	
 }
 
 void CRoseHead::Render_GameObject()

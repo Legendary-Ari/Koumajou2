@@ -52,5 +52,6 @@ void CVKnife::Release_GameObject()
 
 void CVKnife::Use(const INFO& tInfo)
 {
-	
+	m_pBulletInfo = CPrefab_Manager::Get_Instance()->Get_ObjectPrefab(L"Sakuya_Knife");
+	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)m_pBulletInfo->eObjId, CKnife::Create(m_pBulletInfo, tInfo.vPos, tInfo.fAngle));
 }

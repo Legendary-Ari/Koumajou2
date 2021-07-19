@@ -30,8 +30,8 @@ HRESULT CStageUi::Ready_GameObject()
 	m_tInfo.vPos = { 154.f, 36.f, 0.f };
 	m_tHpBarInfo.vPos = { 115.f, 20.0f, 0.f };
 	m_tHpBarInfo.vSize = { 6.f,0.75f,0.f };
-	m_vMPBarInfo.vPos = { 117.f, 28.0f, 0.f };
-	m_vMPBarInfo.vSize = { 0.75f,0.75f,0.f };
+	m_tMPBarInfo.vPos = { 117.f, 28.0f, 0.f };
+	m_tMPBarInfo.vSize = { 0.75f,0.75f,0.f };
 	m_vRingInfo.vPos = { 0.f, 0.f, 0.f };
 	m_vRingInfo.vSize = { 0.75f, 0.75f, 0.f };
 	for (int i = 0; i < 3; ++i)
@@ -53,6 +53,7 @@ HRESULT CStageUi::Ready_GameObject()
 void CStageUi::InitUpdate_GameObject()
 {
 	m_pCurHp = static_cast<const CPlayer*>(CGameObject_Manager::Get_Instance()->Get_Player())->Get_HpPointer();
+	m_pCurMp = static_cast<const CPlayer*>(CGameObject_Manager::Get_Instance()->Get_Player())->Get_MpPointer();
 }
 
 int CStageUi::Update_GameObject()
@@ -65,8 +66,9 @@ void CStageUi::Late_Update_GameObject()
 	m_tHpBarInfo.vSize.x = 6.f * 0.01f * (*m_pCurHp);
 	if (m_tHpBarInfo.vSize.x < 0)
 		m_tHpBarInfo.vSize.x = 0;
-	if (m_vMPBarInfo.vSize.x < 0)
-		m_tHpBarInfo.vSize.x = 0;
+	m_tMPBarInfo.vSize.x = 0.75f * 0.01f * (*m_pCurMp);
+	if (m_tMPBarInfo.vSize.x < 0)
+		m_tMPBarInfo.vSize.x = 0;
 }
 
 void CStageUi::Render_GameObject()
@@ -130,8 +132,8 @@ void CStageUi::RenderMp()
 	D3DXVECTOR3 vScroll = CScroll_Manager::Get_Scroll();
 
 	D3DXMATRIX matScale, matTrans, matWorld;
-	D3DXMatrixScaling(&matScale, m_vMPBarInfo.vSize.x, m_vMPBarInfo.vSize.y, 0.f);
-	D3DXMatrixTranslation(&matTrans, m_vMPBarInfo.vPos.x, m_vMPBarInfo.vPos.y, 0.f);
+	D3DXMatrixScaling(&matScale, m_tMPBarInfo.vSize.x, m_tMPBarInfo.vSize.y, 0.f);
+	D3DXMatrixTranslation(&matTrans, m_tMPBarInfo.vPos.x, m_tMPBarInfo.vPos.y, 0.f);
 	matWorld = matScale * matTrans;
 	const RECT& rect = pObjectInfo->tRect;
 	float 	fCenterX = 0.f;

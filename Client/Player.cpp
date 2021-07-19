@@ -23,8 +23,12 @@ CPlayer::CPlayer()
 	, m_fHitCumulateTime(0.f)
 	, m_bHit(false)
 	, m_fInvincibleTimeLength(1.5f)
-	, m_fJumpMaxTime(0.7f)
+	, m_fJumpMaxTime(0.35f)
 	, m_fMaxKnifeTime(0.5f)
+	, m_fKnifeRemainedTime(0.f)
+	, m_bFlyable(true)
+	, m_fCurMp(100)
+	, m_fFlyingSpeed(70.f)
 {
 }
 
@@ -255,10 +259,8 @@ HRESULT CPlayer::Ready_GameObject()
 			case CVSkill::FLANDRE:
 				m_pVSkill[i] = static_cast<CVSkill*>(CVS_Flandre::Create());
 				break;
-			default:
-				break;
 			}
-			CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::UI, m_pVSkill[i]);
+			CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::VSKILL, m_pVSkill[i]);
 
 		}
 
@@ -279,11 +281,10 @@ int CPlayer::Update_GameObject()
 		return OBJ_DESTROYED;
 
 	UpdateMoveWithPressKey();
-	m_bOnGround = false;
-	
+	UpdateJump();
+
 	m_tInfo.vPos += m_tInfo.vDir;
-
-
+	
 	Offset();
 
 	return OBJ_NOEVENT;
@@ -331,6 +332,7 @@ void CPlayer::Render_GameObject()
 	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
 	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, &tRenderRect, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
 	RenderCollision();
+	DEBUG_STRING(L"%d", m_bFlying, 100, 50);
 }
 
 void CPlayer::Release_GameObject()
@@ -347,13 +349,18 @@ void CPlayer::OnBlocked(CGameObject * pHitObject, DIRECTION::ID _eId)
 	m_bJumping = false;
 	m_bFalling = true;
 	m_bOnGround = false;
-	m_fActionRamainedTime = 0;
+	m_bFlying = false;
+	m_fJumpRamainedTime = 0;
 
 }
 
 void CPlayer::Set_OnGround(bool _b)
 {
-	//m_bOnGround = _b;
+	m_bOnGround = _b;
+	if (_b)
+	{
+		m_bFlyable = true;
+	}
 }
 
 CGameObject * CPlayer::Create(const OBJECTINFO* _pPrefab, const INFO& _tInfo )
@@ -372,7 +379,17 @@ CGameObject * CPlayer::Create(const OBJECTINFO* _pPrefab, const INFO& _tInfo )
 
 void CPlayer::OnBlockedTile(CGameObject * pHitObject, DIRECTION::ID _eId)
 {
-	CGameObject::OnBlockedTile(pHitObject, _eId);
+	if (m_bFlying)
+		return;
+	if (!m_bJumping && _eId == DIRECTION::S)
+	{
+		//m_bFlyable = true;
+		//m_fJumpRamainedTime = 0.f;
+		m_bFalling = false;
+		m_bJumping = false;
+		m_tInfo.vDir.y = 0;
+		m_bFlyable = true;
+	}
 }
 
 void CPlayer::OnOverlaped(CGameObject* _pHitObject, _vec3 vHitPos)
@@ -390,12 +407,16 @@ void CPlayer::OnOverlaped(CGameObject* _pHitObject, _vec3 vHitPos)
 	m_bBlockable = false;
 	m_bOverlapable = false;
 	m_bHit = true;
+	m_bFalling = true;
+	m_bFlying = false;
 	m_uiAnimationFrame = 0;
-	m_fActionRamainedTime = 0;
+	m_fJumpRamainedTime = 0;
 }
 
 void CPlayer::UpdateState()
 {
+	if (m_bFlying)
+		m_tInfo.vDir.y = 0;
 	float fDeltaTime = CTime_Manager::Get_Instance()->Get_DeltaTime();
 	if (!m_bBlockable)
 	{
@@ -426,53 +447,45 @@ void CPlayer::UpdateState()
 	float fMoveSpeed = fDeltaTime * m_pObjectInfo->fMoveSpeed;
 	if (!m_bAttacking && !m_bKnifeAttacking)
 	{
-		if (m_tInfo.vDir.y <= -14.0f && m_bJumping)
+
+		if (m_bJumping && m_eCurState != FALLING)
 		{
-			m_bJumping = false;
-			m_bFalling = true;
-			eState = CPlayer::FALLING;
+			if (m_eCurState != FALLING)
+			{
+				if (m_eCurState == U_JUMPING)
+					eState = U_JUMPING;
+				else if (m_eCurState == JUMPING)
+					eState = JUMPING;
+				else if (abs(m_tInfo.vDir.x) < (fMoveSpeed * 0.5f))
+					eState = U_JUMPING;
+				else
+					eState = JUMPING;
+			}
 		}
 		else
 		{
-			if (m_bJumping && m_eCurState != FALLING)
-			{
-				if (m_eCurState != FALLING)
-				{
-					if (m_eCurState == U_JUMPING)
-						eState = U_JUMPING;
-					else if (m_eCurState == JUMPING)
-						eState = JUMPING;
-					else if (abs(m_tInfo.vDir.x) < (fMoveSpeed * 0.5f))
-						eState = U_JUMPING;
-					else
-						eState = JUMPING;
-				}
-			}
+			if (m_bFalling || m_eCurState == FALLING && !m_bOnGround)
+				eState = FALLING;
 			else
 			{
-				if (m_bFalling || m_eCurState == FALLING && !m_bOnGround)
-					eState = FALLING;
+				if (!m_bCrouch && m_eCurState == CROUCH)
+					eState = STANDUP;
+				else if(m_bCrouch)
+					eState = CROUCH;
 				else
 				{
-					if (!m_bCrouch && m_eCurState == CROUCH)
-						eState = STANDUP;
-					else if(m_bCrouch)
-						eState = CROUCH;
-					else
+					if (m_tInfo.vDir.x != 0)
 					{
-						if (m_tInfo.vDir.x != 0)
-						{
-							if (m_bFliped != m_bPrevIsFliped)
-								eState = TURNING;
-							else if (m_eCurState == S_WALKING || m_eCurState == IDLE)
-								eState = S_WALKING;
-							else if (m_bStoping || m_eCurState == STOPING)
-								eState = STOPING;
-							else if (m_eCurState == WALKING) // 마지막에서 두번째
-								eState = WALKING;
-							else
-								eState = IDLE;
-						}
+						if (m_bFliped != m_bPrevIsFliped)
+							eState = TURNING;
+						else if (m_eCurState == S_WALKING || m_eCurState == IDLE)
+							eState = S_WALKING;
+						else if (m_bStoping || m_eCurState == STOPING)
+							eState = STOPING;
+						else if (m_eCurState == WALKING) // 마지막에서 두번째
+							eState = WALKING;
+						else
+							eState = IDLE;
 					}
 				}
 			}
@@ -595,7 +608,6 @@ void CPlayer::UpdateAnimation()
 				case CPlayer::U_JUMPING:
 					m_eCurState = FALLING;
 				case CPlayer::JUMPING:
-					//m_bFalling = true;
 					m_eCurState = FALLING;
 					break;
 				case CPlayer::ATTACK:
@@ -638,7 +650,7 @@ void CPlayer::UpdateAnimation()
 					break;
 				case CPlayer::S_KNIFE:
 					m_uiAnimationFrame = m_vecAnimation[m_eCurState]->vecRect.size() - 1;
-					if (m_fActionRamainedTime <= 0)
+					if (m_fKnifeRemainedTime <= 0)
 						m_eCurState = E_KNIFE;
 					break;
 				case CPlayer::E_KNIFE:
@@ -647,7 +659,7 @@ void CPlayer::UpdateAnimation()
 					break;
 				case CPlayer::DS_KNIFE:
 					m_uiAnimationFrame = m_vecAnimation[m_eCurState]->vecRect.size() - 1;
-					if (m_fActionRamainedTime <= 0)
+					if (m_fKnifeRemainedTime <= 0)
 						m_eCurState = DE_KNIFE;
 					break;
 				case CPlayer::DE_KNIFE:
@@ -782,6 +794,25 @@ void CPlayer::UpdateAttackCollision()
 
 void CPlayer::UpdateMoveWithPressKey()
 {
+	float fDeltaTime = CTime_Manager::Get_Instance()->Get_DeltaTime();
+	if (m_bFlying)
+	{
+		m_fCurMp -= fDeltaTime * 25.f;
+		if (m_fCurMp < 0)
+		{
+			m_fCurMp = 0;
+			m_bFlying = false;
+			m_bFalling = true;
+		}
+			
+	}
+	else
+	{
+		m_fCurMp += fDeltaTime * 50.f;
+		if (m_fCurMp >= 100.f)
+			m_fCurMp = 100.f;
+	}
+
 	if (CKey_Manager::Get_Instance()->Key_Down(KEY_V))
 	{
 		CVSkill* pTemp = m_pVSkill[NEXT];
@@ -794,12 +825,13 @@ void CPlayer::UpdateMoveWithPressKey()
 		m_pVSkill[PREV]->Set_Angle(0.f);
 	}
 
-	float fDeltaTime = CTime_Manager::Get_Instance()->Get_DeltaTime();
-	if (m_fActionRamainedTime > 0)
-		m_fActionRamainedTime -= fDeltaTime;
+	
+	if (m_fKnifeRemainedTime > 0)
+		m_fKnifeRemainedTime -= fDeltaTime;
 	else
-		m_fActionRamainedTime = 0.f;
+		m_fKnifeRemainedTime = 0.f;
 	float fMoveSpeed = fDeltaTime * m_pObjectInfo->fMoveSpeed;
+
 	if (m_bHit)
 	{
 		m_tInfo.vDir.x = m_bFliped ? fMoveSpeed : -fMoveSpeed;
@@ -807,6 +839,8 @@ void CPlayer::UpdateMoveWithPressKey()
 		m_tInfo.vDir.y = -fMoveSpeed;
 		return;
 	}		
+	if (m_bFlying)
+		fMoveSpeed = fDeltaTime * m_fFlyingSpeed;
 
 	float fTargetDirX{ 0.f };
 
@@ -830,15 +864,33 @@ void CPlayer::UpdateMoveWithPressKey()
 		if (CKey_Manager::Get_Instance()->Key_Pressing(KEY_DOWN))
 		{
 			m_bCrouch = true;
-			if (m_bOnGround)
+			if (m_bFlying)
 			{
-				fTargetDirX = 0;
+				m_tInfo.vDir.y = fDeltaTime * 30.f;
+			}
+			else
+			{
+				
+				if (m_bOnGround)
+				{
+					fTargetDirX = 0;
+				}
 			}
 		}
 		else
 		{
 			m_bCrouch = false;
 		}
+
+	}
+	if (m_bFlying && CKey_Manager::Get_Instance()->Key_Pressing(KEY_UP))
+	{
+		m_tInfo.vDir.y = -fDeltaTime * m_fFlyingSpeed;
+	}
+	if (m_bFlying && CKey_Manager::Get_Instance()->Key_Pressing(KEY_DOWN))
+	{
+		m_bCrouch = true;
+		m_tInfo.vDir.y = fDeltaTime * m_fFlyingSpeed;
 	}
 	if (!m_bAttacking && !m_bKnifeAttacking)
 	{
@@ -850,6 +902,11 @@ void CPlayer::UpdateMoveWithPressKey()
 				m_tInfo.vDir.x = 0;
 				fTargetDirX = 0;
 			}
+			if (m_bFlying)
+			{
+				m_bFalling = true;
+				m_bFlying = false;
+			}
 		}
 		if (CKey_Manager::Get_Instance()->Key_Down(KEY_C))
 		{
@@ -859,7 +916,7 @@ void CPlayer::UpdateMoveWithPressKey()
 			{
 				m_tInfo.vDir.x = 0;
 				fTargetDirX = 0;
-				m_fActionRamainedTime = m_fMaxKnifeTime;
+				m_fKnifeRemainedTime = m_fMaxKnifeTime;
 
 				if (dynamic_cast<CVKnife*>(m_pVSkill[CUR]))
 				{
@@ -873,18 +930,25 @@ void CPlayer::UpdateMoveWithPressKey()
 				}
 				else
 				{
-					INFO tInfo;
-					m_pVSkill[CUR]->Use(tInfo);
+					INFO tBullet;
+					tBullet.vPos = m_tInfo.vPos;
+					tBullet.fAngle = !m_bFliped ? 0.f : 180.f;
+					m_pVSkill[CUR]->Use(tBullet);
 				}
 			}
 			else
 			{
 				m_bKnifeAttacking = true;
-				m_fActionRamainedTime = 0.001f;
+				m_fKnifeRemainedTime = 0.001f;
+
+				INFO tBullet;
+				tBullet.vPos = m_tInfo.vPos;
+				tBullet.fAngle = !m_bFliped ? 0.f : 180.f;
+				m_pVSkill[CUR]->Use(tBullet);
 			}
 			if (dynamic_cast<CVKnife*>(m_pVSkill[CUR]))
 			{
-				CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)m_pBulletInfo->eObjId,CKnife::Create(m_pBulletInfo, m_tInfo.vPos, !m_bFliped ? 0 : 180));
+				CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)m_pBulletInfo->eObjId,CKnife::Create(m_pBulletInfo, m_tInfo.vPos, !m_bFliped ? 0.f : 180.f));
 			}
 		}
 	}
@@ -896,37 +960,83 @@ void CPlayer::UpdateMoveWithPressKey()
 		m_bRenderCollision = !m_bRenderCollision;
 	}
 
-	if (!m_bFalling && !m_bJumping && CKey_Manager::Get_Instance()->Key_Pressing(KEY_X))
+	bool bXKeyDown = CKey_Manager::Get_Instance()->Key_Down(KEY_X);
+	if (!m_bFalling && m_bOnGround && bXKeyDown)
 	{
 		m_bJumping = true;
 		m_bFalling = false;
 		m_bOnGround = false;
-		m_fActionRamainedTime = m_fJumpMaxTime;
+		m_fJumpRamainedTime = m_fJumpMaxTime;
 	}
-	else if (!m_bFalling && m_bJumping && !CKey_Manager::Get_Instance()->Key_Pressing(KEY_X))
+	else if (m_bFlyable && bXKeyDown)
+	{
+		m_bFlying = true;
+		m_bFlyable = false;
+		m_fJumpRamainedTime = 0;
+	}
+	else if (m_bFlying && bXKeyDown)
+	{
+		m_bFlying = false;
+		m_bFalling = true;
+	}
+	
+
+	bool bXKeyUp= CKey_Manager::Get_Instance()->Key_Up(KEY_X);
+	if (m_bJumping && bXKeyUp)
 	{
 		m_bJumping = false;
 		m_bFalling = true;
 		m_bOnGround = false;
-		m_fActionRamainedTime = 0;
+		m_fJumpRamainedTime = 0.f;
+	}
+	else if (m_bJumping)
+	{
+		m_bJumping = true;
+		m_bFalling = false;
+		m_bOnGround = false;
+	}
 	
-	}
-	else if (m_fActionRamainedTime > 0.f)
-	{
-		m_fActionRamainedTime -= fDeltaTime;
-		if (m_fActionRamainedTime <= 0)
-		{
-			m_bJumping = false;
-			m_bFalling = true;
-			m_bOnGround = false;
-			m_fActionRamainedTime = 0;
-		}
-	}
 
-	if (m_bJumping)
-	{
-		m_tInfo.vDir.y = -300.f * fDeltaTime;
-	}
+	//if (!m_bFalling && !m_bJumping && CKey_Manager::Get_Instance()->Key_Pressing(KEY_X))
+	//{
+	//	m_bJumping = true;
+	//	m_bFalling = false;
+	//	m_bOnGround = false;
+	//	m_fJumpRamainedTime = m_fJumpMaxTime;
+	//}
+	//else if (!m_bFalling && m_bJumping && !CKey_Manager::Get_Instance()->Key_Pressing(KEY_X))
+	//{
+	//	m_bJumping = false;
+	//	m_bFalling = true;
+	//	m_bOnGround = false;
+	//	m_fJumpRamainedTime = 0.f;
+	//
+	//}
+	//else if (!m_bFlying && m_bFalling && m_bFlyable && CKey_Manager::Get_Instance()->Key_Down(KEY_X))
+	//{
+	//	m_bFalling = false;
+	//	m_bFlying = true;
+	//	m_bFlyable = false;
+	//}
+	//else if (m_bFlying && CKey_Manager::Get_Instance()->Key_Down(KEY_X))
+	//{
+	//	m_bFalling = true;
+	//	m_bFlying = false;
+	//}
+	//else 
+	//{
+	//	if (m_fJumpRamainedTime > 0.f)
+	//		m_fJumpRamainedTime -= fDeltaTime;
+	//	if (m_fJumpRamainedTime <= 0)
+	//	{
+	//		m_bJumping = false;
+	//		m_bFalling = true;
+	//		m_bOnGround = false;
+	//		m_fJumpRamainedTime = 0.f;
+	//	}
+	//}
+
+	
 	
 	m_tInfo.vDir.x = CMyMath::FInterpTo(m_tInfo.vDir.x, fTargetDirX, fDeltaTime, 5.f);
 	
@@ -938,7 +1048,10 @@ void CPlayer::UpdateMoveWithPressKey()
 	else
 		m_bStoping = false;
 
-	UpdateGravity();
+	if (!m_bJumping && !m_bOnGround)
+	{
+		UpdateGravity();
+	}
 
 }
 
@@ -950,6 +1063,26 @@ void CPlayer::Offset()
 	
 }
 
+void CPlayer::UpdateJump()
+{
+	float fDeltaTime = CTime_Manager::Get_Instance()->Get_DeltaTime();
+	if (m_bJumping)
+	{
+		m_tInfo.vDir.y = -300.f * fDeltaTime;
+		if (m_fJumpRamainedTime > 0.f)
+			m_fJumpRamainedTime -= fDeltaTime;
+		if (m_fJumpRamainedTime <= 0)
+		{
+			m_bJumping = false;
+			m_bFalling = true;
+			m_bOnGround = false;
+			m_fJumpRamainedTime = 0.f;
+		}
+	}
+
+}
+
 void CPlayer::InitUpdate_GameObject()
 {
+	UpdateBodyCollision();
 }

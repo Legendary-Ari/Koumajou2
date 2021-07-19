@@ -86,8 +86,7 @@ void CCollisionMgr::Collision_Ex( list<CGameObject*>& _Dst, list<CGameObject*>& 
 		}
 	}
 }
-
-void CCollisionMgr::Collision_BackGroundEx( list<CGameObject*>& _Src , bool _bForceEx)
+void CCollisionMgr::Collision_BackGroundEx(list<CGameObject*>& _Src, bool _bForceEx)
 {
 	auto& listBackGround = CGameObject_Manager::Get_Instance()->Get_BackGroundObject();
 	float fX = 0.f, fY = 0.f;
@@ -128,9 +127,43 @@ void CCollisionMgr::Collision_BackGroundEx( list<CGameObject*>& _Src , bool _bFo
 					}
 				}
 
-			}			
+			}
 		}
 	}
+}
+
+void CCollisionMgr::PlayerCheckBottom()
+{
+	auto& listBackGround = CGameObject_Manager::Get_Instance()->Get_BackGroundObject();
+	float fX = 0.f, fY = 0.f;
+	CGameObject* pSrc = CGameObject_Manager::Get_Instance()->Get_Player();
+	if (pSrc == nullptr)
+		return;
+	for (auto& pDst : listBackGround)
+	{
+		vector<COLLISION> vecCol = pSrc->Get_TileCollision();
+		if (vecCol.empty())
+			continue;
+		else
+		{
+			for (auto& Col : vecCol)
+			{
+				Col.tFRect.bottom += 0.1f;
+			}
+		}
+		if (IsObj_OverlappedEx(pDst->Get_TileCollision(), vecCol, &fX, &fY))
+		{
+			if (fX > fY)
+			{
+				if (pDst->Get_Info().vPos.y > pSrc->Get_Info().vPos.y)
+				{
+					pSrc->Set_OnGround(true);
+					return;
+				}
+			}
+		}
+	}
+	pSrc->Set_OnGround(false);
 }
 
 bool CCollisionMgr::IsObj_Overlapped(const vector<COLLISION>& _Dst, const vector<COLLISION>& _Src, _vec3* vHitPos)

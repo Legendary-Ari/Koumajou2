@@ -73,9 +73,6 @@
     <Filter Include="01.GameObject\05.Gui">
       <UniqueIdentifier>{e30d83e8-7bb3-4808-89ed-8a68f7ef528f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.GameObject\06.Enemy">
-      <UniqueIdentifier>{026faa3b-49a4-4fed-b6a3-0d854422f934}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Manager\Math">
       <UniqueIdentifier>{09972d8c-c024-4007-b88a-33790a1caeae}</UniqueIdentifier>
     </Filter>
@@ -84,27 +81,6 @@
     </Filter>
     <Filter Include="01.GameObject\01.BackCollision">
       <UniqueIdentifier>{2e521037-e677-40b3-9c6d-ff8a990c70ab}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.GameObject\06.Enemy\Toad">
-      <UniqueIdentifier>{46fb2175-1381-40f3-95f2-f62a743d2794}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.GameObject\06.Enemy\Ruler_Sword">
-      <UniqueIdentifier>{85288d48-bcf3-4f16-9e1b-ac7c11dc70f1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.GameObject\06.Enemy\Rose">
-      <UniqueIdentifier>{79954292-2980-4293-85cf-ec7b3ac8f918}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.GameObject\06.Enemy\Skeleton">
-      <UniqueIdentifier>{1bbea6a6-3031-4b05-a15b-f11ba6d741e4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.GameObject\06.Enemy\Owl">
-      <UniqueIdentifier>{93e51e37-57fc-4fd6-a971-e9984e7b1da2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.GameObject\06.Enemy\Alura_Une">
-      <UniqueIdentifier>{28e0ff9b-5769-43c2-bfc2-f6e68b429d8d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.GameObject\06.Enemy\Une">
-      <UniqueIdentifier>{a3b6ab37-d2e1-4b05-999e-0d20f636df67}</UniqueIdentifier>
     </Filter>
     <Filter Include="01.GameObject\05.Gui\StageUi%27">
       <UniqueIdentifier>{c1cff981-2b13-43fa-a5e0-b6721e94a9a7}</UniqueIdentifier>
@@ -186,6 +162,33 @@
     </Filter>
     <Filter Include="01.GameObject\05.Gui\WeaponSelectedUi">
       <UniqueIdentifier>{045893eb-e5ba-4082-b869-4e2156f9c3c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Manager\SoundManager">
+      <UniqueIdentifier>{d166b5c0-2304-49e2-8572-3d1aa57f1774}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\06.Enemy">
+      <UniqueIdentifier>{026faa3b-49a4-4fed-b6a3-0d854422f934}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\06.Enemy\Toad">
+      <UniqueIdentifier>{46fb2175-1381-40f3-95f2-f62a743d2794}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\06.Enemy\Ruler_Sword">
+      <UniqueIdentifier>{85288d48-bcf3-4f16-9e1b-ac7c11dc70f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\06.Enemy\Rose">
+      <UniqueIdentifier>{79954292-2980-4293-85cf-ec7b3ac8f918}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\06.Enemy\Skeleton">
+      <UniqueIdentifier>{1bbea6a6-3031-4b05-a15b-f11ba6d741e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\06.Enemy\Owl">
+      <UniqueIdentifier>{93e51e37-57fc-4fd6-a971-e9984e7b1da2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\06.Enemy\Alura_Une">
+      <UniqueIdentifier>{28e0ff9b-5769-43c2-bfc2-f6e68b429d8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\06.Enemy\Une">
+      <UniqueIdentifier>{a3b6ab37-d2e1-4b05-999e-0d20f636df67}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -390,7 +393,15 @@
     <ClInclude Include="WeaponSelectedUi.h">
       <Filter>01.GameObject\05.Gui\WeaponSelectedUi</Filter>
     </ClInclude>
-    <ClInclude Include="LunaDial.h" />
+    <ClInclude Include="SoundMgr.h">
+      <Filter>Manager\SoundManager</Filter>
+    </ClInclude>
+    <ClInclude Include="LunaDial.h">
+      <Filter>01.GameObject\00.Player\01.VSkill\VS_Clock</Filter>
+    </ClInclude>
+    <ClInclude Include="SubMeling.h">
+      <Filter>01.GameObject\00.Player\01.VSkill\VS_Meling</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -588,7 +599,15 @@
     <ClCompile Include="WeaponSelectedUi.cpp">
       <Filter>01.GameObject\05.Gui\WeaponSelectedUi</Filter>
     </ClCompile>
-    <ClCompile Include="LunaDial.cpp" />
+    <ClCompile Include="SoundMgr.cpp">
+      <Filter>Manager\SoundManager</Filter>
+    </ClCompile>
+    <ClCompile Include="LunaDial.cpp">
+      <Filter>01.GameObject\00.Player\01.VSkill\VS_Clock</Filter>
+    </ClCompile>
+    <ClCompile Include="SubMeling.cpp">
+      <Filter>01.GameObject\00.Player\01.VSkill\VS_Meling</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">

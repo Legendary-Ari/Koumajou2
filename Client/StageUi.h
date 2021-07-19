@@ -26,10 +26,11 @@ private:
 	void	RenderLifeText();
 private:
 	INFO	m_tHpBarInfo;
-	INFO	m_vMPBarInfo;
+	INFO	m_tMPBarInfo;
 	INFO	m_vRingInfo;
 	INFO	m_vIconInfo[3];
 	const float*	m_pCurHp;
+	const float*	m_pCurMp;
 	float	m_fPrevHp;
 	const	UINT	m_uiIconMount;
 };

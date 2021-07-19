@@ -64,6 +64,7 @@ void CGameObject::OnBlockedTile(CGameObject * pHitObject, DIRECTION::ID _eId)
 
 void CGameObject::Set_OnGround(bool _b)
 {
+	m_bOnGround = _b;
 }
 
 void CGameObject::Set_Prefab(const OBJECTINFO * _pPrefab)

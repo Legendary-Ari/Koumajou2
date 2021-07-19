@@ -25,8 +25,6 @@ public:
 	virtual void	Render_GameObject() override;
 	virtual void	Release_GameObject() override;
 	virtual void	OnBlocked(CGameObject* pHitObject, DIRECTION::ID _eId) override;
-	virtual void	Set_OnGround(bool _b) override;
-	virtual const float* Get_HpPointer() const { return &m_fCurHp; }
 public:
 	static CGameObject* Create(const OBJECTINFO* _pPrefab, const INFO& _tInfo);
 
@@ -34,14 +32,20 @@ public:
 	virtual void	OnBlockedTile(CGameObject* pHitObject, DIRECTION::ID _eId)override;
 	virtual void	OnOverlaped(CGameObject* _pHitObject, _vec3 vHitPos) override;
 	const vector<COLLISION>& Get_TileCollision() const { return m_vecBodyTileCollision; }
+
+	virtual void	Set_OnGround(bool _b) override;
+	virtual const float* Get_HpPointer() const { return &m_fCurHp; }
+	const float*	Get_MpPointer() const { return &m_fCurMp; }
 private:
 	virtual void	UpdateState() override;
 	virtual void	UpdateAnimation() override;
 	virtual void	UpdateBodyCollision() override;
 	virtual void	UpdateAttackCollision() override;
 	
+	
 	void	UpdateMoveWithPressKey();
 	void	Offset();
+	virtual void UpdateJump() override;
 private:
 	const OBJECTINFO*	m_pBulletInfo;
 	vector<COLLISION> m_vecBodyTileCollision;
@@ -58,9 +62,13 @@ private:
 	bool	m_bCrouch;
 	bool	m_bStoping;
 	bool	m_bDodge;
-	float	m_fActionRamainedTime;
+	float	m_fJumpRamainedTime;
+	float	m_fKnifeRemainedTime;
 	const float	m_fJumpMaxTime;
 	const float m_fMaxKnifeTime;
+	float	m_fCurMp;
+	bool	m_bFlyable;
+	const float	m_fFlyingSpeed;
 
 	CVSkill*	m_pVSkill[SKILL_END];
 

@@ -15,6 +15,7 @@ CMainApp::~CMainApp()
 
 HRESULT CMainApp::Ready_MainApp()
 {
+	
 	// 	E_FAIL; 
 	// 	S_OK; 
 	LARGE_INTEGER tTime;
@@ -29,6 +30,7 @@ HRESULT CMainApp::Ready_MainApp()
 		goto ERR;
 	CGame_Manager::Get_Instance()->m_eCurStage = CScene_Manager::STAGE_1_1;
 	CScene_Manager::Get_Instance()->Change_Scene_Manager(CScene_Manager::SELECT);
+	CSoundMgr::Get_Instance()->Initialize();
 	return S_OK;
 
 ERR:
@@ -52,6 +54,7 @@ void CMainApp::Render_MainApp()
 
 void CMainApp::Release_MainApp()
 {
+	CSoundMgr::Destroy_Instance();
 	CGame_Manager::Destroy_Instance();
 	CKey_Manager::Destroy_Instance();
 	CTime_Manager::Destroy_Instance();

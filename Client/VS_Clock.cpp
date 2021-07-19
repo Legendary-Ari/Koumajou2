@@ -50,6 +50,14 @@ void CVS_Clock::Release_GameObject()
 
 void CVS_Clock::Use(const INFO & tInfo)
 {
+	if (m_bCoolDown)
+		return;
 	const ANIMATION* pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(L"SakuyaTime");
-	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::EFFECT, CLunaDial::Create(pAnim));
+	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::EFFECT, CLunaDial::Create(pAnim,this));
+	m_bCoolDown = true;
+}
+
+void CVS_Clock::ReleaseCoolDown()
+{
+	m_bCoolDown = false;
 }

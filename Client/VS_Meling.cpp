@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "VS_Meling.h"
-
+#include "SubMeling.h"
 
 CVS_Meling::CVS_Meling()
 {
@@ -51,4 +51,5 @@ void CVS_Meling::Release_GameObject()
 
 void CVS_Meling::Use(const INFO & tInfo)
 {
+	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager( OBJECTINFO::PLAYER_BULLET, CSubMeling::Create(tInfo));
 }

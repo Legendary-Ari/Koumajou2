@@ -139,6 +139,11 @@ void CAluraUne::Render_GameObject()
 
 void CAluraUne::UpdateBodyCollision()
 {
+	if (m_bDead)
+	{
+		ZeroMemory(&m_vecBodyCollision[0], sizeof(m_vecBodyCollision[0]));
+		return;
+	}
 	float fSize = m_tInfo.vSize.x;
 	float fReduceSizeLeft = 0.50f;
 	float fReduceSizeRight = 0.50f;
@@ -217,6 +222,8 @@ void CAluraUne::UpdatePattern()
 
 void CAluraUne::UpdateState()
 {
+	if (m_bTimeStop)
+		return;
 	if (m_ePrevState != m_eCurState)
 	{
 		m_uiAnimationFrame = 0;

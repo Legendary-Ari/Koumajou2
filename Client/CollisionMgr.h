@@ -15,6 +15,7 @@ public:
 	static void Collision( list<CGameObject*>& _Dst, list<CGameObject*>& _Src );
 	static void Collision_Ex( list<CGameObject*>& _Dst, list<CGameObject*>& _Src );
 	static void Collision_BackGroundEx( list<CGameObject*>& _Src, bool _bForceEx = false);
+	static void PlayerCheckBottom();
 
 	static bool IsObj_Overlapped(const vector<COLLISION>& _Dst, const vector<COLLISION>& _Src, _vec3* vHitPos);
 	static bool IsObj_OverlappedEx( const vector<COLLISION>& _Dst, const vector<COLLISION>& _Src, float* _fX, float* _fY );

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "LunaDial.h"
 #include "Enemy.h"
+#include "VS_Clock.h"
 
 CLunaDial::CLunaDial()
 {
@@ -12,10 +13,11 @@ CLunaDial::~CLunaDial()
 	Release_GameObject();
 }
 
-CGameObject * CLunaDial::Create(const ANIMATION * _tAnimationInfo)
+CGameObject * CLunaDial::Create(const ANIMATION * _tAnimationInfo, CVS_Clock* _pClock)
 {
 	CGameObject* pInstance = new CLunaDial;
 	static_cast<CEffect*>(pInstance)->Set_Animation(_tAnimationInfo);
+	static_cast<CLunaDial*>(pInstance)->Set_Clock(_pClock);
 	if (FAILED(pInstance->Ready_GameObject()))
 	{
 		delete pInstance;
@@ -51,6 +53,7 @@ int CLunaDial::Update_GameObject()
 		if (m_pAnimationInfo->vecRect.size() <= m_uiAnimationFrame)
 		{
 			m_uiAnimationFrame = 0;
+			m_pClock->ReleaseCoolDown();
 			return OBJ_DESTROYED;
 		}
 
@@ -77,4 +80,9 @@ void CLunaDial::Release_GameObject()
 	{
 		static_cast<CEnemy*>(pEnemy)->Set_TimeStop(false);
 	}
+}
+
+void CLunaDial::Set_Clock(CVS_Clock * _pClock)
+{
+	m_pClock = _pClock;
 }
