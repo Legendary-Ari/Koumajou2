@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Scene_Manager.h"
 #include "SceneWeaponSelect.h"
+#include "LoadingScene.h"
 #include "Stage1_1.h"
 #include "Stage1_4.h"
 IMPLEMENT_SINGLETON(CScene_Manager)
@@ -17,7 +18,7 @@ CScene_Manager::~CScene_Manager()
 	Release_Scene_Manager(); 
 }
 
-HRESULT CScene_Manager::Change_Scene_Manager(const ID eID)
+HRESULT CScene_Manager::Change_Scene_Manager(const ID eID, const ID eNextId)
 {
 	m_eNextScene = eID; 
 	if (m_eCurScene != m_eNextScene)
@@ -27,6 +28,7 @@ HRESULT CScene_Manager::Change_Scene_Manager(const ID eID)
 		switch (m_eNextScene)
 		{
 		case CScene_Manager::SCENE_LOADING:
+			m_pScene = CLoadingScene::Create(eNextId);
 			break;
 		case CScene_Manager::MENU:
 			break;
@@ -83,27 +85,10 @@ const _vec3 & CScene_Manager::Get_StartPos() const
 
 HRESULT CScene_Manager::Reset()
 {
+	Safe_Delete(m_pScene);
+	m_pScene = CLoadingScene::Create(m_eCurScene);
+	m_pScene->InitUpdate_Scene();
+	m_eCurScene = CScene_Manager::SCENE_LOADING;
 
-		Safe_Delete(m_pScene);
-		switch (m_eNextScene)
-		{
-		case CScene_Manager::SCENE_LOADING:
-			break;
-		case CScene_Manager::MENU:
-			break;
-		case CScene_Manager::SELECT:
-			m_pScene = CSceneWeaponSelect::Create();
-			break;
-		case CScene_Manager::STAGE_1_1:
-			m_pScene = CStage1_1::Create();
-			break;
-		case CScene_Manager::STAGE_1_4:
-			m_pScene = CStage1_4::Create();
-			break;
-		default:
-			m_pScene = CStage1_1::Create();
-			break;
-		}
-		m_pScene->InitUpdate_Scene();
 	return S_OK;
 }

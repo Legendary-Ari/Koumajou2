@@ -23,7 +23,7 @@ HRESULT CStage1_1::Ready_Scene()
 	//pObject = nullptr;
 
 	m_vStartPos = { 200.f, 300.f, 0.f };
-	CPrefab_Manager::Get_Instance()->SpawnObjectbyScene(CScene_Manager::STAGE_1_1);
+	//CPrefab_Manager::Get_Instance()->SpawnObjectbyScene(CScene_Manager::STAGE_1_1);
 	if (!CGameObject_Manager::Get_Instance()->Get_Player())
 	{
 		const OBJECTINFO* pObjectInfo = CPrefab_Manager::Get_Instance()->Get_ObjectPrefab(L"Player");
@@ -32,7 +32,7 @@ HRESULT CStage1_1::Ready_Scene()
 			CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)pObjectInfo->eObjId, CPlayer::Create(pObjectInfo, pActorInfo->tInfo));
 
 	}
-
+	CGameObject_Manager::Get_Instance()->Get_Player()->Set_Pos(m_vStartPos);
 
 
 	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::UI, CStageUi::Create());

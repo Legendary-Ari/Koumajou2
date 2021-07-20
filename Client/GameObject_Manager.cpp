@@ -133,6 +133,11 @@ void CGameObject_Manager::Release_StageObject()
 	m_bStageChanging = true;
 }
 
+void CGameObject_Manager::Set_StageChange()
+{
+	m_bStageChanging = true;
+}
+
 CGameObject * CGameObject_Manager::Get_Player()
 {
 	if (m_listGameObject[OBJECTINFO::PLAYER].empty())

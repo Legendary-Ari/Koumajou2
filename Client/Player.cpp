@@ -303,9 +303,15 @@ void CPlayer::Late_Update_GameObject()
 	float fMapSizeY = (float)CScroll_Manager::GetMapSizeY();
 	if (m_tInfo.vPos.y > fMapSizeY)
 	{
-		m_tInfo.vPos = { 200.f, 300.f, 0.f };
-		m_tInfo.vDir.y = 0;
-		m_bDead = true;
+		CScene_Manager::Get_Instance()->Reset();
+		m_bDead = false;
+		m_fCurHp = 100.f;
+		m_fCurMp = 100.f;
+		--m_uiLife;
+		m_tInfo.vPos = CScene_Manager::Get_Instance()->Get_StartPos();
+		D3DXVECTOR3 vScroll = CScroll_Manager::Get_Scroll();
+		D3DXVECTOR3 vDiff = m_tInfo.vPos - D3DXVECTOR3{ float(CLIENTCX >> 1), float(CLIENTCY >> 1), 0.f };
+		CScroll_Manager::Force_Set_Scroll(-vDiff);
 	}
 
 	if (m_tInfo.vPos.x < 0)
@@ -929,7 +935,7 @@ void CPlayer::UpdateMoveWithPressKey()
 				m_bFlying = false;
 			}
 		}
-		if (CKey_Manager::Get_Instance()->Key_Down(KEY_C))
+		if (CKey_Manager::Get_Instance()->Key_Down(KEY_C) && m_uiCurChi >= m_pVSkill[CUR]->Get_Cost())
 		{
 			
 			m_bKnifeAttacking = true;
@@ -941,13 +947,18 @@ void CPlayer::UpdateMoveWithPressKey()
 
 				if (dynamic_cast<CVKnife*>(m_pVSkill[CUR]))
 				{
-					INFO tBullet;
-					tBullet.vPos = m_tInfo.vPos;
-					tBullet.vPos.y -= 10.f;
-					tBullet.fAngle = !m_bFliped ? 0.f : 180.f;
-					CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)m_pBulletInfo->eObjId, CKnife::Create(m_pBulletInfo, tBullet.vPos, tBullet.fAngle));
-					tBullet.vPos.y += 20.f;
-					CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)m_pBulletInfo->eObjId, CKnife::Create(m_pBulletInfo, tBullet.vPos, tBullet.fAngle));
+					if (m_uiCurChi >= 3)
+					{
+						INFO tBullet;
+						tBullet.vPos = m_tInfo.vPos;
+						tBullet.vPos.y -= 10.f;
+						tBullet.fAngle = !m_bFliped ? 0.f : 180.f;
+						CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)m_pBulletInfo->eObjId, CKnife::Create(m_pBulletInfo, tBullet.vPos, tBullet.fAngle));
+						tBullet.vPos.y += 20.f;
+						CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)m_pBulletInfo->eObjId, CKnife::Create(m_pBulletInfo, tBullet.vPos, tBullet.fAngle));
+						m_uiCurChi -= 3;
+					}
+
 				}
 				else
 				{
@@ -955,6 +966,7 @@ void CPlayer::UpdateMoveWithPressKey()
 					tBullet.vPos = m_tInfo.vPos;
 					tBullet.fAngle = !m_bFliped ? 0.f : 180.f;
 					m_pVSkill[CUR]->Use(tBullet);
+					
 				}
 			}
 			else
@@ -967,7 +979,7 @@ void CPlayer::UpdateMoveWithPressKey()
 				tBullet.fAngle = !m_bFliped ? 0.f : 180.f;
 				m_pVSkill[CUR]->Use(tBullet);
 			}
-			if (dynamic_cast<CVKnife*>(m_pVSkill[CUR]))
+			if (dynamic_cast<CVKnife*>(m_pVSkill[CUR]) && m_uiCurChi >= 1)
 			{
 				CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)m_pBulletInfo->eObjId,CKnife::Create(m_pBulletInfo, m_tInfo.vPos, !m_bFliped ? 0.f : 180.f));
 			}

@@ -26,6 +26,7 @@ CGameObject * CVS_Clock::Create()
 HRESULT CVS_Clock::Ready_GameObject()
 {
 	m_pObjectInfo = CPrefab_Manager::Get_Instance()->Get_ObjectPrefab(L"IconClock");
+	m_uiCost = 50;
 	if (!m_pObjectInfo)
 		return E_FAIL;
 	ZeroMemory(&m_tInfo, sizeof(INFO));
@@ -50,11 +51,13 @@ void CVS_Clock::Release_GameObject()
 
 void CVS_Clock::Use(const INFO & tInfo)
 {
+	
 	if (m_bCoolDown)
 		return;
 	const ANIMATION* pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(L"SakuyaTime");
 	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::EFFECT, CLunaDial::Create(pAnim,this));
 	m_bCoolDown = true;
+	Use_Cost();
 }
 
 void CVS_Clock::ReleaseCoolDown()

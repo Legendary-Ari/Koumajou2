@@ -13,6 +13,7 @@ public:
 	void Render_GameObject_Manager(); 
 	void Release_GameObject_Manager(); 
 	void Release_StageObject();
+	void Set_StageChange();
 	CGameObject* Get_Player();
 	CGameObject* Get_Boss();
 	list<CGameObject*>& Get_EnemyList();

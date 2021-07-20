@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "VSkill.h"
-
+#include "Player.h"
 
 CVSkill::CVSkill()
 {
@@ -30,4 +30,14 @@ void CVSkill::Render_GameObject()
 	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
 	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, &rect, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
 
+}
+
+const UINT & CVSkill::Get_Cost() const
+{
+	return m_uiCost;
+}
+
+void CVSkill::Use_Cost()
+{
+	static_cast<CPlayer*>(CGameObject_Manager::Get_Instance()->Get_Player())->Sub_Chi(m_uiCost);
 }

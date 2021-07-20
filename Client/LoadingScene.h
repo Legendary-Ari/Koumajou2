@@ -16,6 +16,7 @@ public:
 	virtual void Render_Scene() override;
 	virtual void Release_Scene() override;
 	void		Set_LoadingStage(const CScene_Manager::ID& _eId);
+	static unsigned	__stdcall LoadActor(LPVOID pVoid);
 private:
 	CScene_Manager::ID m_eLoadingStage;
 	CRITICAL_SECTION m_tCritical_Section;

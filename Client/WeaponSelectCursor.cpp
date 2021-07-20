@@ -236,7 +236,7 @@ int CWeaponSelectCursor::Update_GameObject()
 void CWeaponSelectCursor::Late_Update_GameObject()
 {
 	if(m_bSceneChange)
-		CScene_Manager::Get_Instance()->Change_Scene_Manager(CScene_Manager::STAGE_1_1);
+		CScene_Manager::Get_Instance()->Change_Scene_Manager(CScene_Manager::SCENE_LOADING, CScene_Manager::STAGE_1_1);
 }
 
 void CWeaponSelectCursor::Render_GameObject()

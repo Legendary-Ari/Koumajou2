@@ -24,6 +24,7 @@ CGameObject * CVKnife::Create()
 
 HRESULT CVKnife::Ready_GameObject()
 {
+	m_uiCost = 1;
 	m_pObjectInfo = CPrefab_Manager::Get_Instance()->Get_ObjectPrefab(L"IconKnife");
 	if (!m_pObjectInfo)
 		return E_FAIL;
@@ -54,4 +55,5 @@ void CVKnife::Use(const INFO& tInfo)
 {
 	m_pBulletInfo = CPrefab_Manager::Get_Instance()->Get_ObjectPrefab(L"Sakuya_Knife");
 	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)m_pBulletInfo->eObjId, CKnife::Create(m_pBulletInfo, tInfo.vPos, tInfo.fAngle));
+	Use_Cost();
 }

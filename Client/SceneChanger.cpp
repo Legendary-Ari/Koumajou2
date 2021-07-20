@@ -52,7 +52,7 @@ void CSceneChanger::Late_Update_GameObject()
 		D3DXVECTOR3 vScroll = CScroll_Manager::Get_Scroll();
 		D3DXVECTOR3 vDiff = m_vDstPos - D3DXVECTOR3{ float(CLIENTCX >> 1), float(CLIENTCY >> 1), 0.f };
 		CScroll_Manager::Force_Set_Scroll(-vDiff);
-		CScene_Manager::Get_Instance()->Change_Scene_Manager(m_eSceneId);
+		CScene_Manager::Get_Instance()->Change_Scene_Manager(CScene_Manager::SCENE_LOADING, m_eSceneId);
 	}
 		
 }

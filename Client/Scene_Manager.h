@@ -9,7 +9,7 @@ private:
 	CScene_Manager();
 	~CScene_Manager();
 public:
-	HRESULT Change_Scene_Manager(const ID eID);
+	HRESULT Change_Scene_Manager(const ID eID, const ID eNextId = CScene_Manager::END);
 public:
 	void Update_Scene_Manager(); 
 	void InitUpdate_Scene_Manager();

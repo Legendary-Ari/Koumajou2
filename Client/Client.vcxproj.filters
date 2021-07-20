@@ -414,8 +414,12 @@
     <ClInclude Include="Chi.h">
       <Filter>01.GameObject\07.Item\01.Chi</Filter>
     </ClInclude>
-    <ClInclude Include="NumberUi.h" />
-    <ClInclude Include="LoadingScene.h" />
+    <ClInclude Include="LoadingScene.h">
+      <Filter>03.Scene\LoadingScene</Filter>
+    </ClInclude>
+    <ClInclude Include="NumberUi.h">
+      <Filter>01.GameObject\05.Gui\Number</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -625,8 +629,12 @@
     <ClCompile Include="Chi.cpp">
       <Filter>01.GameObject\07.Item\01.Chi</Filter>
     </ClCompile>
-    <ClCompile Include="NumberUi.cpp" />
-    <ClCompile Include="LoadingScene.cpp" />
+    <ClCompile Include="LoadingScene.cpp">
+      <Filter>03.Scene\LoadingScene</Filter>
+    </ClCompile>
+    <ClCompile Include="NumberUi.cpp">
+      <Filter>01.GameObject\05.Gui\Number</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">

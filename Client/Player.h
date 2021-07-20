@@ -39,6 +39,7 @@ public:
 	const UINT*		Get_ChiPointer() const { return &m_uiCurChi; }
 	const UINT*		Get_LifePointer() const { return &m_uiLife; }
 	void			Add_Chi(UINT _uiChi) { m_uiCurChi += _uiChi; }
+	void			Sub_Chi(UINT _uiChi) { m_uiCurChi -= _uiChi; }
 private:
 	virtual void	UpdateState() override;
 	virtual void	UpdateAnimation() override;
