@@ -190,6 +190,9 @@
     <Filter Include="01.GameObject\06.Enemy\Une">
       <UniqueIdentifier>{a3b6ab37-d2e1-4b05-999e-0d20f636df67}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.GameObject\07.Item\01.Chi">
+      <UniqueIdentifier>{a70475e9-3b67-4a29-bef3-f5285ee70142}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -402,6 +405,9 @@
     <ClInclude Include="SubMeling.h">
       <Filter>01.GameObject\00.Player\01.VSkill\VS_Meling</Filter>
     </ClInclude>
+    <ClInclude Include="Chi.h">
+      <Filter>01.GameObject\07.Item\01.Chi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -607,6 +613,9 @@
     </ClCompile>
     <ClCompile Include="SubMeling.cpp">
       <Filter>01.GameObject\00.Player\01.VSkill\VS_Meling</Filter>
+    </ClCompile>
+    <ClCompile Include="Chi.cpp">
+      <Filter>01.GameObject\07.Item\01.Chi</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

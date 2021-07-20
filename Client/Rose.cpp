@@ -60,6 +60,9 @@ HRESULT CRose::Ready_GameObject()
 		m_vecRoseParts[m_uiRoseStemMount] = static_cast<CEnemy*>(CRoseHead::Create(tInfo , pObjectInfo, this, m_uiRoseStemMount * 4.f));
 		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)pObjectInfo->eObjId, m_vecRoseParts[m_uiRoseStemMount]);
 	}
+
+	m_uiChi = 60;
+
 	return S_OK;
 }
 

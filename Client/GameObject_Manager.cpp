@@ -64,6 +64,7 @@ void CGameObject_Manager::Update_GameObject_Manager()
 	CCollisionMgr::Collision(m_listGameObject[OBJECTINFO::BOSS], m_listGameObject[OBJECTINFO::PLAYER_BULLET]);
 	CCollisionMgr::Collision(m_listGameObject[OBJECTINFO::ENEMY_BULLET], m_listGameObject[OBJECTINFO::PLAYER]);
 	CCollisionMgr::Collision(m_listGameObject[OBJECTINFO::COLLISION], m_listGameObject[OBJECTINFO::PLAYER]);
+	CCollisionMgr::Collision(m_listGameObject[OBJECTINFO::ITEM], m_listGameObject[OBJECTINFO::PLAYER]);
 	CCollisionMgr::Collision_Ex(m_listGameObject[OBJECTINFO::ENEMY], m_listGameObject[OBJECTINFO::PLAYER_BULLET]);
 	CCollisionMgr::Collision_Ex(m_listGameObject[OBJECTINFO::ENEMY], m_listGameObject[OBJECTINFO::PLAYER]);
 	CCollisionMgr::Collision_Ex(m_listGameObject[OBJECTINFO::BOSS], m_listGameObject[OBJECTINFO::PLAYER]);

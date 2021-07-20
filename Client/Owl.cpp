@@ -48,6 +48,7 @@ HRESULT COwl::Ready_GameObject()
 	m_bFalling = false;
 	m_bJumping = false;
 	m_bOnGround = false;
+	m_uiChi = 3;
 
 	m_vecBodyCollision.resize(1);
 	m_vecBodyCollision[0].eId = COLLISION::C_RECT;

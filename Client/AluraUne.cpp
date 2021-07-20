@@ -54,6 +54,7 @@ HRESULT CAluraUne::Ready_GameObject()
 	m_bFlying = true;
 	m_fMaxCoolDownDieEffectTime = 0.1f;
 	m_fAttackWakeDistance = 200.f;
+	m_uiChi = 30;
 
 	m_vecBodyCollision.resize(1);
 	m_vecBodyCollision[0].eId = COLLISION::C_RECT;

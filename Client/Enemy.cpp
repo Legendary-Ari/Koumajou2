@@ -2,6 +2,7 @@
 #include "Enemy.h"
 #include "Effect.h"
 #include "Knife.h"
+#include "Chi.h"
 
 CEnemy::CEnemy()
 	:m_bActived(false)
@@ -17,6 +18,7 @@ CEnemy::CEnemy()
 
 CEnemy::~CEnemy()
 {
+	Release_GameObject();
 }
 // m_tInfo ³Ö±â
 HRESULT CEnemy::Ready_GameObject()
@@ -83,6 +85,7 @@ void CEnemy::Render_GameObject()
 
 void CEnemy::Release_GameObject()
 {
+	DropChi();
 }
 
 void CEnemy::Set_Hit(bool _bHit)
@@ -197,4 +200,22 @@ void CEnemy::RenderDieEffect(_vec3 _vPos)
 	if (m_bTimeStop)
 		return;
 	CGameObject::RenderDieEffect(_vPos);
+}
+
+void CEnemy::DropChi()
+{
+	for (UINT ui = 0; ui < (m_uiChi / 10); ++ui)
+	{
+		_vec3 vPos = m_tInfo.vPos;
+		vPos.x += (ui % 2 == 0 ? -1.f : 1.f) * (float)ui * 3.f;
+		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::ITEM, CChi::Create(true, vPos));
+	}
+
+	for (UINT ui = 0; ui < (m_uiChi % 10); ++ui)
+	{
+		_vec3 vPos = m_tInfo.vPos;
+		vPos.x += (ui % 2 == 0 ? -1.f : 1.f) * (float)ui * 3.f;
+		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::ITEM, CChi::Create(false, vPos));
+	}
+	
 }

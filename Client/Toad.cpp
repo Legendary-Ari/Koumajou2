@@ -62,6 +62,7 @@ HRESULT CToad::Ready_GameObject()
 	m_eCurState = IDLE;
 	m_fJumpPower = -7.f;
 	m_fMaxAttackCoolDownTime = 2.0f;
+	m_uiChi = 5;
 
 	m_vecBodyCollision.resize(1);
 	m_vecBodyCollision[0].eId = COLLISION::C_RECT;

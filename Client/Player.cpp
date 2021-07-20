@@ -12,6 +12,7 @@
 #include "VS_Flandre.h"
 #include "VS_Alice.h"
 #include "SceneChanger.h"
+#include "Item.h"
 
 CPlayer::CPlayer()
 	:m_bAttacking(false)
@@ -29,6 +30,7 @@ CPlayer::CPlayer()
 	, m_bFlyable(true)
 	, m_fCurMp(100)
 	, m_fFlyingSpeed(70.f)
+	, m_uiCurChi(0)
 {
 }
 
@@ -356,6 +358,8 @@ void CPlayer::OnBlocked(CGameObject * pHitObject, DIRECTION::ID _eId)
 
 void CPlayer::Set_OnGround(bool _b)
 {
+	if (m_bFlying)
+		return;
 	m_bOnGround = _b;
 	if (_b)
 	{
@@ -394,6 +398,8 @@ void CPlayer::OnBlockedTile(CGameObject * pHitObject, DIRECTION::ID _eId)
 
 void CPlayer::OnOverlaped(CGameObject* _pHitObject, _vec3 vHitPos)
 {
+	if (dynamic_cast<CItem*>(_pHitObject))
+		return;
 	CSceneChanger* _pChanger = dynamic_cast<CSceneChanger*>(_pHitObject);
 	if (_pChanger)
 	{

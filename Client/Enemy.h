@@ -29,6 +29,7 @@ protected:
 	virtual void UpdateActionCoolDown();
 	virtual void UpdateAnimation() override;
 	virtual void RenderDieEffect(_vec3 _vPos);
+	void		 DropChi();
 protected:
 	bool	m_bActived;
 	bool	m_bHit;
@@ -39,5 +40,6 @@ protected:
 	float	m_fJumpPower;
 	float	m_fAttackWakeDistance;
 	bool	m_bTimeStop;
+	UINT	m_uiChi;
 };
 
