@@ -49,10 +49,9 @@ void CSceneChanger::Late_Update_GameObject()
 	if (m_bChange)
 	{
 		CGameObject_Manager::Get_Instance()->Get_Player()->Set_Pos(m_vDstPos);
-		_vec3 vScroll = m_vDstPos;
-		vScroll.x -= float(CLIENTCX >> 1);
-		vScroll.y -= float(CLIENTCY >> 1);
-		CScroll_Manager::Force_Set_Scroll(vScroll);
+		D3DXVECTOR3 vScroll = CScroll_Manager::Get_Scroll();
+		D3DXVECTOR3 vDiff = m_vDstPos - D3DXVECTOR3{ float(CLIENTCX >> 1), float(CLIENTCY >> 1), 0.f };
+		CScroll_Manager::Force_Set_Scroll(-vDiff);
 		CScene_Manager::Get_Instance()->Change_Scene_Manager(m_eSceneId);
 	}
 		
@@ -69,7 +68,6 @@ void CSceneChanger::Release_GameObject()
 
 void CSceneChanger::OnOverlaped(CGameObject * _pHitObject, _vec3 vHitPos)
 {
-	return;
 }
 
 void CSceneChanger::UpdateAttackCollision()

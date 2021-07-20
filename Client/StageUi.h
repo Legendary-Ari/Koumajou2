@@ -31,6 +31,10 @@ private:
 	INFO	m_vIconInfo[3];
 	const float*	m_pCurHp;
 	const float*	m_pCurMp;
+	const UINT*		m_pCurChi;
+	const UINT*		m_pCurLife;
+	const _vec3		m_vChiTextPos;
+	const _vec3		m_vLifeTextPos;
 	float	m_fPrevHp;
 	const	UINT	m_uiIconMount;
 };

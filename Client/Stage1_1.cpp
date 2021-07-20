@@ -22,6 +22,7 @@ HRESULT CStage1_1::Ready_Scene()
 	//CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::BACKGROUND, pObject);
 	//pObject = nullptr;
 
+	m_vStartPos = { 200.f, 300.f, 0.f };
 	CPrefab_Manager::Get_Instance()->SpawnObjectbyScene(CScene_Manager::STAGE_1_1);
 	if (!CGameObject_Manager::Get_Instance()->Get_Player())
 	{

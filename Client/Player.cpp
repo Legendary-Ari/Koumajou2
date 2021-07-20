@@ -29,8 +29,9 @@ CPlayer::CPlayer()
 	, m_fKnifeRemainedTime(0.f)
 	, m_bFlyable(true)
 	, m_fCurMp(100)
+	, m_uiCurChi(50)
 	, m_fFlyingSpeed(70.f)
-	, m_uiCurChi(0)
+	, m_uiLife(3)
 {
 }
 
@@ -263,7 +264,6 @@ HRESULT CPlayer::Ready_GameObject()
 				break;
 			}
 			CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::VSKILL, m_pVSkill[i]);
-
 		}
 
 		INFO tInfo;
@@ -294,16 +294,20 @@ int CPlayer::Update_GameObject()
 
 void CPlayer::Late_Update_GameObject()
 {
+	if (m_fCurHp <= 0.f)
+		m_bDead = true;
+
 	UpdateState();
 	UpdateAnimation();
-
-	if (m_tInfo.vPos.y > 8000)
+	float fMapSizeX = (float)CScroll_Manager::GetMapSizeX();
+	float fMapSizeY = (float)CScroll_Manager::GetMapSizeY();
+	if (m_tInfo.vPos.y > fMapSizeY)
 	{
 		m_tInfo.vPos = { 200.f, 300.f, 0.f };
 		m_tInfo.vDir.y = 0;
+		m_bDead = true;
 	}
-	float fMapSizeX = (float)CScroll_Manager::GetMapSizeX();
-	float fMapSizeY = (float)CScroll_Manager::GetMapSizeY();
+
 	if (m_tInfo.vPos.x < 0)
 		m_tInfo.vPos.x = 0;
 	if (m_tInfo.vPos.x > fMapSizeX)
@@ -334,7 +338,7 @@ void CPlayer::Render_GameObject()
 	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
 	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, &tRenderRect, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
 	RenderCollision();
-	DEBUG_STRING(L"%d", m_bFlying, 100, 50);
+	
 }
 
 void CPlayer::Release_GameObject()
@@ -353,7 +357,6 @@ void CPlayer::OnBlocked(CGameObject * pHitObject, DIRECTION::ID _eId)
 	m_bOnGround = false;
 	m_bFlying = false;
 	m_fJumpRamainedTime = 0;
-
 }
 
 void CPlayer::Set_OnGround(bool _b)
@@ -440,6 +443,18 @@ void CPlayer::UpdateState()
 		else if (m_fHitCumulateTime > m_fHitTimeLength)
 		{
 			m_bHit = false;
+			if (m_bDead)
+			{
+				CScene_Manager::Get_Instance()->Reset();
+				m_bDead = false;
+				m_fCurHp = 100.f;
+				m_fCurMp = 100.f;
+				--m_uiLife;
+				m_tInfo.vPos = CScene_Manager::Get_Instance()->Get_StartPos();
+				D3DXVECTOR3 vScroll = CScroll_Manager::Get_Scroll();
+				D3DXVECTOR3 vDiff = m_tInfo.vPos - D3DXVECTOR3{ float(CLIENTCX >> 1), float(CLIENTCY >> 1), 0.f };
+				CScroll_Manager::Force_Set_Scroll(-vDiff);
+			}
 		}
 		else
 			return;
@@ -628,8 +643,8 @@ void CPlayer::UpdateAnimation()
 					m_eCurState = FALLING;
 					m_bFalling = true;
 					m_bOnGround = false;
-					
 					m_bHit = false;
+
 					break;
 				case CPlayer::F_LANDING:
 					m_uiAnimationFrame = m_vecAnimation[m_eCurState]->vecRect.size() - 1;
@@ -1057,6 +1072,7 @@ void CPlayer::UpdateMoveWithPressKey()
 	if (!m_bJumping && !m_bOnGround)
 	{
 		UpdateGravity();
+		m_bFalling = true;
 	}
 
 }

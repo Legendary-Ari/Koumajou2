@@ -10,5 +10,9 @@ public:
 	virtual void	InitUpdate_Scene()PURE;
 	virtual void	Render_Scene()PURE;
 	virtual void	Release_Scene()PURE;
+	const _vec3&	Get_StartPos() const;
+protected:
+	_vec3		m_vStartPos;
+
 };
 

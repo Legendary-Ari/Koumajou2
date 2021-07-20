@@ -36,6 +36,8 @@ public:
 	virtual void	Set_OnGround(bool _b) override;
 	virtual const float* Get_HpPointer() const { return &m_fCurHp; }
 	const float*	Get_MpPointer() const { return &m_fCurMp; }
+	const UINT*		Get_ChiPointer() const { return &m_uiCurChi; }
+	const UINT*		Get_LifePointer() const { return &m_uiLife; }
 	void			Add_Chi(UINT _uiChi) { m_uiCurChi += _uiChi; }
 private:
 	virtual void	UpdateState() override;
@@ -69,9 +71,10 @@ private:
 	const float m_fMaxKnifeTime;
 	float		m_fCurMp;
 	UINT		m_uiCurChi;
+	UINT		m_uiLife;
 	bool		m_bFlyable;
 	const float	m_fFlyingSpeed;
-
+	
 	CVSkill*	m_pVSkill[SKILL_END];
 
 };

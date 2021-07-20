@@ -193,6 +193,12 @@
     <Filter Include="01.GameObject\07.Item\01.Chi">
       <UniqueIdentifier>{a70475e9-3b67-4a29-bef3-f5285ee70142}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.GameObject\05.Gui\Number">
+      <UniqueIdentifier>{07d47c30-935a-4428-ae9d-5cb207db2924}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Scene\LoadingScene">
+      <UniqueIdentifier>{b744c69c-3a39-4d68-b9bc-b0659233dc53}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -408,6 +414,8 @@
     <ClInclude Include="Chi.h">
       <Filter>01.GameObject\07.Item\01.Chi</Filter>
     </ClInclude>
+    <ClInclude Include="NumberUi.h" />
+    <ClInclude Include="LoadingScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -617,6 +625,8 @@
     <ClCompile Include="Chi.cpp">
       <Filter>01.GameObject\07.Item\01.Chi</Filter>
     </ClCompile>
+    <ClCompile Include="NumberUi.cpp" />
+    <ClCompile Include="LoadingScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">

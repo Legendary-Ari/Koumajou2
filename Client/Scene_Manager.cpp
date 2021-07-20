@@ -75,3 +75,35 @@ void CScene_Manager::Release_Scene_Manager()
 {
 	Safe_Delete(m_pScene); 
 }
+
+const _vec3 & CScene_Manager::Get_StartPos() const
+{
+	return m_pScene->Get_StartPos();
+}
+
+HRESULT CScene_Manager::Reset()
+{
+
+		Safe_Delete(m_pScene);
+		switch (m_eNextScene)
+		{
+		case CScene_Manager::SCENE_LOADING:
+			break;
+		case CScene_Manager::MENU:
+			break;
+		case CScene_Manager::SELECT:
+			m_pScene = CSceneWeaponSelect::Create();
+			break;
+		case CScene_Manager::STAGE_1_1:
+			m_pScene = CStage1_1::Create();
+			break;
+		case CScene_Manager::STAGE_1_4:
+			m_pScene = CStage1_4::Create();
+			break;
+		default:
+			m_pScene = CStage1_1::Create();
+			break;
+		}
+		m_pScene->InitUpdate_Scene();
+	return S_OK;
+}

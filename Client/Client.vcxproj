@@ -177,10 +177,12 @@
     <ClInclude Include="Item.h" />
     <ClInclude Include="Key_Manager.h" />
     <ClInclude Include="Knife.h" />
+    <ClInclude Include="LoadingScene.h" />
     <ClInclude Include="LunaDial.h" />
     <ClInclude Include="MainApp.h" />
     <ClInclude Include="Multi_Texture.h" />
     <ClInclude Include="MyMath.h" />
+    <ClInclude Include="NumberUi.h" />
     <ClInclude Include="Owl.h" />
     <ClInclude Include="Pillor.h" />
     <ClInclude Include="Player.h" />
@@ -250,10 +252,12 @@
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="Key_Manager.cpp" />
     <ClCompile Include="Knife.cpp" />
+    <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="LunaDial.cpp" />
     <ClCompile Include="MainApp.cpp" />
     <ClCompile Include="Multi_Texture.cpp" />
     <ClCompile Include="MyMath.cpp" />
+    <ClCompile Include="NumberUi.cpp" />
     <ClCompile Include="Owl.cpp" />
     <ClCompile Include="Pillor.cpp" />
     <ClCompile Include="Player.cpp" />

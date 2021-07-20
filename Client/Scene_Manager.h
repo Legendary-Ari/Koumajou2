@@ -15,9 +15,12 @@ public:
 	void InitUpdate_Scene_Manager();
 	void Render_Scene_Manager(); 
 	void Release_Scene_Manager(); 
+	const _vec3& Get_StartPos() const;
+	HRESULT Reset();
 private:
 	ID m_eCurScene; 
 	ID m_eNextScene; 
 	CScene* m_pScene; 
+	
 };
 

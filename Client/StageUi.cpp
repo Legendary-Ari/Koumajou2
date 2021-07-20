@@ -1,9 +1,14 @@
 #include "stdafx.h"
 #include "StageUi.h"
 #include "Player.h"
+#include "NumberUi.h"
 
 CStageUi::CStageUi()
 	:m_uiIconMount(3)
+	, m_vChiTextPos({18.f,10.f,0.f})
+	, m_vLifeTextPos({120.f, 40.f, 0.f})
+	, m_pCurLife(nullptr)
+	, m_pCurChi(nullptr)
 {
 }
 
@@ -28,6 +33,7 @@ CGameObject * CStageUi::Create()
 HRESULT CStageUi::Ready_GameObject()
 {
 	m_tInfo.vPos = { 154.f, 36.f, 0.f };
+	m_tInfo.vSize = { 0.75f, 0.75f, 0.f };
 	m_tHpBarInfo.vPos = { 115.f, 20.0f, 0.f };
 	m_tHpBarInfo.vSize = { 6.f,0.75f,0.f };
 	m_tMPBarInfo.vPos = { 117.f, 28.0f, 0.f };
@@ -54,6 +60,8 @@ void CStageUi::InitUpdate_GameObject()
 {
 	m_pCurHp = static_cast<const CPlayer*>(CGameObject_Manager::Get_Instance()->Get_Player())->Get_HpPointer();
 	m_pCurMp = static_cast<const CPlayer*>(CGameObject_Manager::Get_Instance()->Get_Player())->Get_MpPointer();
+	m_pCurChi = static_cast<const CPlayer*>(CGameObject_Manager::Get_Instance()->Get_Player())->Get_ChiPointer();
+	m_pCurLife = static_cast<const CPlayer*>(CGameObject_Manager::Get_Instance()->Get_Player())->Get_LifePointer();
 }
 
 int CStageUi::Update_GameObject()
@@ -81,7 +89,7 @@ void CStageUi::Render_GameObject()
 	D3DXVECTOR3 vScroll = CScroll_Manager::Get_Scroll();
 
 	D3DXMATRIX matScale, matTrans, matWorld;
-	D3DXMatrixScaling(&matScale, 0.75f, 0.75f, 0.f);
+	D3DXMatrixScaling(&matScale, m_tInfo.vSize.x, m_tInfo.vSize.y, 0.f);
 	D3DXMatrixTranslation(&matTrans, m_tInfo.vPos.x, m_tInfo.vPos.y, 0.f);
 	matWorld = matScale * matTrans;
 	const RECT& rect = m_pObjectInfo->tRect;
@@ -95,6 +103,7 @@ void CStageUi::Render_GameObject()
 	RenderIcon();
 	RenderChiText();
 	RenderLifeText();
+	
 }
 
 
@@ -192,17 +201,18 @@ void CStageUi::RenderIcon()
 
 void CStageUi::RenderChiText()
 {
-	//TCHAR str[32];
-	//GetPrivateProfileString(L"Pos", L"x", L"", str, sizeof(str), L"../Temp.ini");
-	//m_vIconInfo.vPos.x = _ttof(str);
-	//GetPrivateProfileString(L"Pos", L"y", L"", str, sizeof(str), L"../Temp.ini");
-	//m_vIconInfo.vPos.y = _ttof(str);
-	//GetPrivateProfileString(L"Size", L"x", L"", str, sizeof(str), L"../Temp.ini");
-	//m_vIconInfo.vSize.x = _ttof(str);
-	//GetPrivateProfileString(L"Size", L"y", L"", str, sizeof(str), L"../Temp.ini");
-	//m_vIconInfo.vSize.y = _ttof(str);
+	_vec3 vPos = m_vChiTextPos;
+	
+	
+	CNumberUi::RenderNumber((*m_pCurChi) / 100, CNumberUi::BIG, vPos);
+	vPos.x += m_tInfo.vSize.x * 8.f;
+	CNumberUi::RenderNumber(((*m_pCurChi) / 10) % 10, CNumberUi::BIG, vPos);
+	vPos.x += m_tInfo.vSize.x * 8.f;
+	CNumberUi::RenderNumber((*m_pCurChi) % 10, CNumberUi::BIG, vPos);
 }
 
 void CStageUi::RenderLifeText()
 {
+
+	CNumberUi::RenderNumber((*m_pCurLife), CNumberUi::BIG, m_vLifeTextPos);
 }
