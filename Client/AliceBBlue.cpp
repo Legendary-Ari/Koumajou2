@@ -2,6 +2,7 @@
 #include "AliceBBlue.h"
 #include "BossAlice.h"
 
+int CAliceBBlue::m_pSoundIdx = 0;
 CAliceBBlue::CAliceBBlue()
 	:m_fAcceleration(0.f)
 {
@@ -49,6 +50,14 @@ HRESULT CAliceBBlue::Ready_GameObject()
 	m_vecAttackCollision = m_vecTileCollision;
 	m_vecBodyCollision = m_vecAttackCollision;
 	m_fAcceleration = 0.f;
+	{
+		CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNELID(CSoundMgr::BOSS_BULLET1 + m_pSoundIdx));
+		CSoundMgr::Get_Instance()->PlaySound(L"060.wav", CSoundMgr::CHANNELID(CSoundMgr::BOSS_BULLET1 + m_pSoundIdx));
+		++m_pSoundIdx;
+		if (m_pSoundIdx >= 3)
+			m_pSoundIdx = 0;
+	}
+	
 	return S_OK;
 }
 

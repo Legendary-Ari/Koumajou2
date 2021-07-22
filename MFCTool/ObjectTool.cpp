@@ -731,7 +731,7 @@ BOOL CObjectTool::OnInitDialog()
 	m_ComboOBJID.ResetContent();
 	for (BYTE i = 0; i < OBJECTINFO::OBJID_END; ++i)
 	{
-		cstrFormat.Format(_T("%d "), i);
+		cstrFormat.Format(_T("%02d "), i);
 		CString cstrEnum = CEnumToString::szObjId[i];
 		m_ComboOBJID.AddString(cstrFormat + cstrEnum);
 		cstrFormat.Empty();
@@ -739,7 +739,7 @@ BOOL CObjectTool::OnInitDialog()
 	m_ComboRenderId.ResetContent();
 	for (BYTE i = 0; i < RENDERID::END; ++i)
 	{
-		cstrFormat.Format(_T("%d "), i);
+		cstrFormat.Format(_T("%02d "), i);
 		CString cstrEnum = CEnumToString::szRenderId[i];
 		m_ComboRenderId.AddString(cstrFormat + cstrEnum);
 		cstrFormat.Empty();

@@ -16,6 +16,5 @@ public:
 	virtual void Release_Scene() override;
 public:
 	static CScene* Create(); 
-
 };
 

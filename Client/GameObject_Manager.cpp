@@ -30,7 +30,6 @@ void CGameObject_Manager::InitUpdate_GameObject_Manager()
 		for (auto& iter = m_listGameObject[i].begin(); iter != m_listGameObject[i].end(); ++iter)
 		{
 			(*iter)->InitUpdate_GameObject();
-
 		}
 	}
 }
@@ -69,8 +68,6 @@ void CGameObject_Manager::Update_GameObject_Manager()
 	CCollisionMgr::Collision_Ex(m_listGameObject[OBJECTINFO::ENEMY], m_listGameObject[OBJECTINFO::PLAYER]);
 	CCollisionMgr::Collision_Ex(m_listGameObject[OBJECTINFO::BOSS], m_listGameObject[OBJECTINFO::PLAYER]);
 
-	
-
 	for (int i = 0; i < OBJECTINFO::OBJID_END; ++i)
 	{
 		for (auto& pGameObject : m_listGameObject[i])
@@ -83,7 +80,6 @@ void CGameObject_Manager::Update_GameObject_Manager()
 					list.clear();
 				return;
 			}
-
 			m_listGameObjectRender[pGameObject->Get_RenderId()].emplace_back(pGameObject);
 		}
 	}
@@ -93,8 +89,14 @@ void CGameObject_Manager::Render_GameObject_Manager()
 {
 	if (m_bStageChanging)
 	{
+		for (int i = 0; i < OBJECTINFO::OBJID_END; ++i)
+		{
+			for (auto& pGameObject : m_listGameObject[i])
+			{
+				m_listGameObjectRender[pGameObject->Get_RenderId()].emplace_back(pGameObject);
+			}
+		}
 		m_bStageChanging = false;
-		return;
 	}
 	for (int i = 0; i < RENDERID::END; ++i)
 	{

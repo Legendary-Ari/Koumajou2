@@ -294,24 +294,36 @@ int CPlayer::Update_GameObject()
 
 void CPlayer::Late_Update_GameObject()
 {
-	if (m_fCurHp <= 0.f)
+	if (m_fCurHp <= 0.f && !m_bDead)
+	{
+		CSoundMgr::Get_Instance()->StopSound(CSoundMgr::UI);
+		CSoundMgr::Get_Instance()->PlaySound(L"sak_A089.wav", CSoundMgr::UI);
 		m_bDead = true;
+	}
+		
 
 	UpdateState();
+	if (m_bDead)
+	{
+		m_bDead = false;
+		return;
+	}
 	UpdateAnimation();
 	float fMapSizeX = (float)CScroll_Manager::GetMapSizeX();
 	float fMapSizeY = (float)CScroll_Manager::GetMapSizeY();
 	if (m_tInfo.vPos.y > fMapSizeY)
 	{
+		m_tInfo.vPos = CScene_Manager::Get_Instance()->Get_StartPos();
+		D3DXVECTOR3 vScroll = CScroll_Manager::Get_Scroll();
+		D3DXVECTOR3 vDiff = m_tInfo.vPos - D3DXVECTOR3{ float(CLIENTCX >> 1), float(CLIENTCY >> 1), 0.f };
+		CScroll_Manager::Force_Set_Scroll(-vDiff);
+		CScroll_Manager::ScrollLock();
 		CScene_Manager::Get_Instance()->Reset();
 		m_bDead = false;
 		m_fCurHp = 100.f;
 		m_fCurMp = 100.f;
 		--m_uiLife;
-		m_tInfo.vPos = CScene_Manager::Get_Instance()->Get_StartPos();
-		D3DXVECTOR3 vScroll = CScroll_Manager::Get_Scroll();
-		D3DXVECTOR3 vDiff = m_tInfo.vPos - D3DXVECTOR3{ float(CLIENTCX >> 1), float(CLIENTCY >> 1), 0.f };
-		CScroll_Manager::Force_Set_Scroll(-vDiff);
+		return;
 	}
 
 	if (m_tInfo.vPos.x < 0)
@@ -344,7 +356,7 @@ void CPlayer::Render_GameObject()
 	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
 	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, &tRenderRect, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
 	RenderCollision();
-	
+	DEBUG_STRING(L"%f",m_tInfo.vPos.y,100,100);
 }
 
 void CPlayer::Release_GameObject()
@@ -363,6 +375,10 @@ void CPlayer::OnBlocked(CGameObject * pHitObject, DIRECTION::ID _eId)
 	m_bOnGround = false;
 	m_bFlying = false;
 	m_fJumpRamainedTime = 0;
+	CSoundMgr::Get_Instance()->StopSound(CSoundMgr::PLAYER_VOICE);
+	CSoundMgr::Get_Instance()->PlaySound(L"sak_A080.wav", CSoundMgr::PLAYER_VOICE);
+	CSoundMgr::Get_Instance()->StopSound(CSoundMgr::PLAYER_EFFECT);
+	CSoundMgr::Get_Instance()->PlaySound(L"damage.wav", CSoundMgr::PLAYER_EFFECT);
 }
 
 void CPlayer::Set_OnGround(bool _b)
@@ -426,6 +442,10 @@ void CPlayer::OnOverlaped(CGameObject* _pHitObject, _vec3 vHitPos)
 	m_bFlying = false;
 	m_uiAnimationFrame = 0;
 	m_fJumpRamainedTime = 0;
+	CSoundMgr::Get_Instance()->StopSound(CSoundMgr::PLAYER_VOICE);
+	CSoundMgr::Get_Instance()->PlaySound(L"sak_A081.wav", CSoundMgr::PLAYER_VOICE);
+	CSoundMgr::Get_Instance()->StopSound(CSoundMgr::PLAYER_EFFECT);
+	CSoundMgr::Get_Instance()->PlaySound(L"damage.wav", CSoundMgr::PLAYER_EFFECT);
 }
 
 void CPlayer::UpdateState()
@@ -452,7 +472,6 @@ void CPlayer::UpdateState()
 			if (m_bDead)
 			{
 				CScene_Manager::Get_Instance()->Reset();
-				m_bDead = false;
 				m_fCurHp = 100.f;
 				m_fCurMp = 100.f;
 				--m_uiLife;
@@ -460,6 +479,8 @@ void CPlayer::UpdateState()
 				D3DXVECTOR3 vScroll = CScroll_Manager::Get_Scroll();
 				D3DXVECTOR3 vDiff = m_tInfo.vPos - D3DXVECTOR3{ float(CLIENTCX >> 1), float(CLIENTCY >> 1), 0.f };
 				CScroll_Manager::Force_Set_Scroll(-vDiff);
+				CScroll_Manager::ScrollLock();
+				return;
 			}
 		}
 		else
@@ -850,6 +871,8 @@ void CPlayer::UpdateMoveWithPressKey()
 		m_pVSkill[NEXT]->Set_Angle(90.f);
 		m_pVSkill[CUR]->Set_Angle(45.f);
 		m_pVSkill[PREV]->Set_Angle(0.f);
+		CSoundMgr::Get_Instance()->StopSound(CSoundMgr::UI);
+		CSoundMgr::Get_Instance()->PlaySound(L"000.wav", CSoundMgr::UI);
 	}
 
 	
@@ -934,6 +957,29 @@ void CPlayer::UpdateMoveWithPressKey()
 				m_bFalling = true;
 				m_bFlying = false;
 			}
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::PLAYER_VOICE);
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::PLAYER_EFFECT);
+			CSoundMgr::Get_Instance()->PlaySound(L"atk_sw.wav", CSoundMgr::PLAYER_EFFECT);
+			{
+				int i = rand() % 10;
+				if (i == 0)
+				{
+					CSoundMgr::Get_Instance()->PlaySound(L"sak_A003.wav", CSoundMgr::PLAYER_VOICE);
+				}
+				else if (i == 1)
+				{
+					CSoundMgr::Get_Instance()->PlaySound(L"sak_A003_B.wav", CSoundMgr::PLAYER_VOICE);
+				}
+				else if (i == 2)
+				{
+					CSoundMgr::Get_Instance()->PlaySound(L"sak_A003_C.wav", CSoundMgr::PLAYER_VOICE);
+				}
+				else if (i == 3)
+				{
+					CSoundMgr::Get_Instance()->PlaySound(L"sak_A003_D.wav", CSoundMgr::PLAYER_VOICE);
+				}
+			}
+
 		}
 		if (CKey_Manager::Get_Instance()->Key_Down(KEY_C) && m_uiCurChi >= m_pVSkill[CUR]->Get_Cost())
 		{
@@ -957,6 +1003,8 @@ void CPlayer::UpdateMoveWithPressKey()
 						tBullet.vPos.y += 20.f;
 						CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)m_pBulletInfo->eObjId, CKnife::Create(m_pBulletInfo, tBullet.vPos, tBullet.fAngle));
 						m_uiCurChi -= 3;
+						CSoundMgr::Get_Instance()->StopSound(CSoundMgr::VSKILL);
+						CSoundMgr::Get_Instance()->PlaySound(L"kick.wav", CSoundMgr::VSKILL);
 					}
 
 				}

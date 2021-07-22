@@ -46,7 +46,6 @@ private:
 	virtual void	UpdateBodyCollision() override;
 	virtual void	UpdateAttackCollision() override;
 	
-	
 	void	UpdateMoveWithPressKey();
 	void	Offset();
 	virtual void UpdateJump() override;

@@ -5,6 +5,7 @@
 #include "AliceBBlue.h"
 #include "BAliceDoll.h"
 #include "BossSkillEffect.h"
+#include "SceneChanger.h"
 
 CBossAlice::CBossAlice()
 	: m_fHitMaxTime(0.2f)
@@ -23,6 +24,11 @@ CBossAlice::CBossAlice()
 CBossAlice::~CBossAlice()
 {
 	Release_GameObject();
+	{
+		_vec3 SrcPos = { 1300.f, 500.f, 0.f };
+		_vec3 DstPos = { 20.f, 270.f, 0.f };
+		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::COLLISION, CSceneChanger::Create(SrcPos, DstPos, CScene_Manager::STAGE_2_4));
+	}
 }
 
 CGameObject * CBossAlice::Create(const OBJECTINFO * _pObjectInfo)
@@ -135,8 +141,6 @@ void CBossAlice::InitUpdate_GameObject()
 
 void CBossAlice::Late_Update_GameObject()
 {
-
-		
 	UpdateState();
 	if (m_bDead)
 	{
@@ -184,16 +188,15 @@ void CBossAlice::OnOverlaped(CGameObject * _pHitObject, _vec3 vHitPos)
 		CGameObject::OnOverlaped(_pHitObject, vHitPos);
 		m_bHit = true;
 		m_fHitRemainTime = m_fHitMaxTime;
-		const ANIMATION* pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(L"SakuyaMelee");
+		const ANIMATION* pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(L"Common_EffectsLight");
 		INFO tInfo;
 		ZeroMemory(&tInfo, sizeof(INFO));
 		tInfo.vPos = vHitPos;
-		if (vHitPos.x < m_tInfo.vPos.x)
-			tInfo.vDir = { 3.0f,0.0f,0.f };
-		else
-			tInfo.vDir = { -3.0f,0.0f,0.f };
-		tInfo.vSize = { 5.0f,3.0f,0.f };
+		tInfo.vDir = { 0.0f,0.0f,0.f };
+		tInfo.vSize = { 0.5f,0.5f,0.f };
 		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::EFFECT), CEffect::Create(pAnim, tInfo));
+		CSoundMgr::Get_Instance()->StopSound(CSoundMgr::ENEMY_HIT);
+		CSoundMgr::Get_Instance()->PlaySound(L"101.wav", CSoundMgr::ENEMY_HIT);
 	}
 }
 
@@ -369,7 +372,7 @@ void CBossAlice::UpdateState()
 			m_eCurState = IDLE;
 
 	}
-	if (m_eCurState == MOVE || m_eCurState == IDLE)
+	if (m_eCurState == MOVE || m_eCurState == IDLE && !m_bDead)
 	{
 		if (m_tInfo.vPos.x > CGameObject_Manager::Get_Instance()->Get_Player()->Get_Info().vPos.x)
 			m_bFliped = true;

@@ -33,6 +33,14 @@ HRESULT CSpawn_Manager::Spawn(const wstring _wstrObjName, const ACTORINFO * _pAc
 	{
 		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)_pObjectInfo->eObjId, CBackGround::Create(_pObjectInfo));
 	}
+	else if (wstrPrefab == L"bg05")
+	{
+		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)_pObjectInfo->eObjId, CBackGround::Create(_pObjectInfo));
+	}
+	else if (wstrPrefab == L"InvisibleBlock")
+	{
+		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)_pObjectInfo->eObjId, CBackCollision::Create(_pActorInfo, _pObjectInfo));
+	}
 	else if (wstrPrefab == L"s01g03")
 	{
 		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)_pObjectInfo->eObjId, CBackCollision::Create(_pActorInfo, _pObjectInfo));
@@ -73,6 +81,7 @@ HRESULT CSpawn_Manager::Spawn(const wstring _wstrObjName, const ACTORINFO * _pAc
 	{
 		//CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)_pObjectInfo->eObjId, CAluraUne::Create(_pActorInfo, _pObjectInfo));
 	}
+
 
 
 

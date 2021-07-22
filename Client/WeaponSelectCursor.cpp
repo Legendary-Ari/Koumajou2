@@ -168,6 +168,8 @@ int CWeaponSelectCursor::Update_GameObject()
 		} while (!m_pVSkill[m_uiCurSel] || IsSelected(m_uiCurSel));
 		
 		m_tInfo.vPos = m_vRingPos[m_uiCurSel];
+		CSoundMgr::Get_Instance()->StopSound(CSoundMgr::UI);
+		CSoundMgr::Get_Instance()->PlaySound(L"cursor.wav",CSoundMgr::UI);
 	}
 	if (CKey_Manager::Get_Instance()->Key_Down(KEY_RIGHT))
 	{
@@ -180,6 +182,8 @@ int CWeaponSelectCursor::Update_GameObject()
 				break;
 		} while (!m_pVSkill[m_uiCurSel] || IsSelected(m_uiCurSel));
 		m_tInfo.vPos = m_vRingPos[m_uiCurSel];
+		CSoundMgr::Get_Instance()->StopSound(CSoundMgr::UI);
+		CSoundMgr::Get_Instance()->PlaySound(L"cursor.wav", CSoundMgr::UI);
 	}
 
 	if (CKey_Manager::Get_Instance()->Key_Down(KEY_X))
@@ -194,6 +198,8 @@ int CWeaponSelectCursor::Update_GameObject()
 			m_uiCurSel = uiTarget;
 			m_tInfo.vPos = m_vRingPos[m_uiCurSel];
 		}
+		CSoundMgr::Get_Instance()->StopSound(CSoundMgr::UI);
+		CSoundMgr::Get_Instance()->PlaySound(L"cancel.wav", CSoundMgr::UI);
 	}
 	
 	if (CKey_Manager::Get_Instance()->Key_Down(KEY_Z))
@@ -222,6 +228,8 @@ int CWeaponSelectCursor::Update_GameObject()
 			m_tInfo.vPos = m_vRingPos[m_uiCurSel];
 			++m_iSelectedIdx;
 		}
+		CSoundMgr::Get_Instance()->StopSound(CSoundMgr::UI);
+		CSoundMgr::Get_Instance()->PlaySound(L"decide.wav", CSoundMgr::UI);
 	}
 	if (m_iSelectedIdx == 3)
 	{
@@ -236,7 +244,7 @@ int CWeaponSelectCursor::Update_GameObject()
 void CWeaponSelectCursor::Late_Update_GameObject()
 {
 	if(m_bSceneChange)
-		CScene_Manager::Get_Instance()->Change_Scene_Manager(CScene_Manager::SCENE_LOADING, CScene_Manager::STAGE_1_1);
+		CScene_Manager::Get_Instance()->Change_Scene_Manager(CScene_Manager::SCENE_LOADING, CScene_Manager::STAGE_2_4);
 }
 
 void CWeaponSelectCursor::Render_GameObject()

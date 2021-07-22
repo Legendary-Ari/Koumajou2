@@ -5,6 +5,7 @@
 #include "StageUi.h"
 #include "SceneChanger.h"
 
+
 CStage1_1::CStage1_1()
 {
 }
@@ -17,6 +18,13 @@ CStage1_1::~CStage1_1()
 
 HRESULT CStage1_1::Ready_Scene()
 {
+	if (m_ePlaying != CScene_Manager::STAGE_1_1)
+	{
+		CSoundMgr::Get_Instance()->StopAll();
+		CSoundMgr::Get_Instance()->PlayBGM(L"Stage 1.mp3");
+		m_ePlaying = CScene_Manager::STAGE_1_1;
+	}
+	
 	CGameObject* pObject = nullptr;
 	//pObject =	CTerrain::Create();
 	//CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::BACKGROUND, pObject);
@@ -32,6 +40,9 @@ HRESULT CStage1_1::Ready_Scene()
 			CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)pObjectInfo->eObjId, CPlayer::Create(pObjectInfo, pActorInfo->tInfo));
 
 	}
+
+		
+
 	CGameObject_Manager::Get_Instance()->Get_Player()->Set_Pos(m_vStartPos);
 
 

@@ -39,6 +39,8 @@ void CNumberUi::Release_GameObject()
 
 void CNumberUi::RenderNumber(UINT _ui, CNumberUi::ID _eId, const _vec3& _vPos)
 {
+	if (_ui > 9)
+		return;
 	wstring Anim_Key = L"Number_Font";
 	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()->Get_TexInfo(Anim_Key);
 	switch (_eId)

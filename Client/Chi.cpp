@@ -99,6 +99,8 @@ void CChi::Give_ThisItem()
 {
 	static_cast<CPlayer*>(CGameObject_Manager::Get_Instance()->Get_Player())->Add_Chi(m_uiChiMount);
 	m_bDestroyed = true;
+	CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHI);
+	CSoundMgr::Get_Instance()->PlaySound(L"take_chi.wav", CSoundMgr::CHI);
 }
 
 void CChi::Set_Chi(UINT _uiChi)

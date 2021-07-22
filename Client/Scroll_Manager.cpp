@@ -89,12 +89,25 @@ int CScroll_Manager::GetMapSizeY()
 void CScroll_Manager::ScrollLock()
 {
 	if (m_vTargetScroll.x > 0)
+	{
 		m_vTargetScroll.x = 0;
+		m_vCurScroll = m_vTargetScroll;
+	}
 	if (m_vTargetScroll.x < -m_iMapSizeX + CLIENTCX)
+	{
 		m_vTargetScroll.x = (float)(-m_iMapSizeX + CLIENTCX);
+		m_vCurScroll = m_vTargetScroll;
+	}
 	if (m_vTargetScroll.y > 0)
+	{
 		m_vTargetScroll.y = 0;
+		m_vCurScroll = m_vTargetScroll;
+	}
 	if (m_vTargetScroll.y < (-m_iMapSizeY + CLIENTCY))
+	{
 		m_vTargetScroll.y = (float)(-m_iMapSizeY + CLIENTCY);
+		m_vCurScroll = m_vTargetScroll;
+	}
+	
 
 }

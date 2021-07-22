@@ -28,9 +28,9 @@ HRESULT CMainApp::Ready_MainApp()
 
 	if (FAILED(CPrefab_Manager::Get_Instance()->Ready_Prefab_Manager()))
 		goto ERR;
-	CGame_Manager::Get_Instance()->m_eCurStage = CScene_Manager::STAGE_1_1;
-	CScene_Manager::Get_Instance()->Change_Scene_Manager(CScene_Manager::SELECT);
 	CSoundMgr::Get_Instance()->Initialize();
+	CScene_Manager::Get_Instance()->Change_Scene_Manager(CScene_Manager::SELECT);
+
 	return S_OK;
 
 ERR:

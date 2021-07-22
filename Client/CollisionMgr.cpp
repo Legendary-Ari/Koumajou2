@@ -148,7 +148,7 @@ void CCollisionMgr::PlayerCheckBottom()
 		{
 			for (auto& Col : vecCol)
 			{
-				Col.tFRect.bottom += 0.1f;
+				Col.tFRect.bottom += 0.9f;
 			}
 		}
 		if (IsObj_OverlappedEx(pDst->Get_TileCollision(), vecCol, &fX, &fY))
@@ -342,7 +342,7 @@ bool CCollisionMgr::Check_Rect(const FRECT& _Dst,const FRECT& _Src, float* _x, f
 			*_x = rcW;
 			*_y = rcH;
 		}
-			return true;
+		return true;
 	}
 
 	return false;

@@ -56,4 +56,6 @@ void CVKnife::Use(const INFO& tInfo)
 	m_pBulletInfo = CPrefab_Manager::Get_Instance()->Get_ObjectPrefab(L"Sakuya_Knife");
 	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)m_pBulletInfo->eObjId, CKnife::Create(m_pBulletInfo, tInfo.vPos, tInfo.fAngle));
 	Use_Cost();
+	CSoundMgr::Get_Instance()->StopSound(CSoundMgr::VSKILL);
+	CSoundMgr::Get_Instance()->PlaySound(L"067.wav", CSoundMgr::VSKILL);
 }

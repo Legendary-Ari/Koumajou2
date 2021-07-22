@@ -199,6 +199,15 @@
     <Filter Include="03.Scene\LoadingScene">
       <UniqueIdentifier>{b744c69c-3a39-4d68-b9bc-b0659233dc53}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03.Scene\Stage\Stage2">
+      <UniqueIdentifier>{b9b5993d-3530-4ee1-85f0-ae6e955ef12c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\09.Boss\Remilia">
+      <UniqueIdentifier>{08ed9c08-60a5-4c22-97dd-d6b31ac2a2fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\01.BackCollision\Invisibel">
+      <UniqueIdentifier>{ffc10f27-0b03-448b-b5df-ad2634f01361}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -420,6 +429,15 @@
     <ClInclude Include="NumberUi.h">
       <Filter>01.GameObject\05.Gui\Number</Filter>
     </ClInclude>
+    <ClInclude Include="Stage2_4.h">
+      <Filter>03.Scene\Stage\Stage2</Filter>
+    </ClInclude>
+    <ClInclude Include="BossRemilia.h">
+      <Filter>01.GameObject\09.Boss\Remilia</Filter>
+    </ClInclude>
+    <ClInclude Include="InvisibleBlock.h">
+      <Filter>01.GameObject\01.BackCollision\Invisibel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -634,6 +652,15 @@
     </ClCompile>
     <ClCompile Include="NumberUi.cpp">
       <Filter>01.GameObject\05.Gui\Number</Filter>
+    </ClCompile>
+    <ClCompile Include="Stage2_4.cpp">
+      <Filter>03.Scene\Stage\Stage2</Filter>
+    </ClCompile>
+    <ClCompile Include="BossRemilia.cpp">
+      <Filter>01.GameObject\09.Boss\Remilia</Filter>
+    </ClCompile>
+    <ClCompile Include="InvisibleBlock.cpp">
+      <Filter>01.GameObject\01.BackCollision\Invisibel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

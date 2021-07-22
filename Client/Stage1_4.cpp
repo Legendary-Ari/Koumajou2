@@ -18,12 +18,17 @@ CStage1_4::~CStage1_4()
 
 HRESULT CStage1_4::Ready_Scene()
 {
+
 	CGameObject* pObject = nullptr;
-	//pObject =	CTerrain::Create();
-	//CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::BACKGROUND, pObject);
-	//pObject = nullptr;
+
 	m_vStartPos = { 50.f,500.f,0.f };
-	//CPrefab_Manager::Get_Instance()->SpawnObjectbyScene(CScene_Manager::STAGE_1_4);
+
+	if (m_ePlaying != CScene_Manager::STAGE_1_4)
+	{
+		CSoundMgr::Get_Instance()->StopAll();
+		CSoundMgr::Get_Instance()->PlayBGM(L"Stage 1-4.mp3");
+		m_ePlaying = CScene_Manager::STAGE_1_4;
+	}
 
 	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::UI, CStageUi::Create());
 
@@ -63,7 +68,7 @@ void CStage1_4::Render_Scene()
 
 void CStage1_4::Release_Scene()
 {
-	CGameObject_Manager::Get_Instance()->Release_GameObject_Manager();
+	CGameObject_Manager::Get_Instance()->Release_StageObject();
 }
 
 CScene * CStage1_4::Create()

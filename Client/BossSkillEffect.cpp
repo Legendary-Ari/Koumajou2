@@ -32,6 +32,8 @@ HRESULT CBossSkillEffect::Ready_GameObject()
 {
 	ZeroMemory(&m_tInfo,sizeof(INFO));
 	m_tInfo.vSize = { 1.f,1.f,0.f };
+	CSoundMgr::Get_Instance()->StopSound(CSoundMgr::BOSS_SPELL);
+	CSoundMgr::Get_Instance()->PlaySound(L"018.wav", CSoundMgr::BOSS_SPELL);
 	return S_OK;
 }
 

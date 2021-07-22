@@ -281,6 +281,10 @@ HRESULT CPrefab_Manager::SpawnObjectbyScene(const CScene_Manager::ID & _id)
 		uiFirst = 1;
 		uiSecond = 4;
 		break;
+	case CScene_Manager::STAGE_2_4:
+		uiFirst = 2;
+		uiSecond = 4;
+		break;
 	default:
 		break;
 	}

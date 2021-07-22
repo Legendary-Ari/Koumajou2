@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Scene.h"
 
-
+BYTE CScene::m_ePlaying = CScene_Manager::END;
 CScene::CScene()
 {
 }

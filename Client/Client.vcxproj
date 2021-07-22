@@ -161,6 +161,7 @@
     <ClInclude Include="BGSelectCastle.h" />
     <ClInclude Include="BossAlice.h" />
     <ClInclude Include="BossHpUi.h" />
+    <ClInclude Include="BossRemilia.h" />
     <ClInclude Include="BossSkillEffect.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="Chi.h" />
@@ -174,6 +175,7 @@
     <ClInclude Include="Game_Manager.h" />
     <ClInclude Include="Graphic_Device.h" />
     <ClInclude Include="Gui.h" />
+    <ClInclude Include="InvisibleBlock.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Key_Manager.h" />
     <ClInclude Include="Knife.h" />
@@ -204,6 +206,7 @@
     <ClInclude Include="Spawn_Manager.h" />
     <ClInclude Include="Stage1_1.h" />
     <ClInclude Include="Stage1_4.h" />
+    <ClInclude Include="Stage2_4.h" />
     <ClInclude Include="StageUi.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="SubMeling.h" />
@@ -236,6 +239,7 @@
     <ClCompile Include="BGSelectCastle.cpp" />
     <ClCompile Include="BossAlice.cpp" />
     <ClCompile Include="BossHpUi.cpp" />
+    <ClCompile Include="BossRemilia.cpp" />
     <ClCompile Include="BossSkillEffect.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Chi.cpp" />
@@ -249,6 +253,7 @@
     <ClCompile Include="Game_Manager.cpp" />
     <ClCompile Include="Graphic_Device.cpp" />
     <ClCompile Include="Gui.cpp" />
+    <ClCompile Include="InvisibleBlock.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="Key_Manager.cpp" />
     <ClCompile Include="Knife.cpp" />
@@ -278,6 +283,7 @@
     <ClCompile Include="Spawn_Manager.cpp" />
     <ClCompile Include="Stage1_1.cpp" />
     <ClCompile Include="Stage1_4.cpp" />
+    <ClCompile Include="Stage2_4.cpp" />
     <ClCompile Include="StageUi.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -13,6 +13,5 @@ public:
 	const _vec3&	Get_StartPos() const;
 protected:
 	_vec3		m_vStartPos;
-
+	static BYTE m_ePlaying;
 };
-

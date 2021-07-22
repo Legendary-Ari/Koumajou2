@@ -4,6 +4,7 @@
 #include "LoadingScene.h"
 #include "Stage1_1.h"
 #include "Stage1_4.h"
+#include "Stage2_4.h"
 IMPLEMENT_SINGLETON(CScene_Manager)
 CScene_Manager::CScene_Manager()
 	:m_eCurScene(END)
@@ -39,14 +40,18 @@ HRESULT CScene_Manager::Change_Scene_Manager(const ID eID, const ID eNextId)
 			m_pScene = CStage1_1::Create();
 			break;
 		case CScene_Manager::STAGE_1_4:
+			CSoundMgr::Get_Instance()->StopAll();
+			CSoundMgr::Get_Instance()->PlayBGM(L"Stage 1-4.mp3");
 			m_pScene = CStage1_4::Create();
 			break;
 		//case CScene_Manager::STAGE_2_1:
 		//	m_pScene = CStage2_1::Create();
 		//	break;
-		//case CScene_Manager::STAGE_2_4:
-		//	m_pScene = CStage2_4::Create();
-		//	break;
+		case CScene_Manager::STAGE_2_4:
+			CSoundMgr::Get_Instance()->StopAll();
+			CSoundMgr::Get_Instance()->PlayBGM(L"Stage 2-4.mp3");
+			m_pScene = CStage2_4::Create();
+			break;
 		default:
 			m_pScene = CStage1_1::Create();
 			break;

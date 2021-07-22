@@ -105,16 +105,15 @@ void CEnemy::OnOverlaped(CGameObject* _pHitObject, _vec3 vHitPos)
 	{
 		CGameObject::OnOverlaped(_pHitObject, vHitPos);
 		m_bHit = true;
-		const ANIMATION* pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(L"SakuyaMelee");
+		const ANIMATION* pAnim = CPrefab_Manager::Get_Instance()->Get_AnimationPrefab(L"Common_EffectsLight");
 		INFO tInfo;
 		ZeroMemory(&tInfo, sizeof(INFO));
 		tInfo.vPos = vHitPos;
-		if(vHitPos.x < m_tInfo.vPos.x)
-			tInfo.vDir = { 3.0f,0.0f,0.f };
-		else
-			tInfo.vDir = { -3.0f,0.0f,0.f };
-		tInfo.vSize = { 5.0f,3.0f,0.f };
+		tInfo.vDir = { 0.0f,0.0f,0.f };
+		tInfo.vSize = { 0.5f,0.5f,0.f };
 		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::EFFECT), CEffect::Create(pAnim, tInfo));
+		CSoundMgr::Get_Instance()->StopSound(CSoundMgr::ENEMY_HIT);
+		CSoundMgr::Get_Instance()->PlaySound(L"101.wav", CSoundMgr::ENEMY_HIT);
 	}
 
 }

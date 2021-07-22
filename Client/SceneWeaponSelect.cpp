@@ -40,7 +40,8 @@ HRESULT CSceneWeaponSelect::Ready_Scene()
 		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)pObjectInfo->eObjId, CWeaponSelectCursor::Create(pObjectInfo));
 	}
 	
-
+	CSoundMgr::Get_Instance()->StopAll();
+	CSoundMgr::Get_Instance()->PlayBGM(L"A Night.mp3");
 
 	return S_OK;
 }
@@ -62,6 +63,7 @@ void CSceneWeaponSelect::Render_Scene()
 
 void CSceneWeaponSelect::Release_Scene()
 {
+	CSoundMgr::Get_Instance()->StopAll();
 	CGameObject_Manager::Get_Instance()->Release_StageObject();
 }
 

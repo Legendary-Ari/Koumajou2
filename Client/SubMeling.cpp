@@ -63,7 +63,22 @@ HRESULT CSubMeling::Ready_GameObject()
 	m_vecAttackCollision.resize(1);
 	m_vecBodyCollision.resize(1);
 	m_vecTileCollision.resize(1);
-
+	CSoundMgr::Get_Instance()->StopSound(CSoundMgr::VSKILL);
+	{
+		int i = rand() % 3;
+		if (i == 0)
+		{
+			CSoundMgr::Get_Instance()->PlaySound(L"sak_A033.wav", CSoundMgr::VSKILL);
+		}
+		else if (i == 1)
+		{
+			CSoundMgr::Get_Instance()->PlaySound(L"sak_A035.wav", CSoundMgr::VSKILL);
+		}
+		else if (i == 2)
+		{
+			CSoundMgr::Get_Instance()->PlaySound(L"sak_A037.wav", CSoundMgr::VSKILL);
+		}
+	}
 	return S_OK;
 }
 

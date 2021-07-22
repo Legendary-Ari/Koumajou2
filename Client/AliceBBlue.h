@@ -27,5 +27,6 @@ private:
 	virtual void UpdateTileCollision() override;
 private:
 	float m_fAcceleration;
+	static int m_pSoundIdx;
 };
 

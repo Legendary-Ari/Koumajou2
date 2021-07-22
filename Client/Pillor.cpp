@@ -80,8 +80,8 @@ void CPillor::UpdateTileCollision()
 
 	float fSizeX = m_tInfo.vSize.x;
 	float fSizeY = m_tInfo.vSize.y;
-	float fReduceSizeLeft = 0.0f;
-	float fReduceSizeRight = 0.75f;
+	float fReduceSizeLeft = 0.5f;
+	float fReduceSizeRight = 0.0f;
 	float fReduceSizeUp = 0.5f;
 	float fReduceSizeDown = 0.5f;
 

@@ -35,6 +35,27 @@ HRESULT CLunaDial::Ready_GameObject()
 	}
 	m_tInfo.vSize = { 1.0f,1.0f,0.f };
 	m_tInfo.fAngle = 0.f;
+	CSoundMgr::Get_Instance()->StopSound(CSoundMgr::VSKILL);
+	{
+		int i = rand() % 4;
+		if (i == 0)
+		{
+			CSoundMgr::Get_Instance()->PlaySound(L"sak_A027.wav", CSoundMgr::VSKILL);
+		}
+		else if (i == 1)
+		{
+			CSoundMgr::Get_Instance()->PlaySound(L"sak_A029.wav", CSoundMgr::VSKILL);
+		}
+		else if (i == 2)
+		{
+			CSoundMgr::Get_Instance()->PlaySound(L"sak_A031.wav", CSoundMgr::VSKILL);
+		}
+		else if (i == 3)
+		{
+			CSoundMgr::Get_Instance()->PlaySound(L"sak_A031_B.wav", CSoundMgr::VSKILL);
+		}
+	}
+	
 	return S_OK;
 }
 

@@ -62,6 +62,10 @@ HRESULT CBAliceDoll::Ready_GameObject()
 
 	m_vecBodyCollision.resize(1);
 	m_vecBodyCollision[0].eId = COLLISION::C_RECT;
+
+	CSoundMgr::Get_Instance()->StopSound(CSoundMgr::CHANNELID(CSoundMgr::DOLL));
+	CSoundMgr::Get_Instance()->PlaySound(L"050.wav", CSoundMgr::CHANNELID(CSoundMgr::DOLL));
+
 	return S_OK;
 }
 

@@ -124,7 +124,7 @@ void CRose::Render_GameObject()
 
 void CRose::Set_Hit(bool _bHit)
 {
-	for (int i=0; i<m_uiRoseStemMount-1; ++i)
+	for (int i=0; i<m_uiRoseStemMount; ++i)
 	{
 		m_vecRoseParts[i]->Set_Hit(true);
 	}
