@@ -24,11 +24,7 @@ CBossAlice::CBossAlice()
 CBossAlice::~CBossAlice()
 {
 	Release_GameObject();
-	{
-		_vec3 SrcPos = { 1300.f, 500.f, 0.f };
-		_vec3 DstPos = { 20.f, 270.f, 0.f };
-		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::COLLISION, CSceneChanger::Create(SrcPos, DstPos, CScene_Manager::STAGE_2_4));
-	}
+
 }
 
 CGameObject * CBossAlice::Create(const OBJECTINFO * _pObjectInfo)
@@ -179,6 +175,11 @@ void CBossAlice::Render_GameObject()
 
 void CBossAlice::Release_GameObject()
 {
+	{
+		_vec3 SrcPos = { 1300.f, 500.f, 0.f };
+		_vec3 DstPos = { 20.f, 270.f, 0.f };
+		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::COLLISION, CSceneChanger::Create(SrcPos, DstPos, CScene_Manager::STAGE_2_4));
+	}
 }
 
 void CBossAlice::OnOverlaped(CGameObject * _pHitObject, _vec3 vHitPos)
@@ -283,6 +284,8 @@ void CBossAlice::UpdatePattern()
 		m_bSummon = true;
 		if (m_bPaternInit)
 		{
+			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::BOSS_VOICE);
+			CSoundMgr::Get_Instance()->PlaySound(L"ali_A021.wav", CSoundMgr::BOSS_VOICE);
 			m_uiRemainSummon = 3;
 			m_fCoolDownSummon = 0.3f;
 			const OBJECTINFO* pObjectInfo = CPrefab_Manager::Get_Instance()->Get_ObjectPrefab(L"BossSkill");

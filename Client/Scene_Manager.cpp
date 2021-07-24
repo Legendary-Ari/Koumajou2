@@ -37,19 +37,28 @@ HRESULT CScene_Manager::Change_Scene_Manager(const ID eID, const ID eNextId)
 			m_pScene = CSceneWeaponSelect::Create();
 			break;
 		case CScene_Manager::STAGE_1_1:
+			if (m_ePrevScene != m_eNextScene)
+			{
+			}
 			m_pScene = CStage1_1::Create();
 			break;
 		case CScene_Manager::STAGE_1_4:
-			CSoundMgr::Get_Instance()->StopAll();
-			CSoundMgr::Get_Instance()->PlayBGM(L"Stage 1-4.mp3");
+			if (m_ePrevScene != m_eNextScene)
+			{
+				CSoundMgr::Get_Instance()->StopAll();
+				CSoundMgr::Get_Instance()->PlayBGM(L"Stage 1-4.mp3");
+			}
 			m_pScene = CStage1_4::Create();
 			break;
 		//case CScene_Manager::STAGE_2_1:
 		//	m_pScene = CStage2_1::Create();
 		//	break;
 		case CScene_Manager::STAGE_2_4:
-			CSoundMgr::Get_Instance()->StopAll();
-			CSoundMgr::Get_Instance()->PlayBGM(L"Stage 2-4.mp3");
+			if (m_ePrevScene != m_eNextScene)
+			{
+				CSoundMgr::Get_Instance()->StopAll();
+				CSoundMgr::Get_Instance()->PlayBGM(L"Stage 2-4.mp3");
+			}
 			m_pScene = CStage2_4::Create();
 			break;
 		default:
@@ -57,6 +66,7 @@ HRESULT CScene_Manager::Change_Scene_Manager(const ID eID, const ID eNextId)
 			break;
 		}
 		m_pScene->InitUpdate_Scene();
+		m_ePrevScene = m_eCurScene;
 		m_eCurScene = m_eNextScene; 
 	}
 	return S_OK;
@@ -90,10 +100,11 @@ const _vec3 & CScene_Manager::Get_StartPos() const
 
 HRESULT CScene_Manager::Reset()
 {
-	Safe_Delete(m_pScene);
-	m_pScene = CLoadingScene::Create(m_eCurScene);
-	m_pScene->InitUpdate_Scene();
-	m_eCurScene = CScene_Manager::SCENE_LOADING;
+	//Safe_Delete(m_pScene);
+	//m_pScene = CLoadingScene::Create(m_eCurScene);
+	//m_pScene->InitUpdate_Scene();
+	//m_eNextScene = m_eCurScene = CScene_Manager::SCENE_LOADING;
+	Change_Scene_Manager(CScene_Manager::SCENE_LOADING, m_eCurScene);
 
 	return S_OK;
 }

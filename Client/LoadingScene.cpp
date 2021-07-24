@@ -41,6 +41,7 @@ void CLoadingScene::Update_Scene()
 		CloseHandle(m_hThread);
 		DeleteCriticalSection(&m_tCritical_Section);
 		CScene_Manager::Get_Instance()->Change_Scene_Manager(m_eLoadingStage);
+		return;
 	}
 }
 

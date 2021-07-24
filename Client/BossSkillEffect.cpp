@@ -87,5 +87,5 @@ void CBossSkillEffect::Release_GameObject()
 
 const RENDERID::ID & CBossSkillEffect::Get_RenderId() const
 {
-	return RENDERID::BACKCOLLISION;
+	return RENDERID::BACKGROUND;
 }

@@ -18,6 +18,7 @@ public:
 	const _vec3& Get_StartPos() const;
 	HRESULT Reset();
 private:
+	ID m_ePrevScene;
 	ID m_eCurScene; 
 	ID m_eNextScene; 
 	CScene* m_pScene; 

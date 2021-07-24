@@ -51,14 +51,12 @@ void CCollisionMgr::Collision_Ex( list<CGameObject*>& _Dst, list<CGameObject*>& 
 				{
 					if ( pDst->Get_Info().vPos.x < pSrc->Get_Info().vPos.x )
 					{
-						pSrc->Add_PosX( fX );
 						pSrc->OnBlocked(pDst, DIRECTION::W);
 						pDst->OnBlocked( pSrc, DIRECTION::E );
 						continue;
 					}
 					else
 					{
-						pSrc->Add_PosX( -fX );
 							pSrc->OnBlocked( pDst, DIRECTION::E );
 							pDst->OnBlocked( pSrc, DIRECTION::W );
 						continue;
@@ -68,14 +66,12 @@ void CCollisionMgr::Collision_Ex( list<CGameObject*>& _Dst, list<CGameObject*>& 
 				{
 					if ( pDst->Get_Info().vPos.y < pSrc->Get_Info().vPos.y)
 					{
-						pSrc->Add_PosY( fY );
 							pSrc->OnBlocked( pDst, DIRECTION::N );
 							pDst->OnBlocked( pSrc, DIRECTION::S );
 						continue;
 					}
 					else
 					{
-						pSrc->Add_PosY( -fY );
 							pSrc->OnBlocked( pDst, DIRECTION::S );
 							pDst->OnBlocked( pSrc, DIRECTION::N );
 						continue;

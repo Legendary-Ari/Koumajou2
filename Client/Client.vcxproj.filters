@@ -208,6 +208,21 @@
     <Filter Include="01.GameObject\01.BackCollision\Invisibel">
       <UniqueIdentifier>{ffc10f27-0b03-448b-b5df-ad2634f01361}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.GameObject\09.Boss\Remilia\Bullet">
+      <UniqueIdentifier>{10cc5771-be57-4a1b-9cc3-9862c2f05bbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\09.Boss\Remilia\Arm">
+      <UniqueIdentifier>{82e44805-fd5c-4919-bf72-0205935e19cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\09.Boss\Remilia\Eye">
+      <UniqueIdentifier>{805b2a4c-fcae-4bfd-8953-e0578726b715}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\09.Boss\Remilia\Bullet\Lazor">
+      <UniqueIdentifier>{726bc243-43cf-4301-afd3-c6776efcc7f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.GameObject\03.Effect\Fade">
+      <UniqueIdentifier>{1ff52237-5d35-4ef9-84d2-6d1eefc69d4c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -438,6 +453,21 @@
     <ClInclude Include="InvisibleBlock.h">
       <Filter>01.GameObject\01.BackCollision\Invisibel</Filter>
     </ClInclude>
+    <ClInclude Include="RemiliaBullet.h">
+      <Filter>01.GameObject\09.Boss\Remilia\Bullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Remilia_Arm.h">
+      <Filter>01.GameObject\09.Boss\Remilia\Arm</Filter>
+    </ClInclude>
+    <ClInclude Include="Remilia_Eye.h">
+      <Filter>01.GameObject\09.Boss\Remilia\Eye</Filter>
+    </ClInclude>
+    <ClInclude Include="Remilia_Lazor.h">
+      <Filter>01.GameObject\09.Boss\Remilia\Bullet\Lazor</Filter>
+    </ClInclude>
+    <ClInclude Include="Fade.h">
+      <Filter>01.GameObject\03.Effect\Fade</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -661,6 +691,21 @@
     </ClCompile>
     <ClCompile Include="InvisibleBlock.cpp">
       <Filter>01.GameObject\01.BackCollision\Invisibel</Filter>
+    </ClCompile>
+    <ClCompile Include="RemiliaBullet.cpp">
+      <Filter>01.GameObject\09.Boss\Remilia\Bullet</Filter>
+    </ClCompile>
+    <ClCompile Include="Remilia_Arm.cpp">
+      <Filter>01.GameObject\09.Boss\Remilia\Arm</Filter>
+    </ClCompile>
+    <ClCompile Include="Remilia_Eye.cpp">
+      <Filter>01.GameObject\09.Boss\Remilia\Eye</Filter>
+    </ClCompile>
+    <ClCompile Include="Remilia_Lazor.cpp">
+      <Filter>01.GameObject\09.Boss\Remilia\Bullet\Lazor</Filter>
+    </ClCompile>
+    <ClCompile Include="Fade.cpp">
+      <Filter>01.GameObject\03.Effect\Fade</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

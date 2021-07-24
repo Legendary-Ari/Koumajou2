@@ -13,6 +13,9 @@
 #include "VS_Alice.h"
 #include "SceneChanger.h"
 #include "Item.h"
+#include "BossRemilia.h"
+#include "Remilia_Arm.h"
+#include "Fade.h"
 
 CPlayer::CPlayer()
 	:m_bAttacking(false)
@@ -299,6 +302,7 @@ void CPlayer::Late_Update_GameObject()
 		CSoundMgr::Get_Instance()->StopSound(CSoundMgr::UI);
 		CSoundMgr::Get_Instance()->PlaySound(L"sak_A089.wav", CSoundMgr::UI);
 		m_bDead = true;
+		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::BACKGROUND, CFade::Create(false));
 	}
 		
 
@@ -356,7 +360,6 @@ void CPlayer::Render_GameObject()
 	CGraphic_Device::Get_Instance()->Get_Sprite()->SetTransform(&matWorld);
 	CGraphic_Device::Get_Instance()->Get_Sprite()->Draw(pTexInfo->pTexture, &tRenderRect, &D3DXVECTOR3(fCenterX, fCenterY, 0.f), nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
 	RenderCollision();
-	DEBUG_STRING(L"%f",m_tInfo.vPos.y,100,100);
 }
 
 void CPlayer::Release_GameObject()
@@ -365,6 +368,10 @@ void CPlayer::Release_GameObject()
 
 void CPlayer::OnBlocked(CGameObject * pHitObject, DIRECTION::ID _eId)
 {
+	if (dynamic_cast<CBossRemilia*>(pHitObject) || dynamic_cast<CRemilia_Arm*>(pHitObject))
+		return;
+	if (pHitObject->Get_Damage() == 0)
+		return;
 	m_fCurHp -= pHitObject->Get_Damage();
 	m_eCurState = HIT;
 	m_bBlockable = false;
@@ -471,11 +478,11 @@ void CPlayer::UpdateState()
 			m_bHit = false;
 			if (m_bDead)
 			{
+				m_tInfo.vPos = CScene_Manager::Get_Instance()->Get_StartPos();
 				CScene_Manager::Get_Instance()->Reset();
 				m_fCurHp = 100.f;
 				m_fCurMp = 100.f;
 				--m_uiLife;
-				m_tInfo.vPos = CScene_Manager::Get_Instance()->Get_StartPos();
 				D3DXVECTOR3 vScroll = CScroll_Manager::Get_Scroll();
 				D3DXVECTOR3 vDiff = m_tInfo.vPos - D3DXVECTOR3{ float(CLIENTCX >> 1), float(CLIENTCY >> 1), 0.f };
 				CScroll_Manager::Force_Set_Scroll(-vDiff);
@@ -738,13 +745,14 @@ void CPlayer::UpdateBodyCollision()
 {
 	float fSize = m_tInfo.vSize.x;
 	float fReduceSizeX = 0.3f;
-	float fReduceSizeUp = 0.6f;
-	float fReduceSizeDown = 1.f;
+	float fReduceSizeUp = 0.5f;
+	float fReduceSizeDown = 0.8f;
 	if (m_bCrouch && m_bOnGround)
 		fReduceSizeUp = -0.2f;
 	if (m_bJumping)
 	{
-		fReduceSizeDown = 0.7f + abs((m_vecAnimation[JUMPING]->vecRect.size()-1) * 0.5f - m_uiAnimationFrame) * 0.6f / (m_vecAnimation[JUMPING]->vecRect.size()+1);
+		fReduceSizeUp = 0.2f;
+		fReduceSizeDown = 0.2f + abs((m_vecAnimation[JUMPING]->vecRect.size()-1) * 0.5f - m_uiAnimationFrame) * 0.6f / (m_vecAnimation[JUMPING]->vecRect.size()+1);
 	}
 		
 	RECT rect = m_vecAnimation[0]->vecRect[0];

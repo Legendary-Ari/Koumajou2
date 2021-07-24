@@ -169,6 +169,7 @@
     <ClInclude Include="CollisionMgr.h" />
     <ClInclude Include="Effect.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Fade.h" />
     <ClInclude Include="Frame_Manager.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObject_Manager.h" />
@@ -189,6 +190,10 @@
     <ClInclude Include="Pillor.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Prefab_Manager.h" />
+    <ClInclude Include="Remilia_Eye.h" />
+    <ClInclude Include="RemiliaBullet.h" />
+    <ClInclude Include="Remilia_Arm.h" />
+    <ClInclude Include="Remilia_Lazor.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Rose.h" />
     <ClInclude Include="RoseStem.h" />
@@ -247,6 +252,7 @@
     <ClCompile Include="CollisionMgr.cpp" />
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Fade.cpp" />
     <ClCompile Include="Frame_Manager.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameObject_Manager.cpp" />
@@ -267,6 +273,10 @@
     <ClCompile Include="Pillor.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Prefab_Manager.cpp" />
+    <ClCompile Include="Remilia_Eye.cpp" />
+    <ClCompile Include="RemiliaBullet.cpp" />
+    <ClCompile Include="Remilia_Arm.cpp" />
+    <ClCompile Include="Remilia_Lazor.cpp" />
     <ClCompile Include="Rose.cpp" />
     <ClCompile Include="RoseStem.cpp" />
     <ClCompile Include="RoseHead.cpp" />

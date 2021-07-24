@@ -220,7 +220,7 @@ void CGameObject::RenderCollision()
 			_vec3 vScroll = CScroll_Manager::Get_Scroll();
 			v2LinePos[i] += {vScroll.x, vScroll.y};
 		}
-		CGraphic_Device::Get_Instance()->Get_Line()->Draw(v2LinePos, dwSize, D3DCOLOR_ARGB(255, 255, 100, 100));
+		CGraphic_Device::Get_Instance()->Get_Line()->Draw(v2LinePos, dwSize, D3DCOLOR_ARGB(255, 255, 0, 255));
 		Safe_Delete_Arr(v2LinePos);
 	}
 	for (auto& tCollision : m_vecTileCollision)

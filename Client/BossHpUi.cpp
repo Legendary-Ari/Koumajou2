@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "BossHpUi.h"
-
+#include "BossAlice.h"
+#include "BossRemilia.h"
 
 CBossHpUi::CBossHpUi()
 {
@@ -110,7 +111,15 @@ void CBossHpUi::RenderIcon()
 	//m_tIconInfo.vPos.x = _ttof(str);
 	//GetPrivateProfileString(L"Pos", L"y", L"", str, sizeof(str), L"../Temp.ini");
 	//m_tIconInfo.vPos.y = _ttof(str);
-	const OBJECTINFO* pObjectInfo = CPrefab_Manager::Get_Instance()->Get_ObjectPrefab(L"IconAlice");
+	const OBJECTINFO* pObjectInfo;
+	if (dynamic_cast<CBossRemilia*>(CGameObject_Manager::Get_Instance()->Get_Boss()))
+	{
+		pObjectInfo = CPrefab_Manager::Get_Instance()->Get_ObjectPrefab(L"IconRemilia");
+	}
+	else
+	{
+		pObjectInfo = CPrefab_Manager::Get_Instance()->Get_ObjectPrefab(L"IconAlice");
+	}
 	const TEXINFO* pTexInfo = CTexture_Manager::Get_Instance()->Get_TexInfo(pObjectInfo->wstrObjectImage_ObjectKey);
 	if (nullptr == pTexInfo)
 		return;

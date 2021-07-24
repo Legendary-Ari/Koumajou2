@@ -41,7 +41,7 @@ HRESULT CStage1_4::Ready_Scene()
 		if (pActorInfo)
 			CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)pObjectInfo->eObjId, CPlayer::Create(pObjectInfo, pActorInfo->tInfo));
 		else
-			CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)pObjectInfo->eObjId, CPlayer::Create(pObjectInfo, { {50.f,500.f,0.f},{0.f,0.f,0.f},{1.f,1.f,0.f},0.f }));
+			CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)pObjectInfo->eObjId, CPlayer::Create(pObjectInfo, { m_vStartPos,{0.f,0.f,0.f},{1.f,1.f,0.f},0.f }));
 	}
 	{
 		const OBJECTINFO* pObjectInfo = CPrefab_Manager::Get_Instance()->Get_ObjectPrefab(L"BossHpBar");

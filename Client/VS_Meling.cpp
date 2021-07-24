@@ -54,4 +54,14 @@ void CVS_Meling::Use(const INFO & tInfo)
 {
 	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager( OBJECTINFO::PLAYER_BULLET, CSubMeling::Create(tInfo));
 	Use_Cost();
+	CSoundMgr::Get_Instance()->StopSound(CSoundMgr::VSKILL);
+	switch (rand() % 2)
+	{
+	case 0:
+		CSoundMgr::Get_Instance()->PlaySound(L"mei_A001.wav", CSoundMgr::VSKILL);
+		break;
+	case 1:
+		CSoundMgr::Get_Instance()->PlaySound(L"mei_A003.wav", CSoundMgr::VSKILL);
+		break;
+	}
 }

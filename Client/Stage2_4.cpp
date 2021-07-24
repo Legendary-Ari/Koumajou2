@@ -5,6 +5,7 @@
 #include "InvisibleBlock.h"
 #include "StageUi.h"
 #include "BossRemilia.h"
+#include "Fade.h"
 
 CStage2_4::CStage2_4()
 {
@@ -13,6 +14,7 @@ CStage2_4::CStage2_4()
 
 CStage2_4::~CStage2_4()
 {
+	Release_Scene();
 }
 
 HRESULT CStage2_4::Ready_Scene()
@@ -33,7 +35,6 @@ HRESULT CStage2_4::Ready_Scene()
 		const OBJECTINFO* pObjectInfo = CPrefab_Manager::Get_Instance()->Get_ObjectPrefab(L"Remilia");
 		assert(pObjectInfo);
 		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::BOSS, CBossRemilia::Create(pObjectInfo));
-
 	}
 
 	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::UI, CStageUi::Create());
@@ -45,19 +46,20 @@ HRESULT CStage2_4::Ready_Scene()
 		if (pActorInfo)
 			CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)pObjectInfo->eObjId, CPlayer::Create(pObjectInfo, pActorInfo->tInfo));
 		else
-			CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)pObjectInfo->eObjId, CPlayer::Create(pObjectInfo, { { 50.f,500.f,0.f },{ 0.f,0.f,0.f },{ 1.f,1.f,0.f },0.f }));
+			CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::OBJID)pObjectInfo->eObjId, CPlayer::Create(pObjectInfo, { m_vStartPos,{ 0.f,0.f,0.f },{ 1.f,1.f,0.f },0.f }));
 	}
 	{
 		INFO tInfo;
 		ZeroMemory(&tInfo, sizeof(tInfo));
 		tInfo.vPos = { float(WINCX >> 1),float(CLIENTCY + 20.f),0.f };
-		tInfo.vSize = { float(WINCX), 64.f, 0.f };
+		tInfo.vSize = { float(WINCX + 20), 64.f, 0.f };
 		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager((OBJECTINFO::BACKGROUND), CInvisibleBlock::Create(tInfo));
 	}
-	//{
-	//	const OBJECTINFO* pObjectInfo = CPrefab_Manager::Get_Instance()->Get_ObjectPrefab(L"BossHpBar");
-	//	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::UI, CBossHpUi::Create(pObjectInfo));
-	//}
+	{
+		const OBJECTINFO* pObjectInfo = CPrefab_Manager::Get_Instance()->Get_ObjectPrefab(L"BossHpBar");
+		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::UI, CBossHpUi::Create(pObjectInfo));
+	}
+	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::BACKGROUND, CFade::Create(true));
 	return S_OK;
 }
 
