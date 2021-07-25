@@ -55,7 +55,7 @@ int CRemilia_Arm::Update_GameObject()
 	if (m_bDestroyed)
 		return OBJ_DESTROYED;
 	float fDeltaTime = CTime_Manager::Get_Instance()->Get_DeltaTime();
-	if (m_bDead)
+	if (m_bDead || !m_pRemilia)
 	{
 		if (m_bDieInit)
 		{
@@ -63,7 +63,8 @@ int CRemilia_Arm::Update_GameObject()
 			m_fDieRandomSign = cosf(fAngle);
 			m_tInfo.vDir.y = -5.f;
 			m_bDieInit = false;
-			m_pRemilia->Set_ArmNullptr(!m_bFliped);
+			if(m_pRemilia)
+				m_pRemilia->Set_ArmNullptr(!m_bFliped);
 		}
 		UpdateDie();
 		m_tInfo.vPos += m_tInfo.vDir;

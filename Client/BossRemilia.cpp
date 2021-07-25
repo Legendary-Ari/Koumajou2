@@ -14,7 +14,8 @@ CBossRemilia::CBossRemilia()
 	, m_uiPattern3PosMount(12)
 	, m_uiPattern3Idx (0)
 	, m_uiMaxSpellIdx(8)
-	, m_fHitMaxTime(0.1f)
+	, m_fHitMaxTime(0.2f)
+	, m_fMaxDieTime(2.0f)
 {
 	ZeroMemory(m_bDonePattern, sizeof(m_bDonePattern));
 }
@@ -22,6 +23,7 @@ CBossRemilia::CBossRemilia()
 
 CBossRemilia::~CBossRemilia()
 {
+	Release_GameObject();
 }
 
 CGameObject * CBossRemilia::Create(const OBJECTINFO * _pObjectInfo)
@@ -81,7 +83,7 @@ HRESULT CBossRemilia::Ready_GameObject()
 		ERR_MSG(L"CBossRemilia 이미지를 찾지 못했습니다.6");
 		return E_FAIL;
 	}
-
+	m_vecAnimation[DIE] = pAnim;
 	m_vecPatternTime.resize(PATTERN::P_PATTERN_END);
 	m_vecPatternTime[P_IDLE] = 1.1f;
 	m_vecPatternTime[P_PATTERN1] = 1.0f;
@@ -171,11 +173,11 @@ int CBossRemilia::Update_GameObject()
 			m_bDieInit = false;
 			m_uiAnimationFrame = 0;
 			ZeroMemory(&m_vecBodyCollision[0].tFRect, sizeof(FRECT));
-
-			m_fRamainedDieTime = m_fMaxDieTime;
+			m_eCurState = STATE::DIE;
+			m_fRemainDieTime = m_fMaxDieTime;
 			m_vDieDir = { m_bFliped ? cosf(D3DXToRadian(-30.f)) : cosf(D3DXToRadian(30.f)), sinf(D3DXToRadian(-30)),0.f };
-			CSoundMgr::Get_Instance()->StopSound(CSoundMgr::BOSS_VOICE);
-			CSoundMgr::Get_Instance()->PlaySound(L"lem_A037.wav",CSoundMgr::BOSS_VOICE);
+			CSoundMgr::Get_Instance()->StopAll();
+			CSoundMgr::Get_Instance()->PlaySound(L"lem_A037.wav", CSoundMgr::BOSS_VOICE);
 		}
 		UpdateDie();
 		return OBJ_NOEVENT;
@@ -266,7 +268,7 @@ void CBossRemilia::Render_GameObject()
 		D3DXMATRIX matScale, matRotZ, matTrans, matWorld;
 		D3DXMatrixScaling(&matScale, (m_bFliped ? -1.0f : 1.0f), 1.f, 0.f);
 		D3DXMatrixRotationZ(&matRotZ, D3DXToRadian(-m_tInfo.fAngle));
-		D3DXMatrixTranslation(&matTrans, m_tInfo.vPos.x - 10.f + vScroll.x, m_tInfo.vPos.y + vScroll.y, 0.f);
+		D3DXMatrixTranslation(&matTrans, m_tInfo.vPos.x - 10.f + vScroll.x, m_tInfo.vPos.y + vScroll.y + (m_bDead ? (m_fMaxDieTime - m_fRemainDieTime) * 10.f : 0), 0.f);
 		matWorld = matScale * matRotZ * matTrans;
 		const RECT& rect = pObjectInfo->tRect;
 		float 	fCenterX = float(((rect.right - rect.left)*0.5f));
@@ -278,13 +280,35 @@ void CBossRemilia::Render_GameObject()
 
 	}
 
-
+	if (m_bDead)
+	{
+		_vec3 vRandom(m_tInfo.vPos);
+		vRandom.x += rand() % 100 - 50.f;
+		vRandom.y += rand() % 100 - 50.f;
+		RenderDieEffect(vRandom);
+		vRandom.x += rand() % 100 - 50.f;
+		vRandom.y += rand() % 100 - 50.f;
+		RenderDieEffect(vRandom);
+		vRandom.x += rand() % 100 - 50.f;
+		vRandom.y += rand() % 100 - 50.f;
+		RenderDieEffect(vRandom);
+	}
 
 	RenderCollision();
 }
 
 void CBossRemilia::Release_GameObject()
 {
+	if(m_pArm[0])
+		static_cast<CRemilia_Arm*>(m_pArm[0])->Set_Remilia(nullptr);
+	if (m_pArm[1])
+		static_cast<CRemilia_Arm*>(m_pArm[1])->Set_Remilia(nullptr);
+	if (m_pEye[0])
+		static_cast<CRemilia_Eye*>(m_pEye[0])->Set_Remilia(nullptr);
+	if (m_pEye[1])
+		static_cast<CRemilia_Eye*>(m_pEye[1])->Set_Remilia(nullptr);
+	if (m_pEye[2])
+		static_cast<CRemilia_Eye*>(m_pEye[2])->Set_Remilia(nullptr);
 }
 
 void CBossRemilia::OnOverlaped(CGameObject * _pHitObject, _vec3 vHitPos)

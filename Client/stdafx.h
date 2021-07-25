@@ -37,6 +37,3 @@
 
 #include "Headers.h"
 #include "MyMath.h"
-
-
-

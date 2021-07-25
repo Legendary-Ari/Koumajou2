@@ -56,7 +56,7 @@ int CRemilia_Eye::Update_GameObject()
 	if (m_bDestroyed)
 		return OBJ_DESTROYED;
 	float fDeltaTime = CTime_Manager::Get_Instance()->Get_DeltaTime();
-	if (m_bDead)
+	if (m_bDead || !m_pRemilia)
 	{
 		if (m_bDieInit)
 		{
@@ -64,7 +64,8 @@ int CRemilia_Eye::Update_GameObject()
 			m_fDieRandomSign = cosf(fAngle);
 			m_tInfo.vDir.y = -5.f;
 			m_bDieInit = false;
-			m_pRemilia->Set_EyeNullptr(m_iIdx);
+			if(m_pRemilia)
+				m_pRemilia->Set_EyeNullptr(m_iIdx);
 		}
 		UpdateDie();
 		m_tInfo.vPos += m_tInfo.vDir;
@@ -90,7 +91,7 @@ void CRemilia_Eye::Late_Update_GameObject()
 {
 	UpdateBodyCollision();
 	m_fAnimationCumulatedTime += CTime_Manager::Get_Instance()->Get_DeltaTime();
-	if (m_fAnimationCumulatedTime >= m_vecAnimation[0]->fPlay_Speed)
+	if (m_fAnimationCumulatedTime >= m_vecAnimation[0]->fPlay_Speed + 0.5f)
 	{
 		m_fAnimationCumulatedTime = 0;
 		++m_uiAnimationFrame;

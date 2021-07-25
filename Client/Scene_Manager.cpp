@@ -5,7 +5,11 @@
 #include "Stage1_1.h"
 #include "Stage1_4.h"
 #include "Stage2_4.h"
+#include "GameOverScene.h"
+#include "LogoScene.h"
+
 IMPLEMENT_SINGLETON(CScene_Manager)
+CScene_Manager::ID CScene_Manager::g_eStartScene = CScene_Manager::STAGE_2_4;
 CScene_Manager::CScene_Manager()
 	:m_eCurScene(END)
 	, m_eNextScene(END)
@@ -32,6 +36,7 @@ HRESULT CScene_Manager::Change_Scene_Manager(const ID eID, const ID eNextId)
 			m_pScene = CLoadingScene::Create(eNextId);
 			break;
 		case CScene_Manager::MENU:
+			m_pScene = CLogoScene::Create();
 			break;
 		case CScene_Manager::SELECT:
 			m_pScene = CSceneWeaponSelect::Create();
@@ -60,6 +65,10 @@ HRESULT CScene_Manager::Change_Scene_Manager(const ID eID, const ID eNextId)
 				CSoundMgr::Get_Instance()->PlayBGM(L"Stage 2-4.mp3");
 			}
 			m_pScene = CStage2_4::Create();
+			break;
+		case CScene_Manager::GAMEOVER:
+			CSoundMgr::Get_Instance()->StopAll();
+			m_pScene = CGameOverScene::Create();
 			break;
 		default:
 			m_pScene = CStage1_1::Create();

@@ -16,11 +16,12 @@ public:
 	virtual void	Late_Update_GameObject() override;
 	virtual void	Render_GameObject() override;
 	void			Set_Index(int idx);
+
+	void	Set_Remilia(CBossRemilia* _pRemilia);
 private:
 	virtual void	UpdateBodyCollision() override;
 	virtual void	UpdateDie() override;
 
-	void	Set_Remilia(CBossRemilia* _pRemilia);
 private:
 	float	m_fDieRandomSign;
 	float	m_fRemainedDieTime;

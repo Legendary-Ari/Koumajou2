@@ -5,6 +5,7 @@
 #include "StageUi.h"
 #include "BossAlice.h"
 #include "BossHpUi.h"
+#include "Fade.h"
 
 CStage1_4::CStage1_4()
 {
@@ -47,7 +48,7 @@ HRESULT CStage1_4::Ready_Scene()
 		const OBJECTINFO* pObjectInfo = CPrefab_Manager::Get_Instance()->Get_ObjectPrefab(L"BossHpBar");
 		CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::UI, CBossHpUi::Create(pObjectInfo));
 	}
-
+	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::BACKGROUND, CFade::Create(true));
 	return S_OK;
 }
 

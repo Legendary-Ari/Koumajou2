@@ -173,6 +173,7 @@
     <ClInclude Include="Frame_Manager.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameObject_Manager.h" />
+    <ClInclude Include="GameOverScene.h" />
     <ClInclude Include="Game_Manager.h" />
     <ClInclude Include="Graphic_Device.h" />
     <ClInclude Include="Gui.h" />
@@ -181,6 +182,7 @@
     <ClInclude Include="Key_Manager.h" />
     <ClInclude Include="Knife.h" />
     <ClInclude Include="LoadingScene.h" />
+    <ClInclude Include="LogoScene.h" />
     <ClInclude Include="LunaDial.h" />
     <ClInclude Include="MainApp.h" />
     <ClInclude Include="Multi_Texture.h" />
@@ -256,6 +258,7 @@
     <ClCompile Include="Frame_Manager.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameObject_Manager.cpp" />
+    <ClCompile Include="GameOverScene.cpp" />
     <ClCompile Include="Game_Manager.cpp" />
     <ClCompile Include="Graphic_Device.cpp" />
     <ClCompile Include="Gui.cpp" />
@@ -264,6 +267,7 @@
     <ClCompile Include="Key_Manager.cpp" />
     <ClCompile Include="Knife.cpp" />
     <ClCompile Include="LoadingScene.cpp" />
+    <ClCompile Include="LogoScene.cpp" />
     <ClCompile Include="LunaDial.cpp" />
     <ClCompile Include="MainApp.cpp" />
     <ClCompile Include="Multi_Texture.cpp" />

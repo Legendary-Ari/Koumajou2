@@ -223,6 +223,12 @@
     <Filter Include="01.GameObject\03.Effect\Fade">
       <UniqueIdentifier>{1ff52237-5d35-4ef9-84d2-6d1eefc69d4c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03.Scene\GameOver">
+      <UniqueIdentifier>{8648a4f0-62cf-4821-a8d1-c823a4e0bee7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Scene\Logo">
+      <UniqueIdentifier>{d0875e7e-c12f-4f67-bca4-f522a99e8216}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -468,6 +474,12 @@
     <ClInclude Include="Fade.h">
       <Filter>01.GameObject\03.Effect\Fade</Filter>
     </ClInclude>
+    <ClInclude Include="GameOverScene.h">
+      <Filter>03.Scene\GameOver</Filter>
+    </ClInclude>
+    <ClInclude Include="LogoScene.h">
+      <Filter>03.Scene\Logo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -706,6 +718,12 @@
     </ClCompile>
     <ClCompile Include="Fade.cpp">
       <Filter>01.GameObject\03.Effect\Fade</Filter>
+    </ClCompile>
+    <ClCompile Include="GameOverScene.cpp">
+      <Filter>03.Scene\GameOver</Filter>
+    </ClCompile>
+    <ClCompile Include="LogoScene.cpp">
+      <Filter>03.Scene\Logo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

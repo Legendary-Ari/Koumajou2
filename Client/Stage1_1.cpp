@@ -4,7 +4,7 @@
 #include "Player.h"
 #include "StageUi.h"
 #include "SceneChanger.h"
-
+#include "Fade.h"
 
 CStage1_1::CStage1_1()
 {
@@ -50,7 +50,7 @@ HRESULT CStage1_1::Ready_Scene()
 	_vec3 SrcPos = { 4650.f, 400.f, 0.f };
 	_vec3 DstPos = { 50.f, 500.f, 0.f };
 	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::COLLISION, CSceneChanger::Create(SrcPos,DstPos,CScene_Manager::STAGE_1_4));
-
+	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::BACKGROUND, CFade::Create(true));
 	return S_OK;
 }
 

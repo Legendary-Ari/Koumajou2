@@ -29,7 +29,7 @@ HRESULT CMainApp::Ready_MainApp()
 	if (FAILED(CPrefab_Manager::Get_Instance()->Ready_Prefab_Manager()))
 		goto ERR;
 	CSoundMgr::Get_Instance()->Initialize();
-	CScene_Manager::Get_Instance()->Change_Scene_Manager(CScene_Manager::SELECT);
+	CScene_Manager::Get_Instance()->Change_Scene_Manager(CScene_Manager::MENU);
 
 	return S_OK;
 

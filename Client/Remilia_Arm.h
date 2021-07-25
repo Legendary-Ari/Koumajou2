@@ -17,12 +17,13 @@ public:
 	virtual void	Render_GameObject() override;
 	virtual const RENDERID::ID& Get_RenderId() const { return RENDERID::BACKCOLLISION; }
 	void		Shoot();
+	void	Set_Remilia(CBossRemilia* _pRemilia);
 private:
 	virtual void	UpdateBodyCollision() override;
 	virtual void	UpdateDie() override;
 
 	void	Set_IsLeft(bool _bLeft);
-	void	Set_Remilia(CBossRemilia* _pRemilia);
+
 private:
 	bool	m_bLeft;
 	float	m_fDieRandomSign;

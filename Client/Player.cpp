@@ -478,16 +478,24 @@ void CPlayer::UpdateState()
 			m_bHit = false;
 			if (m_bDead)
 			{
-				m_tInfo.vPos = CScene_Manager::Get_Instance()->Get_StartPos();
-				CScene_Manager::Get_Instance()->Reset();
-				m_fCurHp = 100.f;
-				m_fCurMp = 100.f;
-				--m_uiLife;
-				D3DXVECTOR3 vScroll = CScroll_Manager::Get_Scroll();
-				D3DXVECTOR3 vDiff = m_tInfo.vPos - D3DXVECTOR3{ float(CLIENTCX >> 1), float(CLIENTCY >> 1), 0.f };
-				CScroll_Manager::Force_Set_Scroll(-vDiff);
-				CScroll_Manager::ScrollLock();
-				return;
+				if (m_uiLife == 0)
+				{
+					CScene_Manager::Get_Instance()->Change_Scene_Manager(CScene_Manager::GAMEOVER);
+					return;
+				}
+				else
+				{
+					m_tInfo.vPos = CScene_Manager::Get_Instance()->Get_StartPos();
+					CScene_Manager::Get_Instance()->Reset();
+					m_fCurHp = 100.f;
+					m_fCurMp = 100.f;
+					--m_uiLife;
+					D3DXVECTOR3 vScroll = CScroll_Manager::Get_Scroll();
+					D3DXVECTOR3 vDiff = m_tInfo.vPos - D3DXVECTOR3{ float(CLIENTCX >> 1), float(CLIENTCY >> 1), 0.f };
+					CScroll_Manager::Force_Set_Scroll(-vDiff);
+					CScroll_Manager::ScrollLock();
+					return;
+				}
 			}
 		}
 		else

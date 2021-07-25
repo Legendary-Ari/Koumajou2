@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "LoadingScene.h"
-
+#include "Fade.h"
 
 CLoadingScene::CLoadingScene()
 	:m_bLoaded(false)
@@ -27,6 +27,7 @@ CScene * CLoadingScene::Create(const CScene_Manager::ID & _eId)
 
 HRESULT CLoadingScene::Ready_Scene()
 {
+	CGameObject_Manager::Get_Instance()->Add_GameObject_Manager(OBJECTINFO::BACKGROUND, CFade::Create(true));
 	InitializeCriticalSection(&m_tCritical_Section);
 
 	m_hThread = (HANDLE)_beginthreadex(nullptr, 0, LoadActor, this, 0, nullptr);

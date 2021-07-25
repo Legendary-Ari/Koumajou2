@@ -36,12 +36,13 @@ HRESULT CSceneChanger::Ready_GameObject()
 
 void CSceneChanger::InitUpdate_GameObject()
 {
-	UpdateAttackCollision();
+	
 }
 
 int CSceneChanger::Update_GameObject()
 {
-	return 0;
+	UpdateAttackCollision();
+	return OBJ_NOEVENT;
 }
 
 void CSceneChanger::Late_Update_GameObject()
